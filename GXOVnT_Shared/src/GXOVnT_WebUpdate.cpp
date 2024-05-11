@@ -48,7 +48,7 @@ void GXOVnT_WebUpdate::downloadSystemFirmwareVersions() {
   HTTPClient http;
   // Send request
   http.useHTTP10(true);
-  http.begin(*m_wifiClientSecure, "http://arduinojson.org/example.json");
+  http.begin(*m_wifiClientSecure, "https://github.com/TrevorMare/GXOVnT/raw/main/firmware_versions.json");
   http.GET();
 
   // Print the response
