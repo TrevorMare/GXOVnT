@@ -12,6 +12,7 @@
 #include <SPIFFS.h>
 #include "Update.h"
 #include <ArduinoJson.h>
+#include <vector>
 
 #define ssid "HouseMare"
 #define password "X@Kbi-Rh3$"
