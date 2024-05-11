@@ -16,7 +16,7 @@ enum GXOVnT_Exception_Code {
   ERROR_DEVICE_ALREADY_INITIALIZED = 1
 };
 
-static const char *SoftwareVersion = "v1.0.0";
+static const char *SoftwareVersion = "v1.0.1";
 
 struct GXOVnT_Exception {
   const char *ErrorMessage = "";
