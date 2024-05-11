@@ -1,6 +1,6 @@
-#include "GXOVnT_AutoUpdate.h"
+#include "GXOVnT_WebUpdate.h"
 
-void GVOVnT_AutoUpdate::checkForUpdatesAndInstall() {
+void GXOVnT_WebUpdate::checkForUpdatesAndInstall() {
 
   if (!SPIFFS.begin(true)) {
     Serial.println("SPIFFS Mount Failed");
@@ -8,21 +8,18 @@ void GVOVnT_AutoUpdate::checkForUpdatesAndInstall() {
   }
 
   openWifiConnection();
-  getFileFromServer();
-  performOTAUpdateFromSPIFFS();
+
+  downloadSystemFirmwareVersions();
+
+  //getFileFromServer();
+  //performOTAUpdateFromSPIFFS();
 
 }
 
-void GVOVnT_AutoUpdate::downloadSystemFirmwareVersions() {
 
 
 
-
-  
-}
-
-
-void GVOVnT_AutoUpdate::openWifiConnection() {
+void GXOVnT_WebUpdate::openWifiConnection() {
 
   // Begin connecting to WiFi using the provided SSID and password
   WiFi.begin(ssid, password);
@@ -39,9 +36,75 @@ void GVOVnT_AutoUpdate::openWifiConnection() {
   // Print confirmation message when WiFi is connected
   Serial.println("WiFi connected");
 
+  // Creating the secure wifi client
+  m_wifiClientSecure = new WiFiClientSecure();
+  m_wifiClientSecure->setInsecure();
+
 }
 
-void GVOVnT_AutoUpdate::getFileFromServer() {
+void GXOVnT_WebUpdate::downloadSystemFirmwareVersions() {
+  Serial.println("Downloading firmware versions");
+
+  HTTPClient http;
+  // Send request
+  http.useHTTP10(true);
+  http.begin(*m_wifiClientSecure, "http://arduinojson.org/example.json");
+  http.GET();
+
+  // Print the response
+  JsonDocument doc;
+  deserializeJson(doc, http.getStream());
+
+  // Disconnect
+  http.end();
+
+  m_availableFirmwareVersions.clear();
+
+  for (JsonObject FirmwareVersion : doc["FirmwareVersions"].as<JsonArray>()) {
+
+    const char* FirmwareVersion_FirmwareName = FirmwareVersion["FirmwareName"]; // "Alpha Version 1.0.0.0", ...
+    const char* FirmwareVersion_DownloadUrl = FirmwareVersion["DownloadUrl"]; // "https://raw.github/", ...
+    int FirmwareVersion_FirmwareType = FirmwareVersion["FirmwareType"]; // 1, 1, 1, 1
+    int FirmwareVersion_SystemType = FirmwareVersion["SystemType"]; // 1, 1, 1, 1
+    const char* FirmwareVersion_VersionNumber = FirmwareVersion["VersionNumber"]; // "1.0.0.0", "1.0.0.1", ...
+
+    GVOVnT_SystemFirmware *systemFirmware = new GVOVnT_SystemFirmware(FirmwareVersion_FirmwareName, FirmwareVersion_DownloadUrl, FirmwareVersion_VersionNumber,
+    FirmwareVersion_FirmwareType, FirmwareVersion_SystemType);
+
+    m_availableFirmwareVersions.push_back(systemFirmware);
+
+  }
+
+
+  for (size_t i = 0; i < m_availableFirmwareVersions.size(); i++)
+  {
+    Serial.printf("Found version [%s] \n", m_availableFirmwareVersions[i]->FirmwareName);
+  }
+  
+
+
+  // HTTPClient http;
+
+  // WiFiClient wifiClient;
+
+  // http.useHTTP10(true);
+  // http.begin("http://arduinojson.org/example.json");
+  // http.GET();
+
+  // // Parse response
+  // JsonDocument doc();
+  // deserializeJson(doc, wifiClient);
+
+  // // Read values
+  // Serial.println(doc["time"].as<long>());
+
+  // // Disconnect
+  // http.end();
+
+
+}
+
+void GXOVnT_WebUpdate::getFileFromServer() {
   WiFiClientSecure client;
   client.setInsecure(); // Set client to allow insecure connections
 
@@ -96,7 +159,7 @@ void GVOVnT_AutoUpdate::getFileFromServer() {
   }
 }
 
-void GVOVnT_AutoUpdate::performOTAUpdateFromSPIFFS() {
+void GXOVnT_WebUpdate::performOTAUpdateFromSPIFFS() {
   // Open the firmware file in SPIFFS for reading
   File file = SPIFFS.open("/" + String(FILE_NAME), FILE_READ);
   if (!file) {

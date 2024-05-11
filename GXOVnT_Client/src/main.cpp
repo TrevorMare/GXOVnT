@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 #include <GXOVnT_TPMS_BLE_Manager.h>
-#include <GXOVnT_AutoUpdate.h>
+#include <GXOVnT_WebUpdate.h>
 #include <heltec.h>
 //https://medium.com/@adityabangde/esp32-firmware-updates-from-github-a-simple-ota-solution-173a95f4a97b
 
@@ -10,7 +10,7 @@
 //int myFunction(int, int);
 
 GXOVnT_TPMS_BLE_Manager *m_bleManager = new GXOVnT_TPMS_BLE_Manager();
-GVOVnT_AutoUpdate *updater = new GVOVnT_AutoUpdate();
+GXOVnT_WebUpdate *updater = new GXOVnT_WebUpdate();
 int scanTime = 10; //In seconds
 
 
