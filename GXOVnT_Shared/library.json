@@ -1,0 +1,30 @@
+{
+    "name": "GXOVnT_Shared",
+    "version": "0.0.4",
+    "description": "Shared library for the GX Overland and Tow systems",
+    "keywords": "GX470, IoT",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/username/hello-world.git"
+    },
+    "authors":
+    [
+      {
+        "name": "Trevor Maré",
+        "email": "trevorm336@gmail.com",
+        "url": ""
+      }
+    ],
+    "license": "MIT",
+    "homepage": "https://www.helloworld.org/",
+    "dependencies": [
+      {
+        "owner": "bblanchon",
+        "name": "ArduinoJson",
+        "version": "^7.0.4"
+      }
+    ],
+    "frameworks": "*",
+    "platforms": "*"
+  }
