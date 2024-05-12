@@ -11,7 +11,12 @@ void GXOVnT_WebUpdate::checkForUpdatesAndInstall() {
 
   downloadSystemFirmwareVersions();
 
-  //getFileFromServer();
+  const GVOVnT_SystemFirmware *latestFirmware = getLatestFirmwareForSystem(GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE_CLIENT);
+
+  if (latestFirmware == nullptr)
+    return;
+
+  getFileFromServer(latestFirmware);
   //performOTAUpdateFromSPIFFS();
 
 }
@@ -24,6 +29,14 @@ void GXOVnT_WebUpdate::openWifiConnection() {
   // Begin connecting to WiFi using the provided SSID and password
   WiFi.begin(ssid, password);
 
+#ifdef Heltec_Screen
+  Heltec.display->clear();
+  Heltec.display->drawString(0, 0, "Hello from lib");
+  Heltec.display->display();
+#endif
+
+
+
   // Display connection progress
   Serial.print("Connecting to WiFi");
   
@@ -34,6 +47,7 @@ void GXOVnT_WebUpdate::openWifiConnection() {
   }
   
   // Print confirmation message when WiFi is connected
+  Serial.println("");
   Serial.println("WiFi connected");
 
   // Creating the secure wifi client
@@ -43,75 +57,107 @@ void GXOVnT_WebUpdate::openWifiConnection() {
 }
 
 void GXOVnT_WebUpdate::downloadSystemFirmwareVersions() {
-  Serial.println("Downloading firmware versions");
+  
+  Serial.println("Downloading available firmware versions");
 
+  // Clear the existing list as we will re-build this list
+  clearFirmwareVersionList();
+
+  // Download the firmware versions list
   HTTPClient http;
-  // Send request
   http.useHTTP10(true);
-  http.begin(*m_wifiClientSecure, "https://github.com/TrevorMare/GXOVnT/raw/main/firmware_versions.json");
+  http.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
+  http.begin(*m_wifiClientSecure, FIRMWARE_LIST_URL);
   http.GET();
-
-  // Print the response
+  // Now parse the Json response
   JsonDocument doc;
   deserializeJson(doc, http.getStream());
-
   // Disconnect
   http.end();
 
-  m_availableFirmwareVersions.clear();
+  // Build a list of firmware versions
+  if (doc.isNull())  {
+    // Could not parse the document
+    Serial.println("Firmware versions did not return a valid response, root is null");
+  } else {
+    // For each of the objects in json, build a new struct represenation
+    for (JsonObject FirmwareVersion : doc["FirmwareVersions"].as<JsonArray>()) {
+      const char* FirmwareVersion_FirmwareName = FirmwareVersion["FirmwareName"]; 
+      const char* FirmwareVersion_DownloadUrl = FirmwareVersion["DownloadUrl"]; 
+      int FirmwareVersion_FirmwareType = FirmwareVersion["FirmwareType"]; 
+      int FirmwareVersion_SystemType = FirmwareVersion["SystemType"]; 
+      const char* FirmwareVersion_VersionNumber = FirmwareVersion["VersionNumber"]; 
 
-  for (JsonObject FirmwareVersion : doc["FirmwareVersions"].as<JsonArray>()) {
+      GVOVnT_SystemFirmware *systemFirmware = new GVOVnT_SystemFirmware(FirmwareVersion_FirmwareName, FirmwareVersion_DownloadUrl, FirmwareVersion_VersionNumber,
+        FirmwareVersion_FirmwareType, FirmwareVersion_SystemType);
 
-    const char* FirmwareVersion_FirmwareName = FirmwareVersion["FirmwareName"]; // "Alpha Version 1.0.0.0", ...
-    const char* FirmwareVersion_DownloadUrl = FirmwareVersion["DownloadUrl"]; // "https://raw.github/", ...
-    int FirmwareVersion_FirmwareType = FirmwareVersion["FirmwareType"]; // 1, 1, 1, 1
-    int FirmwareVersion_SystemType = FirmwareVersion["SystemType"]; // 1, 1, 1, 1
-    const char* FirmwareVersion_VersionNumber = FirmwareVersion["VersionNumber"]; // "1.0.0.0", "1.0.0.1", ...
-
-    GVOVnT_SystemFirmware *systemFirmware = new GVOVnT_SystemFirmware(FirmwareVersion_FirmwareName, FirmwareVersion_DownloadUrl, FirmwareVersion_VersionNumber,
-    FirmwareVersion_FirmwareType, FirmwareVersion_SystemType);
-
-    m_availableFirmwareVersions.push_back(systemFirmware);
-
+      m_availableFirmwareVersions.push_back(systemFirmware);
+    }
   }
-
 
   for (size_t i = 0; i < m_availableFirmwareVersions.size(); i++)
   {
-    Serial.printf("Found version [%s] \n", m_availableFirmwareVersions[i]->FirmwareName);
+    Serial.printf("Found version [%s] \n", m_availableFirmwareVersions[i]->FirmwareName.c_str());
   }
-  
-
-
-  // HTTPClient http;
-
-  // WiFiClient wifiClient;
-
-  // http.useHTTP10(true);
-  // http.begin("http://arduinojson.org/example.json");
-  // http.GET();
-
-  // // Parse response
-  // JsonDocument doc();
-  // deserializeJson(doc, wifiClient);
-
-  // // Read values
-  // Serial.println(doc["time"].as<long>());
-
-  // // Disconnect
-  // http.end();
-
-
 }
 
-void GXOVnT_WebUpdate::getFileFromServer() {
+void GXOVnT_WebUpdate::clearFirmwareVersionList() {
+    size_t firmwareListItemCount = m_availableFirmwareVersions.size();
+    if (firmwareListItemCount > 0) {
+        
+        for (size_t deleteIndex = firmwareListItemCount -1; deleteIndex >= 0; deleteIndex--)
+        {
+            delete m_availableFirmwareVersions[deleteIndex];
+        }
+        
+        m_availableFirmwareVersions.clear();
+    }
+}
+
+const GVOVnT_SystemFirmware* GXOVnT_WebUpdate::getLatestFirmwareForSystem(enum GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE systemType, bool includeAlphaRelease, bool includeBetaRelease) {
+  if (m_availableFirmwareVersions.size() == 0) 
+    return nullptr;
+
+  GVOVnT_SystemFirmware* latestFirmwareVersion = nullptr;
+  for (size_t indexFirmwareVersion = 0; indexFirmwareVersion < m_availableFirmwareVersions.size(); indexFirmwareVersion++) {
+    // Get the iteration firmware version
+    GVOVnT_SystemFirmware* iterationFirmwareVersion = m_availableFirmwareVersions[indexFirmwareVersion];
+    // Apply the filtering checks, we are only interested in firmwares matching the system type
+    if (iterationFirmwareVersion->SystemType == systemType) {
+      // Check if the release type matches the input filter
+      if (iterationFirmwareVersion->FirmwareType == GVOVNT_SYSTEM_FIRMWARE_RELEASE_TYPE_RELEASE || 
+         (iterationFirmwareVersion->FirmwareType == GVOVNT_SYSTEM_FIRMWARE_RELEASE_TYPE_ALPHA && includeAlphaRelease) || 
+         (iterationFirmwareVersion->FirmwareType == GVOVNT_SYSTEM_FIRMWARE_RELEASE_TYPE_BETA && includeBetaRelease)) {
+          // First version we encounter that is valid, just set it to the latest
+          if (latestFirmwareVersion == nullptr) {
+            latestFirmwareVersion = iterationFirmwareVersion;
+          } else {
+            // Compare the version, we are interested in the latest version
+            if (latestFirmwareVersion->Version < iterationFirmwareVersion->Version) {
+              latestFirmwareVersion = iterationFirmwareVersion;
+            }
+          }
+      }
+    }
+  }
+  // Return the latest firmware version
+  return latestFirmwareVersion;
+}
+
+void GXOVnT_WebUpdate::getFileFromServer(const GVOVnT_SystemFirmware *firmwareVersion) {
+
+
+
   WiFiClientSecure client;
   client.setInsecure(); // Set client to allow insecure connections
 
-  if (client.connect(HOST, PORT)) { // Connect to the server
-    Serial.println("Connected to server");
-    client.print("GET " + String(PATH) + " HTTP/1.1\r\n"); // Send HTTP GET request
-    client.print("Host: " + String(HOST) + "\r\n"); // Specify the host
+  if (client.connect(FIRMWARE_DOWNLOAD_HOST, FIRMWARE_DOWNLOAD_PORT)) { // Connect to the server
+    
+    Serial.printf("Connected to server. Attempting to download file [%s] \n", firmwareVersion->DownloadUrl);
+
+
+    client.print("GET " + String(firmwareVersion->DownloadUrl.c_str()) + " HTTP/1.1\r\n"); // Send HTTP GET request
+    client.print("Host: " + String(FIRMWARE_DOWNLOAD_HOST) + "\r\n"); // Specify the host
     client.println("Connection: close\r\n"); // Close connection after response
     client.println(); // Send an empty line to indicate end of request headers
 

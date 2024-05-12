@@ -3,28 +3,28 @@
         {
             "FirmwareName": "Alpha Version 1.0.0.0",
             "DownloadUrl": "https://raw.github/",
-            "FirmwareType": 1,
+            "FirmwareType": 4,
             "SystemType": 1,
             "VersionNumber": "1.0.0.0"
         },
         {
             "FirmwareName": "Alpha Version 1.0.0.1",
             "DownloadUrl": "https://raw.github/",
-            "FirmwareType": 1,
+            "FirmwareType": 4,
             "SystemType": 1,
             "VersionNumber": "1.0.0.1"
         },
         {
             "FirmwareName": "Alpha Version 1.0.0.4",
             "DownloadUrl": "https://raw.github/",
-            "FirmwareType": 1,
-            "SystemType": 1,
+            "FirmwareType": 4,
+            "SystemType": 1,1
             "VersionNumber": "1.0.0.4"
         },
         {
             "FirmwareName": "Alpha Version 1.0.0.5",
             "DownloadUrl": "https://raw.github/",
-            "FirmwareType": 1,
+            "FirmwareType": 4,
             "SystemType": 1,
             "VersionNumber": "1.0.0.5"
         }

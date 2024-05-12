@@ -1,5 +1,5 @@
-#ifndef _GXOVnT_AUTOUPDATE_H
-#define _GXOVnT_AUTOUPDATE_H
+#ifndef _GXOVnT_WEBUPDATE_H_
+#define _GXOVnT_WEBUPDATE_H_
 
 // This class internally uses the Wifi to connect to the wifi. After that, either a 
 // WiFiClientSecure or WiFiClient is created depending if the server is http or https. The
@@ -17,10 +17,15 @@
 #define ssid "HouseMare"
 #define password "X@Kbi-Rh3$"
 
+
+#define FIRMWARE_LIST_URL "https://github.com/TrevorMare/GXOVnT/raw/main/firmware_versions.json"
+
 // Define server details and file path
-#define HOST "github.com"
-#define PATH "/TrevorMare/GXOVnT/releases/download/Alpha/client_firmware.bin"
-#define PORT 443
+#define FIRMWARE_DOWNLOAD_HOST "github.com"
+#define FIRMWARE_DOWNLOAD_PORT 443
+
+
+
 // Define the name for the downloaded firmware file
 #define FILE_NAME "client_firmware.bin"
 
@@ -51,7 +56,7 @@ struct GVOVnT_Version {
         // Version Build number part
         int BuildNumber = 0;
 
-        GVOVnT_Version();
+        GVOVnT_Version() {};
         // Constructs a new version from a string
         GVOVnT_Version(std::string version) {
             sscanf(version.c_str(), "%d.%d.%d.%d", &Major, &Minor, &Revision, &BuildNumber);
@@ -95,12 +100,24 @@ struct GVOVnT_Version {
 */
 struct GVOVnT_SystemFirmware {
     public: 
+        // Firmware name
         std::string FirmwareName = "";
+        
+        // Absolute download url
         std::string DownloadUrl = "";
+        
+        // The version number of the firmware
         std::string VersionNumber = "";
+        
         GVOVnT_Version Version;
+
+        // The firmware type
         enum GVOVNT_SYSTEM_FIRMWARE_RELEASE_TYPE FirmwareType = GVOVNT_SYSTEM_FIRMWARE_RELEASE_TYPE_RELEASE;
+        
+        // The target system firmware type
         enum GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE SystemType = GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE_CLIENT;
+        
+        // Constructor
         GVOVnT_SystemFirmware(std::string firmwareName, std::string downloadUrl, std::string versionNumber, uint8_t firmwareType, uint8_t systemType) {
             FirmwareName = firmwareName;
             DownloadUrl = downloadUrl;
@@ -131,10 +148,18 @@ class GXOVnT_WebUpdate {
         void checkForUpdatesAndInstall();
 
     private:
-        void getFileFromServer();
+        
         void performOTAUpdateFromSPIFFS();
         void openWifiConnection();
         void downloadSystemFirmwareVersions();
+
+        // Clears the existing list of available system firmware's
+        void clearFirmwareVersionList();
+        // Gets the latest version of the firmwares
+        const GVOVnT_SystemFirmware* getLatestFirmwareForSystem(enum GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE systemType, bool includeAlphaRelease = false, bool includeBetaRelease = false);
+        // Downloads the firmware bin from the input firmware version
+        void getFileFromServer(const GVOVnT_SystemFirmware *firmwareVersion);
+
 
         WiFiClientSecure *m_wifiClientSecure = nullptr;
         std::vector<GVOVnT_SystemFirmware*> m_availableFirmwareVersions; 
