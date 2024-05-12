@@ -27,7 +27,7 @@
 
 
 // Define the name for the downloaded firmware file
-#define FILE_NAME "client_firmware.bin"
+#define FILE_NAME "firmware.bin"
 
 // Type of release of the firmware
 enum GVOVNT_SYSTEM_FIRMWARE_RELEASE_TYPE {
