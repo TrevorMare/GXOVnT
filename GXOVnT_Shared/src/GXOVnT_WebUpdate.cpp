@@ -69,6 +69,9 @@ void GXOVnT_WebUpdate::downloadSystemFirmwareVersions() {
   http.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
   http.begin(*m_wifiClientSecure, FIRMWARE_LIST_URL);
   http.GET();
+
+  
+  
   // Now parse the Json response
   JsonDocument doc;
   deserializeJson(doc, http.getStream());
@@ -150,6 +153,7 @@ void GXOVnT_WebUpdate::getFileFromServer(const GVOVnT_SystemFirmware *firmwareVe
 
   WiFiClientSecure client;
   client.setInsecure(); // Set client to allow insecure connections
+  
 
   if (client.connect(FIRMWARE_DOWNLOAD_HOST, FIRMWARE_DOWNLOAD_PORT)) { // Connect to the server
     
@@ -187,8 +191,14 @@ void GXOVnT_WebUpdate::getFileFromServer(const GVOVnT_SystemFirmware *firmwareVe
       }
     }
 
-    Serial.println("HTTP response code: " + http_response_code); // Print received headers
+    
 
+    if (http_response_code != "200") {
+      // 
+      return;
+    }
+
+    Serial.println("HTTP response code: " + http_response_code); // Print received headers
     // Loop to read and write raw data to file
     while (client.connected()) {
       if (client.available()) {

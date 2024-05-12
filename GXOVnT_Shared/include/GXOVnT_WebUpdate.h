@@ -21,7 +21,7 @@
 #define FIRMWARE_LIST_URL "https://github.com/TrevorMare/GXOVnT/raw/main/firmware_versions.json"
 
 // Define server details and file path
-#define FIRMWARE_DOWNLOAD_HOST "github.com"
+#define FIRMWARE_DOWNLOAD_HOST "api.github.com" //"github.com"
 #define FIRMWARE_DOWNLOAD_PORT 443
 
 

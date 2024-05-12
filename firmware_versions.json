@@ -2,28 +2,28 @@
     "FirmwareVersions": [
         {
             "FirmwareName": "Alpha Version 1.0.0.0",
-            "DownloadUrl": "/TrevorMare/GXOVnT/releases/download/Release_0.0.1.0/firmware.bin",
+            "DownloadUrl": "/repos/TrevorMare/GXOVnT/releases/assets/167461118",
             "FirmwareType": 4,
             "SystemType": 1,
             "VersionNumber": "1.0.0.0"
         },
         {
             "FirmwareName": "Alpha Version 1.0.0.1",
-            "DownloadUrl": "/TrevorMare/GXOVnT/releases/download/Release_0.0.1.0/firmware.bin",
+            "DownloadUrl": "/repos/TrevorMare/GXOVnT/releases/assets/167461118",
             "FirmwareType": 4,
             "SystemType": 1,
             "VersionNumber": "1.0.0.1"
         },
         {
             "FirmwareName": "Alpha Version 1.0.0.4",
-            "DownloadUrl": "/TrevorMare/GXOVnT/releases/download/Release_0.0.1.0/firmware.bin",
+            "DownloadUrl": "/repos/TrevorMare/GXOVnT/releases/assets/167461118",
             "FirmwareType": 4,
             "SystemType": 1,
             "VersionNumber": "1.0.0.4"
         },
         {
             "FirmwareName": "Alpha Version 1.0.0.5",
-            "DownloadUrl": "/TrevorMare/GXOVnT/releases/download/Release_0.0.1.0/firmware.bin",
+            "DownloadUrl": "/repos/TrevorMare/GXOVnT/releases/assets/167461118",
             "FirmwareType": 4,
             "SystemType": 1,
             "VersionNumber": "1.0.0.5"
