@@ -157,9 +157,9 @@ void GXOVnT_WebUpdate::getFileFromServer(const GVOVnT_SystemFirmware *firmwareVe
 
   if (client.connect(FIRMWARE_DOWNLOAD_HOST, FIRMWARE_DOWNLOAD_PORT)) { // Connect to the server
     
-    Serial.printf("Connected to server. Attempting to download file [%s] \n", firmwareVersion->DownloadUrl);
+    Serial.printf("Connected to server. Attempting to download file [%s] \n", firmwareVersion->DownloadUrl.c_str());
 
-
+    
     client.print("GET " + String(firmwareVersion->DownloadUrl.c_str()) + " HTTP/1.1\r\n"); // Send HTTP GET request
     client.print("Host: " + String(FIRMWARE_DOWNLOAD_HOST) + "\r\n"); // Specify the host
     client.println("Connection: close\r\n"); // Close connection after response
@@ -194,7 +194,7 @@ void GXOVnT_WebUpdate::getFileFromServer(const GVOVnT_SystemFirmware *firmwareVe
     
 
     if (http_response_code != "200") {
-      // 
+      Serial.println("Response code did not indicate success");
       return;
     }
 

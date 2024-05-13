@@ -21,9 +21,10 @@
 #define FIRMWARE_LIST_URL "https://github.com/TrevorMare/GXOVnT/raw/main/firmware_versions.json"
 
 // Define server details and file path
-#define FIRMWARE_DOWNLOAD_HOST "api.github.com" //"github.com"
+#define FIRMWARE_DOWNLOAD_HOST "gxovntstoragetest.blob.core.windows.net" //"github.com"
 #define FIRMWARE_DOWNLOAD_PORT 443
 
+//gxovntstoragetest.blob.core.windows.net
 
 
 // Define the name for the downloaded firmware file
