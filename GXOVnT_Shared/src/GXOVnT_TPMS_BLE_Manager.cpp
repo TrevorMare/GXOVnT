@@ -29,10 +29,8 @@ void GXOVnT_TPMS_BLE_Manager::run() {
   if (m_managerScanMode == BLE_MANAGER_SCAN_MODE_IDLE) return;
 
   // Check if the class has been initialized
-  if (!m_initialized) { 
-    #ifdef GXOVnT_DEBUG_ENABLE
-      Serial.println("GXOVnT_TPMS_BLE_Manager not initialized");
-    #endif
+  if (!m_initialized) {
+    ESP_LOGW(LOG_TAG, "BLE Manager has not been initialized"); 
     return; 
   }
   // Now check in what mode we are before running 
@@ -83,10 +81,8 @@ void GXOVnT_TPMS_BLE_Manager::processDeviceMessageScanTPMSTypes(BLEAdvertisedDev
 
     // Get the index if already inserted
     if (scannedDeviceIdIndex == -1) {
-
-        #ifdef GXOVnT_DEBUG_ENABLE
-          Serial.printf("GXOVnT_TPMS_BLE_Manager: Adding known sensor type with address [%s] and Id [%s] to scan results. \n", deviceMacAddress.c_str(), jdDeviceId.c_str());
-        #endif
+        
+        ESP_LOGI(LOG_TAG, "Adding known sensor type with address [%s] and Id [%s] to scan results. \n", deviceMacAddress.c_str(), jdDeviceId.c_str()); 
 
         BLE_MANAGER_SCAN_TYPE_RESULT *typeFoundResult = new BLE_MANAGER_SCAN_TYPE_RESULT(deviceSensorType, 
         deviceMacAddress.c_str(), jdDeviceId.c_str(), advertisedDevice.toString().c_str());

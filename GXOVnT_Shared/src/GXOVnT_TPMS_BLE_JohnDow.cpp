@@ -14,9 +14,7 @@ bool GXOVnT_TPMS_BLE_JohnDow::setupBLEDeviceSpecific(const char *deviceId) {
   m_DeviceIdPart1 = ConvertHexToByte(s_deviceId.substr(1, 2));
   m_DeviceIdPart2 = ConvertHexToByte(s_deviceId.substr(3, 2));
 
-  #ifdef GXOVnT_DEBUG_ENABLE
-    Serial.printf("Device Id parts [%s] translates to %d %d \n", s_deviceId.substr(1, 4).c_str(), m_DeviceIdPart1, m_DeviceIdPart2);
-  #endif  
+  ESP_LOGI(LOG_TAG, "Device Id parts [%s] translates to %d %d \n", s_deviceId.substr(1, 4).c_str(), m_DeviceIdPart1, m_DeviceIdPart2);
 
   return true;
 }
@@ -131,11 +129,7 @@ std::string GXOVnT_TPMS_BLE_JohnDow::SensorTypeMatchAdvertisementDeviceMessage(B
 
     return "1" + deviceId_Part_0 + deviceId_Part_1;
   }
-
-  Serial.printf("Something didn't match \n");
-
   return "";
-
 }
 
 void GXOVnT_TPMS_BLE_JohnDow::serialPrintDebug(uint8_t* payloadRaw, size_t payloadLength) {

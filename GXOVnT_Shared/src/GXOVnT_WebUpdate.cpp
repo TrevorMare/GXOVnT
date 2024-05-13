@@ -17,7 +17,8 @@ void GXOVnT_WebUpdate::checkForUpdatesAndInstall() {
     return;
 
   getFileFromServer(latestFirmware);
-  //performOTAUpdateFromSPIFFS();
+
+  performOTAUpdateFromSPIFFS();
 
 }
 
@@ -35,7 +36,7 @@ void GXOVnT_WebUpdate::openWifiConnection() {
   Heltec.display->display();
 #endif
 
-
+  ESP_LOGI(LOG_TAG, "Connecting to WiFi");
 
   // Display connection progress
   Serial.print("Connecting to WiFi");
@@ -152,7 +153,8 @@ void GXOVnT_WebUpdate::getFileFromServer(const GVOVnT_SystemFirmware *firmwareVe
 
 
   WiFiClientSecure client;
-  client.setInsecure(); // Set client to allow insecure connections
+  //client.setInsecure(); // Set client to allow insecure connections
+  client.setCACert(SSL_BALTIMORE);
   
 
   if (client.connect(FIRMWARE_DOWNLOAD_HOST, FIRMWARE_DOWNLOAD_PORT)) { // Connect to the server
@@ -162,7 +164,7 @@ void GXOVnT_WebUpdate::getFileFromServer(const GVOVnT_SystemFirmware *firmwareVe
     
     client.print("GET " + String(firmwareVersion->DownloadUrl.c_str()) + " HTTP/1.1\r\n"); // Send HTTP GET request
     client.print("Host: " + String(FIRMWARE_DOWNLOAD_HOST) + "\r\n"); // Specify the host
-    client.println("Connection: close\r\n"); // Close connection after response
+    client.println("Connection: keep-alive\r\n"); // Close connection after response
     client.println(); // Send an empty line to indicate end of request headers
 
     File file = SPIFFS.open("/" + String(FILE_NAME), FILE_WRITE); // Open file in SPIFFS for writing
@@ -199,16 +201,31 @@ void GXOVnT_WebUpdate::getFileFromServer(const GVOVnT_SystemFirmware *firmwareVe
     }
 
     Serial.println("HTTP response code: " + http_response_code); // Print received headers
+    Serial.println("Starting download");
+
+    int iDownload = 0;
+    int totalFileSize = 0;
+
+
     // Loop to read and write raw data to file
     while (client.connected()) {
       if (client.available()) {
         size_t bytesRead = client.readBytes(buffer, bufferSize);
         file.write(buffer, bytesRead); // Write data to file
+        
+        totalFileSize += bytesRead;
+      } else {
+        client.stop();
       }
     }
+
+    Serial.println("Closing file");
     file.close(); // Close the file
-    client.stop(); // Close the client connection
-    Serial.println("File saved successfully");
+    //Serial.println("Stopping client");
+    //client.stop(); // Close the client connection
+
+
+    Serial.printf("File saved successfully. Size [%d] bytes \n", totalFileSize);
   }
   else {
     Serial.println("Failed to connect to server");

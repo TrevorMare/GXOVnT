@@ -25,7 +25,7 @@ void setup() {
   //m_bleManager->initializeManager();
   delay(500);
 
-  String systemVer = "Version " + String(SoftwareVersion);
+  String systemVer = "Version " + String(GXOVnT_FIRMWARE_VERSION);
 
   //Heltec.display->printf("Version %s \n", SoftwareVersion);
   Heltec.display->clear();

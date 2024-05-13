@@ -1,31 +1,36 @@
+/*
+ * Provides functionality for the GXOVnT systems to update firmware via a web download.
+ * A wifi connection with internet access is required. 
+*/
+
 #ifndef _GXOVnT_WEBUPDATE_H_
 #define _GXOVnT_WEBUPDATE_H_
 
-// This class internally uses the Wifi to connect to the wifi. After that, either a 
-// WiFiClientSecure or WiFiClient is created depending if the server is http or https. The
-// WiFiClientSecure can optionally validate server certificates. An http client is created on top of the wifi client to perform the 
-// http operations. This updater class reads from Github (https)
 
+// GXOVnT Libraries
+#include "GXOVnT_Shared.h"
+#include "GXOVnT_Certificates.h"
+
+// Json libraries
+#include <ArduinoJson.h>
+
+
+// Libraries for the WiFi and network handlers
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
 
+// Libraries for the partitions and updates
 #include <SPIFFS.h>
 #include "Update.h"
-#include <ArduinoJson.h>
-#include <vector>
+
 
 #define ssid "HouseMare"
 #define password "X@Kbi-Rh3$"
-
-
 #define FIRMWARE_LIST_URL "https://github.com/TrevorMare/GXOVnT/raw/main/firmware_versions.json"
 
 // Define server details and file path
-#define FIRMWARE_DOWNLOAD_HOST "gxovntstoragetest.blob.core.windows.net" //"github.com"
+#define FIRMWARE_DOWNLOAD_HOST "gxovntstoragetest.blob.core.windows.net" 
 #define FIRMWARE_DOWNLOAD_PORT 443
-
-//gxovntstoragetest.blob.core.windows.net
-
 
 // Define the name for the downloaded firmware file
 #define FILE_NAME "firmware.bin"

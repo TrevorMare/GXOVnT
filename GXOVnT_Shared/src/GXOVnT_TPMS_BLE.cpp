@@ -24,6 +24,7 @@ void GXOVnT_TPMS_BLE::setupBLEDevice(const char *deviceId, int isAliveSecondsOff
   m_isAliveMilliSecondsOffset = (isAliveSecondsOffset * 1000);
   
   if (m_Initialized == true) {
+    ESP_LOGE(LOG_TAG, "The device has already been initialized and cannot be initialized again"); 
     throw new DeviceAlreadyInitializedException();
   }
 
@@ -39,9 +40,8 @@ void GXOVnT_TPMS_BLE::setupBLEDevice(const char *deviceId, int isAliveSecondsOff
   m_deviceId = std::string(s_DeviceId.c_str());
 
   // Print the information about the instance
-  #ifdef GXOVnT_DEBUG_ENABLE
-    Serial.printf("GXOVnT_TPMS_BLE: Device with Id %s initialized \n", m_deviceId.c_str());
-  #endif
+  ESP_LOGI(LOG_TAG, "Device with Id %s initialized \n", m_deviceId.c_str()); 
+
   // Finally set the initialized indicator
   m_Initialized = true;
 }
