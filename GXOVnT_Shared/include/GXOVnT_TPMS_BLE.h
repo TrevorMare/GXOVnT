@@ -1,7 +1,7 @@
 /*
   Base class for Bluetooth TPMS Sensors
 */
-
+#pragma once
 #ifndef _GXOVNT_TPMS_BLE_H
 #define _GXOVNT_TPMS_BLE_H
 

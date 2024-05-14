@@ -1,4 +1,4 @@
-#include <vector>
+#pragma once
 #ifndef _GXOVNT_TPMS_BLE_MANAGER_H
 #define _GXOVNT_TPMS_BLE_MANAGER_H
 

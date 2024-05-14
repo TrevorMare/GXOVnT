@@ -22,7 +22,7 @@
   Position: 50, 51 are expected to be flags
 
 */
-
+#pragma once
 #ifndef _GXOVNT_TPMS_BLE_JohnDow_H
 #define _GXOVNT_TPMS_BLE_JohnDow_H
 

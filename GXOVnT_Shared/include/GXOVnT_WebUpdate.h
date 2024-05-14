@@ -2,7 +2,7 @@
  * Provides functionality for the GXOVnT systems to update firmware via a web download.
  * A wifi connection with internet access is required. 
 */
-
+#pragma once
 #ifndef _GXOVnT_WEBUPDATE_H_
 #define _GXOVnT_WEBUPDATE_H_
 

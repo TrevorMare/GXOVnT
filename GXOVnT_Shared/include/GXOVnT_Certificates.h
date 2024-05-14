@@ -1,14 +1,17 @@
+/////////////////////////////////////////////////////////////////
 /*
  * Provides the SSL Certificates for the secure web client / sockets
  *  a) Baltimore certificate is used for the Azure https 
  * 
 */
-
+/////////////////////////////////////////////////////////////////
+#pragma once
 #ifndef _GXOVNT_CERTIFICATES_H
 #define _GXOVNT_CERTIFICATES_H
 
-
+/////////////////////////////////////////////////////////////////
 // Microsoft Baltimore CA Certificate
+/////////////////////////////////////////////////////////////////
 static const char SSL_BALTIMORE[] = \
 "-----BEGIN CERTIFICATE-----\n"\
 "MIIFWjCCBEKgAwIBAgIQDxSWXyAgaZlP1ceseIlB4jANBgkqhkiG9w0BAQsFADBa\n" \
