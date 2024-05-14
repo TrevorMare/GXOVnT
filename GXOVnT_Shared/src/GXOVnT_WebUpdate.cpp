@@ -3,7 +3,7 @@
 void GXOVnT_WebUpdate::checkForUpdatesAndInstall() {
 
   if (!SPIFFS.begin(true)) {
-    Serial.println("SPIFFS Mount Failed");
+    ESP_LOGE(LOG_TAG, "SPIFFS Mount Failed, Unable to continue");
     return;
   }
 
