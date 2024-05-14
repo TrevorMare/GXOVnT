@@ -7,9 +7,7 @@
 #ifndef _GXOVNT_SHARED_H
 #define _GXOVNT_SHARED_H
 
-// Tag for logging
-/////////////////////////////////////////////////////////////////
-#define LOG_TAG "GXOVnT"
+
 
 // Includes for Logging, Arduino, string conversions and lists
 /////////////////////////////////////////////////////////////////
@@ -21,6 +19,10 @@
 #include <string>
 #include <vector>
 
+// Firmware Defines
+/////////////////////////////////////////////////////////////////
+#define FORMAT_SPIFFS_IF_FAILED true
+#define LOG_TAG "GXOVnT"
 
 // System firmware version
 /////////////////////////////////////////////////////////////////
@@ -56,7 +58,6 @@ struct GXOVnT_Exception {
 struct DeviceAlreadyInitializedException : GXOVnT_Exception { 
   DeviceAlreadyInitializedException() : GXOVnT_Exception::GXOVnT_Exception{ "The device has already been initialized", ERROR_DEVICE_ALREADY_INITIALIZED } {}
 };
-
 
 // Helper methods
 /////////////////////////////////////////////////////////////////

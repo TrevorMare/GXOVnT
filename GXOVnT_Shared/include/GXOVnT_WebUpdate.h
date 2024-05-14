@@ -8,8 +8,8 @@
 
 
 // GXOVnT Libraries
-#include "GXOVnT_Shared.h"
-#include "GXOVnT_Certificates.h"
+#include "shared/GXOVnT_Shared.h"
+#include "security/GXOVnT_Certificates.h"
 
 // Json libraries
 #include <ArduinoJson.h>

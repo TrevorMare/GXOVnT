@@ -21,11 +21,13 @@ enum GXOVnT_States {
     // State to download the configuration of the device
     GXOVNT_STATES_DOWNLOAD_CONFIG,
     // State to upload the configuration of the device
-    GXOVNT_STATES_DOWNLOAD_CONFIG,
+    GXOVNT_STATES_UPLOAD_CONFIG,
     // State to set the configuration of the device
     GXOVNT_STATES_SET_CONFIG,
-    // State to perform a web update on the system firmware
-    GXOVNT_STATES_WEB_UPDATE,
+    // State to download the latest firmware to the system
+    GXOVNT_STATES_DOWNLOAD_FIRMWARE,
+    // State to install the latest firmware to the system
+    GXOVNT_STATES_INSTALL_FIRMWARE,
     // State to scan known types of ble devices
     GXOVNT_STATES_BLE_SCAN_TYPES,
     // State to monitor and send known device messages
