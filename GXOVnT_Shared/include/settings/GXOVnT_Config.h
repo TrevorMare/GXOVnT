@@ -45,6 +45,5 @@ class GXOVnT_Config
         void saveConfiguration();
 };
 
-GXOVnT_Config GXOVnTConfig;
 
 #endif

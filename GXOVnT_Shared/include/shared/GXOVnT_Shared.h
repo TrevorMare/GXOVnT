@@ -7,8 +7,6 @@
 #ifndef _GXOVNT_SHARED_H
 #define _GXOVNT_SHARED_H
 
-
-
 // Includes for Logging, Arduino, string conversions and lists
 /////////////////////////////////////////////////////////////////
 #include <esp_err.h>
@@ -18,6 +16,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <soc/efuse_reg.h>
 
 // Firmware Defines
 /////////////////////////////////////////////////////////////////
@@ -27,7 +26,7 @@
 #define GXOVNT_SYSTEM_TYPE_CLIENT 1
 #define GXOVNT_SYSTEM_TYPE_SERVER 2
 
-#define GXOVNT_SYSTEM_TYPE 2
+#define GXOVNT_SYSTEM_TYPE 1
 
 // System firmware version
 /////////////////////////////////////////////////////////////////
@@ -39,6 +38,10 @@ static const char *GXOVnT_FIRMWARE_VERSION = "v1.0.2";
 enum GXOVnT_Exception_Code {
   ERROR_UNKNOWN = 0,
   ERROR_DEVICE_ALREADY_INITIALIZED = 1
+};
+
+enum GXOVnT_SYSTEM_TYPE {
+  SYSTEM_TYPE_CLIENT = 1, SYSTEM_TYPE_SERVER = 2
 };
 
 enum GXOVnT_BLE_TPMS_TYPE {
@@ -121,6 +124,20 @@ static std::string CharToString(char *c) {
 static std::string CharToString(const char *c) {
   std::string s(c);
   return s;
+}
+// Gets the STA MAC Address of the device
+static std::string DeviceMACAddress() {
+  uint8_t baseMac[6];
+
+  esp_read_mac(baseMac, ESP_MAC_WIFI_STA);
+
+  std::string result("");
+
+  for (int i = 0; i < 5; i++) {
+    result += ConvertByteToHex(baseMac[i]);
+  }
+
+  return result;
 }
 
 #endif

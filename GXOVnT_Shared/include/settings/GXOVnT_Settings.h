@@ -12,21 +12,17 @@
 #if defined(GXOVNT_SYSTEM_TYPE) && (GXOVNT_SYSTEM_TYPE == GXOVNT_SYSTEM_TYPE_CLIENT || GXOVNT_SYSTEM_TYPE == GXOVNT_SYSTEM_TYPE_SERVER)
 #define GXOVnT_Settings_HAS_WIFI_SETTINGS true
 #define GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS true
+#define GXOVnT_Settings_HAS_SYSTEM_SETTINGS true
 #elif
 #define GXOVnT_Settings_HAS_WIFI_SETTINGS false
 #define GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS false
+#define GXOVnT_Settings_HAS_SYSTEM_SETTINGS false
 #endif
 /////////////////////////////////////////////////////////////////
 
 
 class GXOVnT_Settings
 {
-    private:
-       
-
-
-        
-
     public:
 
 #if GXOVnT_Settings_HAS_WIFI_SETTINGS
@@ -34,6 +30,9 @@ class GXOVnT_Settings
 #endif
 #if GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS
         GXOVnT_SettingsSection_BLE_TPMS BLETPMSSettings;
+#endif
+#if GXOVnT_Settings_HAS_SYSTEM_SETTINGS
+        GXOVnT_SettingsSection_System SystemSettings;
 #endif
 
         GXOVnT_Settings() { };

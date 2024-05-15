@@ -4,15 +4,19 @@
 #include <GXOVnT_TPMS_BLE_Manager.h>
 #include <GXOVnT_WebUpdate.h>
 #include <heltec.h>
+#include <settings/GXOVnT_Config.h>
+
 //https://medium.com/@adityabangde/esp32-firmware-updates-from-github-a-simple-ota-solution-173a95f4a97b
 
 // put function declarations here:
 //int myFunction(int, int);
 
-GXOVnT_TPMS_BLE_Manager *m_bleManager = new GXOVnT_TPMS_BLE_Manager();
-GXOVnT_WebUpdate *updater = new GXOVnT_WebUpdate();
+// GXOVnT_TPMS_BLE_Manager *m_bleManager = new GXOVnT_TPMS_BLE_Manager();
+// GXOVnT_WebUpdate *updater = new GXOVnT_WebUpdate();
 int scanTime = 10; //In seconds
 
+
+GXOVnT_Config GXOVnTConfig;
 
 void setup() {
   
@@ -32,6 +36,19 @@ void setup() {
   Heltec.display->drawString(0, 0, systemVer);
   Heltec.display->display();
   
+  Serial.println("Reading configuration");
+
+  delay(1500);
+  GXOVnTConfig.readConfiguration();
+
+  GXOVnTConfig.Settings.SystemSettings.SystemName("MySystemName");
+  GXOVnTConfig.Settings.WiFiSettings.SSID("HouseMare");
+  GXOVnTConfig.Settings.WiFiSettings.Password("X@Kbi-Rh3$");
+  
+
+  GXOVnTConfig.saveConfiguration();
+
+
 
 }
 
@@ -41,7 +58,7 @@ void loop() {
 
     Serial.println("Starting updates");
 
-    updater->checkForUpdatesAndInstall();
+    //updater->checkForUpdatesAndInstall();
   }
   //m_bleManager->run();
   delay(2000);
