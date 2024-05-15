@@ -24,6 +24,11 @@
 #define FORMAT_SPIFFS_IF_FAILED true
 #define LOG_TAG "GXOVnT"
 
+#define GXOVNT_SYSTEM_TYPE_CLIENT 1
+#define GXOVNT_SYSTEM_TYPE_SERVER 2
+
+#define GXOVNT_SYSTEM_TYPE 2
+
 // System firmware version
 /////////////////////////////////////////////////////////////////
 static const char *GXOVnT_FIRMWARE_VERSION = "v1.0.2";
@@ -34,6 +39,14 @@ static const char *GXOVnT_FIRMWARE_VERSION = "v1.0.2";
 enum GXOVnT_Exception_Code {
   ERROR_UNKNOWN = 0,
   ERROR_DEVICE_ALREADY_INITIALIZED = 1
+};
+
+enum GXOVnT_BLE_TPMS_TYPE {
+  BLE_TPMS_TYPE_UNKNOWN = 99, BLE_TPMS_TYPE_JD_DY_BLE_I = 1
+};
+
+enum GXOVnT_TPMS_POSITION {
+  TPMS_POSITION_UNKNOWN = 99, TPMS_POSITION_FRONT_RIGHT = 0, TPMS_POSITION_FRONT_LEFT = 1, TPMS_POSITION_REAR_RIGHT = 2, TPMS_POSITION_REAR_LEFT = 3, TPMS_POSITION_FRONT_SPARE = 4, TPMS_POSITION_CUSTOM = 5
 };
 
 // Common structures
@@ -99,6 +112,15 @@ static void PrintDebugHex(uint8_t value) {
 // Compares two float values by converting them to int values to 2 decimal points
 static bool CompareFloatWithFixedPrecision(float fval1, float fval2) {
   return (int)(fval1 * 100) == (int)(fval2 * 100);
+}
+// Converts a char pointer into a string
+static std::string CharToString(char *c) {
+  std::string s(c);
+  return s;
+}
+static std::string CharToString(const char *c) {
+  std::string s(c);
+  return s;
 }
 
 #endif

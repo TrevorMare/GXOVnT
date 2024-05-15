@@ -6,50 +6,45 @@
 // Include deps
 /////////////////////////////////////////////////////////////////
 #include <SPIFFS.h>
-#include <ArduinoJson.h>
 #include "shared/GXOVnT_Shared.h"
-
-// Other fields
-/////////////////////////////////////////////////////////////////
-
-const char *config_file_name = "/config.json";
+#include "settings/GXOVnT_Settings.h"
 
 // Class to handle the configuration
 /////////////////////////////////////////////////////////////////
 class GXOVnT_Config
 {
     private:
-        bool m_initialized = false;
+        const char *config_file_name = "/config.json";
+        bool m_SPIFFS_open = false;
 
-        // Reads the content of the configuration file
-        String readConfigurationContent();
+        // Reads the content of the configuration file content
+        String readConfigurationFromFileSystem();
+
+        void writeConfigurationToFileSystem(String content);
+
+        bool openSPIFFS();
+
+        bool closeSPIFFS();
 
     public:
+        GXOVnT_Settings Settings;
+
         // Constructor
         GXOVnT_Config();
         
         // Deconstructor
         ~GXOVnT_Config();
-        
-        // Initializes the configuration state
-        bool initializeState();
-        
-        // Disposes the configuration state
-        bool disposeState();
-        
-        // Gets a value indicating if the state has been initialized
-        bool getStateInitialized() { return m_initialized; }
 
         // Checks if the configration file exists
         bool configurationFileExists(); 
 
+        // Reads the configuration from the file system
+        bool readConfiguration();
 
+        // Saves the configuration to the file system
+        void saveConfiguration();
 };
 
-
-
-
-
-
+GXOVnT_Config GXOVnTConfig;
 
 #endif

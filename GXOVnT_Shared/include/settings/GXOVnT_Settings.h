@@ -3,35 +3,51 @@
 #ifndef _GXOVNT_SETTINGS_H
 #define _GXOVNT_SETTINGS_H
 
+#include "GXOVnT_SettingsSection.h"
 #include <ArduinoJson.h>
 
 /////////////////////////////////////////////////////////////////
-// Common structures shared between implemented settings
+// Pre-Processor definitions depending on the system type
 /////////////////////////////////////////////////////////////////
-struct GXOVnT_WiFiSettings {
-    std::string SSID = "";
-    std::string Password = "";
-};
+#if defined(GXOVNT_SYSTEM_TYPE) && (GXOVNT_SYSTEM_TYPE == GXOVNT_SYSTEM_TYPE_CLIENT || GXOVNT_SYSTEM_TYPE == GXOVNT_SYSTEM_TYPE_SERVER)
+#define GXOVnT_Settings_HAS_WIFI_SETTINGS true
+#define GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS true
+#elif
+#define GXOVnT_Settings_HAS_WIFI_SETTINGS false
+#define GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS false
+#endif
+/////////////////////////////////////////////////////////////////
+
 
 class GXOVnT_Settings
 {
-    protected:
-        bool _changesInSettings = false;
-        
-        virtual void readFromJsonDocument(JsonDocument doc);
+    private:
+       
 
-        virtual JsonDocument writeToJsonDocument() const;
+
+        
+
     public:
-        GXOVnT_Settings() {};
-        
-        GXOVnT_Settings(JsonDocument *doc) { readFromJsonDocument(*doc); }
-        
+
+#if GXOVnT_Settings_HAS_WIFI_SETTINGS
+        GXOVnT_SettingsSection_WiFi WiFiSettings;
+#endif
+#if GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS
+        GXOVnT_SettingsSection_BLE_TPMS BLETPMSSettings;
+#endif
+
+        GXOVnT_Settings() { };
+        GXOVnT_Settings(JsonDocument document) { readSettingsFromJson(document); }
         ~GXOVnT_Settings() {};
         
         // Gets a value indicating if there were changes made to the settings
-        bool changesInSettings() { return _changesInSettings; }
+        bool settingsHasChanges();
 
-
+        // Method to write the section settings to a json document
+        void writeSettingsToJson(JsonDocument document);
+        
+        // Method to read the section from a json document
+        void readSettingsFromJson(JsonDocument document);
 };
 
 #endif
