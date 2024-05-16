@@ -4,7 +4,7 @@
 #include <GXOVnT_TPMS_BLE_Manager.h>
 #include <GXOVnT_WebUpdate.h>
 #include <heltec.h>
-#include <settings/GXOVnT_Config.h>
+#include <GXOVnT.h>
 
 //https://medium.com/@adityabangde/esp32-firmware-updates-from-github-a-simple-ota-solution-173a95f4a97b
 
@@ -16,7 +16,7 @@
 int scanTime = 10; //In seconds
 
 
-GXOVnT_Config GXOVnTConfig;
+
 
 void setup() {
   
@@ -36,17 +36,19 @@ void setup() {
   Heltec.display->drawString(0, 0, systemVer);
   Heltec.display->display();
   
-  Serial.println("Reading configuration");
-
+  
   delay(1500);
   GXOVnTConfig.readConfiguration();
 
-  GXOVnTConfig.Settings.SystemSettings.SystemName("MySystemName");
-  GXOVnTConfig.Settings.WiFiSettings.SSID("HouseMare");
-  GXOVnTConfig.Settings.WiFiSettings.Password("X@Kbi-Rh3$");
+  Serial.printf("System name: %s \n", GXOVnTConfig.Settings.SystemSettings.SystemName().c_str());
+  Serial.printf("Firmware version %s \n", GXOVnTConfig.Settings.SystemSettings.FirmwareVersion().c_str());
+  Serial.printf("System Id: %s \n", GXOVnTConfig.Settings.SystemSettings.SystemId().c_str());
+  Serial.printf("WiFi name: %s", GXOVnTConfig.Settings.WiFiSettings.SSID().c_str());
+  
+ 
   
 
-  GXOVnTConfig.saveConfiguration();
+  
 
 
 

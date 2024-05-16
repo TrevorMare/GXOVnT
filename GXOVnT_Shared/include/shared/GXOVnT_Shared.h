@@ -4,8 +4,8 @@
 */
 /////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef _GXOVNT_SHARED_H
-#define _GXOVNT_SHARED_H
+#ifndef _GXOVNT_SHARED_H_
+#define _GXOVNT_SHARED_H_
 
 // Includes for Logging, Arduino, string conversions and lists
 /////////////////////////////////////////////////////////////////

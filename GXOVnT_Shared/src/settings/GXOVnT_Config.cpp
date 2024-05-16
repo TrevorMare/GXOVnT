@@ -9,6 +9,17 @@ GXOVnT_Config::~GXOVnT_Config() {
     closeSPIFFS();
 }
 
+void GXOVnT_Config::deleteConfigurationFile() {
+    // Open the file system object
+    if (!openSPIFFS()) 
+        return;
+    bool fileExists = SPIFFS.exists(config_file_name);
+    if (fileExists) {
+        SPIFFS.remove(config_file_name);
+    }
+    closeSPIFFS();
+}
+
 bool GXOVnT_Config::configurationFileExists() {
     // Open the file system object
     if (!openSPIFFS()) 
@@ -26,6 +37,7 @@ bool GXOVnT_Config::readConfiguration() {
     bool result = false;
    
     ESP_LOGI(LOG_TAG, "Reading configuration file");
+    
     // Get the content of the file
     String configurationContent = readConfigurationFromFileSystem();
     // If there is a value
@@ -33,10 +45,10 @@ bool GXOVnT_Config::readConfiguration() {
         JsonDocument document;
         // Deserialize the json document
         deserializeJson(document, configurationContent);
+        
         // If the document could be loaded, read the settings from the document
         if (!document.isNull()) {
             Settings.readSettingsFromJson(document);
-            ESP_LOGI(LOG_TAG, "Settings were restored");
             result = true;
         } else {
             ESP_LOGE(LOG_TAG, "Unable to parse the json configuration");
@@ -52,6 +64,13 @@ bool GXOVnT_Config::readConfiguration() {
 void GXOVnT_Config::saveConfiguration() {
     // Try open the file system object
     if (!openSPIFFS()) return;
+
+    if (!Settings.settingsHasChanges()) {
+        ESP_LOGI(LOG_TAG, "Skipping the save of the configuration file as no changes were made");
+        return;
+    }
+
+    ESP_LOGI(LOG_TAG, "Saving configuration file");
     // Create a new document
     JsonDocument document;
 
@@ -59,8 +78,6 @@ void GXOVnT_Config::saveConfiguration() {
     Settings.writeSettingsToJson(document);
     // Get the json content of the settings
     String jsonContent;
-
-        
 
     serializeJsonPretty(document, jsonContent);
     // Write the file to the disk
@@ -80,15 +97,13 @@ bool GXOVnT_Config::openSPIFFS() {
         return false;
     }
     else{
-        ESP_LOGI(LOG_TAG, "SPIFFS mount succeeded");
         m_SPIFFS_open = true;
         return true;
     }
 }
 
 bool GXOVnT_Config::closeSPIFFS() {
- if (!m_SPIFFS_open) return true;
-    ESP_LOGI(LOG_TAG, "SPIFFS mount closed");
+    if (!m_SPIFFS_open) return true;
     // Close the SPIFFS
     SPIFFS.end();
     m_SPIFFS_open = false;
@@ -120,24 +135,14 @@ String GXOVnT_Config::readConfigurationFromFileSystem() {
     // Close the file
     file.close();
 
-    Serial.println("*********************");
-    Serial.println(fileData);
-    Serial.println("*********************");
-
     // Return the content
     return fileData;
 }
 
 void GXOVnT_Config::writeConfigurationToFileSystem(String content) {
-    ESP_LOGI(LOG_TAG, "Opening the file to write configuration");
+    
     // Open the file
     File file = SPIFFS.open(config_file_name, FILE_WRITE);
-
-    Serial.println("*********************");
-    Serial.println("Write content");
-    Serial.println(content);
-
-    Serial.println("*********************");
 
     // Check if the file is not null    
     if (!file) { 

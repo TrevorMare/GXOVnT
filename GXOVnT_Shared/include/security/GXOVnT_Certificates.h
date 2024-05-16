@@ -6,8 +6,8 @@
 */
 /////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef _GXOVNT_CERTIFICATES_H
-#define _GXOVNT_CERTIFICATES_H
+#ifndef _GXOVNT_CERTIFICATES_H_
+#define _GXOVNT_CERTIFICATES_H_
 
 /////////////////////////////////////////////////////////////////
 // Microsoft Baltimore CA Certificate

@@ -25,16 +25,16 @@ class GXOVnT_SettingsSection
         GXOVnT_SettingsSection();
         
         // Constructor that will read the settings from a json document
-        GXOVnT_SettingsSection(JsonDocument document);
+        GXOVnT_SettingsSection(JsonDocument &document);
         
         // Gets an indicator if this section values changed
         bool getSettingsChanged();
 
         // Method to write the section settings to a json document
-        virtual void writeSettingsToJson(JsonDocument document);
+        virtual void writeSettingsToJson(JsonDocument &document);
         
         // Method to read the section from a json document
-        virtual void readSettingsFromJson(JsonDocument document);
+        virtual void readSettingsFromJson(JsonDocument &document);
 
 };
 
@@ -57,10 +57,14 @@ class GXOVnT_SettingsSection_System : public GXOVnT_SettingsSection {
     public:
         GXOVnT_SettingsSection_System();
         // Method to write the section settings to a json document
-        void writeSettingsToJson(JsonDocument document) override;
+        void writeSettingsToJson(JsonDocument &document) override;
         // Method to read the section from a json document
-        void readSettingsFromJson(JsonDocument document) override;
+        void readSettingsFromJson(JsonDocument &document) override;
+       
         std::string SystemName();
+        std::string SystemId();
+        std::string FirmwareVersion();
+        GXOVnT_SYSTEM_TYPE SystemType();
         void SystemName(std::string input);
 };
 
@@ -81,10 +85,10 @@ class GXOVnT_SettingsSection_WiFi : public GXOVnT_SettingsSection
         GXOVnT_SettingsSection_WiFi() {}; 
 
         // Method to write the section settings to a json document
-        void writeSettingsToJson(JsonDocument document) override;
+        void writeSettingsToJson(JsonDocument &document) override;
         
         // Method to read the section from a json document
-        void readSettingsFromJson(JsonDocument document) override;
+        void readSettingsFromJson(JsonDocument &document) override;
 
         // Getters and setters
         void SSID(std::string input);
@@ -163,10 +167,10 @@ class GXOVnT_SettingsSection_BLE_TPMS : public GXOVnT_SettingsSection {
         std::vector<BLE_TPMS_SETTINGS> getBLETPMSSettings() const;
 
         // Method to write the section settings to a json document
-        void writeSettingsToJson(JsonDocument document) override;
+        void writeSettingsToJson(JsonDocument &document) override;
         
         // Method to read the section from a json document
-        void readSettingsFromJson(JsonDocument document) override;
+        void readSettingsFromJson(JsonDocument &document) override;
 };
 
 

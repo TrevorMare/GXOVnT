@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef _GXOVNT_CONFIG_H
-#define _GXOVNT_CONFIG_H
+#ifndef _GXOVNT_CONFIG_H_
+#define _GXOVNT_CONFIG_H_
 
 // Include deps
 /////////////////////////////////////////////////////////////////
@@ -21,7 +21,9 @@ class GXOVnT_Config
         String readConfigurationFromFileSystem();
 
         void writeConfigurationToFileSystem(String content);
-
+        
+        void deleteConfigurationFile();
+        
         bool openSPIFFS();
 
         bool closeSPIFFS();

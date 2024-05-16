@@ -1,6 +1,6 @@
 #include "settings/GXOVnT_Settings.h"
 
-void GXOVnT_Settings::readSettingsFromJson(JsonDocument document) {
+void GXOVnT_Settings::readSettingsFromJson(JsonDocument &document) {
 
     ESP_LOGI(LOG_TAG, "Reading of settings from configuration file \n");
 
@@ -13,11 +13,9 @@ void GXOVnT_Settings::readSettingsFromJson(JsonDocument document) {
     #if GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS
         BLETPMSSettings.readSettingsFromJson(document);
     #endif
-
-    ESP_LOGI(LOG_TAG, "Reading of settings completed \n");
 }
 
-void GXOVnT_Settings::writeSettingsToJson(JsonDocument document) {
+void GXOVnT_Settings::writeSettingsToJson(JsonDocument &document) {
     ESP_LOGI(LOG_TAG, "Writing of settings to configuration file \n");
 
     #if GXOVnT_Settings_HAS_SYSTEM_SETTINGS
@@ -29,8 +27,6 @@ void GXOVnT_Settings::writeSettingsToJson(JsonDocument document) {
     #if GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS
         BLETPMSSettings.writeSettingsToJson(document);
     #endif
-    
-    ESP_LOGI(LOG_TAG, "Writing of settings completed \n");
 }
 
 bool GXOVnT_Settings::settingsHasChanges() {

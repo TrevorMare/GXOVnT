@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef _GXOVNT_SETTINGS_H
-#define _GXOVNT_SETTINGS_H
+#ifndef _GXOVNT_SETTINGS_H_
+#define _GXOVNT_SETTINGS_H_
 
 #include "GXOVnT_SettingsSection.h"
 #include <ArduinoJson.h>
@@ -36,17 +36,17 @@ class GXOVnT_Settings
 #endif
 
         GXOVnT_Settings() { };
-        GXOVnT_Settings(JsonDocument document) { readSettingsFromJson(document); }
+        GXOVnT_Settings(JsonDocument &document) { readSettingsFromJson(document); }
         ~GXOVnT_Settings() {};
         
         // Gets a value indicating if there were changes made to the settings
         bool settingsHasChanges();
 
         // Method to write the section settings to a json document
-        void writeSettingsToJson(JsonDocument document);
+        void writeSettingsToJson(JsonDocument &document);
         
         // Method to read the section from a json document
-        void readSettingsFromJson(JsonDocument document);
+        void readSettingsFromJson(JsonDocument &document);
 };
 
 #endif
