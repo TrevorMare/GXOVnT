@@ -9,6 +9,6 @@ env.AddCustomTarget(
        "--strip-path --output-dir=../src simple.proto)"
     ],
     title="Nanopb generate step",
-    description="Rebuild .c/.h files from .proto"
-    #always_build=True
+    description="Rebuild .c/.h files from .proto",
+    always_build=True
 )

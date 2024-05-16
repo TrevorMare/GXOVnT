@@ -1,20 +1,28 @@
 Import("env")
 
 
-def nanopb_callback(*args, **kwargs):
+def nanopb_callback(source, target, env):
     print("Hello PlatformIO!")
     env.SetDefault(NANOPB = "lib/nanopb")
     env.Tool("nanopb", toolpath = ["lib/nanopb/tests/site_scons/site_tools"])
     env.NanopbProto("proto/simple.proto")
 
 
-env.AddCustomTarget(
-    name="nanopb-scons",
-    dependencies=None,
-    actions=[
-        "python --version", nanopb_callback
-    ],
-    title="Nanopb generate step, Scons flavor",
-    description="Rebuild .c/.h files from .proto"
-    #always_build=True
-)
+# env.AddCustomTarget(
+#     name="nanopb-scons",
+#     dependencies=None,
+#     actions=[
+#         "python --version", nanopb_callback
+#     ],
+#     title="Generate proto messages",
+#     description="Generate proto messages",
+#     always_build=True
+# )
+
+
+#env.AddPreAction("buildprog", nanopb_callback)
+
+print("Hello PlatformIO!")
+env.SetDefault(NANOPB = "lib/nanopb")
+env.Tool("nanopb", toolpath = ["lib/nanopb/tests/site_scons/site_tools"])
+env.NanopbProto("proto/simple.proto")
