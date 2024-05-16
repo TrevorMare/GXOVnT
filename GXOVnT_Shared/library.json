@@ -35,9 +35,6 @@
         "version": "^1.4.1"
       }
     ],
-    "build": {
-      "extraScript": "../GXOVnT_ProtoMessaging/scripts/rebuild-nanopb-scons.py"
-    },
     "frameworks": "*",
     "platforms": "*"
   }
