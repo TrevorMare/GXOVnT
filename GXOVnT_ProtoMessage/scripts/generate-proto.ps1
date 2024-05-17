@@ -25,6 +25,7 @@
 # Final Copy directories
 [string]$global:final_output_cpp_headers = ""
 [string]$global:final_output_cpp_source = ""
+[string]$global:final_output_cpp_extra = ""
 
 
 function SetupInputAndOutputDirectories() {
@@ -35,13 +36,15 @@ function SetupInputAndOutputDirectories() {
 
     $global:protoc_generator = "$global:root_generator_protoc_directory\bin\protoc.exe"
     $global:nanopd_generator = "$global:root_generator_nanopd_directory\nanopb-master\generator\protoc-gen-nanopb.bat"
+    $global:nanopd_extra = "$global:root_generator_nanopd_directory\nanopb-master"
     
     $global:messages_input_directory = "$global:root_input_directory\proto"
     $global:src_output_csharp = "$global:root_input_directory\src\c#"
     $global:src_output_cpp = "$global:root_input_directory\src\c++"
 
     $global:final_output_cpp_headers = "$global:root_directory\GXOVnT_Shared\include\messages"
-    $global:final_output_cpp_headers = "$global:root_directory\GXOVnT_Shared\src\messages"
+    $global:final_output_cpp_source = "$global:root_directory\GXOVnT_Shared\src\messages"
+    $global:final_output_cpp_extra = "$global:root_directory\GXOVnT_Shared\extralibs"
 }
 
 function PrepareGeneratorsDirectory() {
@@ -68,17 +71,17 @@ function PrepareGeneratorsDirectory() {
     }
     Get-ChildItem -Path $global:src_output_cpp *.* -File -Recurse | foreach { $_.Delete()}
     
-    #=============== Final output headers directory ===============
+    # #=============== Final output headers directory ===============
     if (!(Test-Path -Path $global:final_output_cpp_headers )) {
         New-Item -ItemType Directory -Force -Path $global:final_output_cpp_headers 
     }
-    Get-ChildItem -Path $global:final_output_cpp_headers *.* -File -Recurse | foreach { $_.Delete()}
+    Get-ChildItem -Path $global:final_output_cpp_headers *.* -File | foreach { $_.Delete()}
 
-    #=============== Final output source directory ===============
+    # #=============== Final output source directory ===============
     if (!(Test-Path -Path $global:final_output_cpp_source )) {
         New-Item -ItemType Directory -Force -Path $global:final_output_cpp_source 
     }
-    Get-ChildItem -Path $global:final_output_cpp_source *.* -File -Recurse | foreach { $_.Delete()}
+    Get-ChildItem -Path $global:final_output_cpp_source *.* -File | foreach { $_.Delete()}
 }
 
 function DownloadAndExtract_protoc() {
@@ -121,12 +124,21 @@ function GenerateFiles_CPP() {
 function CopyCPPFilesToShared() {
 
     Get-ChildItem $global:src_output_cpp -Filter *.h | Foreach-Object {
-        Copy-Item $_.FullName -Destination "$global:final_output_cpp_headers\${_.Name}" -Recurse -force 
+        Copy-Item $_ -Destination "$global:final_output_cpp_headers\${_.Name}" -force 
     }
 
     Get-ChildItem $global:src_output_cpp -Filter *.c | Foreach-Object {
-        Copy-Item $_.FullName -Destination "$global:final_output_cpp_headers\${_.Name}" -Recurse -force 
+        Copy-Item $_ -Destination "$global:final_output_cpp_source\${_.Name}" -force 
     }
+    
+    Copy-Item "$global:nanopd_extra\pb.h" -Destination "$global:final_output_cpp_extra\pb.h" -force 
+    Copy-Item "$global:nanopd_extra\pb_common.c" -Destination "$global:final_output_cpp_extra\pb_common.c" -force 
+    Copy-Item "$global:nanopd_extra\pb_common.h" -Destination "$global:final_output_cpp_extra\pb_common.h" -force 
+    Copy-Item "$global:nanopd_extra\pb_decode.c" -Destination "$global:final_output_cpp_extra\pb_decode.c" -force 
+    Copy-Item "$global:nanopd_extra\pb_decode.h" -Destination "$global:final_output_cpp_extra\pb_decode.h" -force 
+    Copy-Item "$global:nanopd_extra\pb_encode.h" -Destination "$global:final_output_cpp_extra\pb_encode.h" -force 
+    Copy-Item "$global:nanopd_extra\pb_encode.c" -Destination "$global:final_output_cpp_extra\pb_encode.c" -force 
+
 }
 
 SetupInputAndOutputDirectories
