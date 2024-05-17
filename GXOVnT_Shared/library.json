@@ -36,7 +36,7 @@
       }
     ],
     "build": {
-      "extraScript": "scripts/build-proto-messages.py"
+      
     },
     "frameworks": "*",
     "platforms": "*"
