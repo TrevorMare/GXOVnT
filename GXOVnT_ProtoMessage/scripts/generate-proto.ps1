@@ -25,7 +25,6 @@
 # Final Copy directories
 [string]$global:final_output_cpp_headers = ""
 [string]$global:final_output_cpp_source = ""
-[string]$global:final_output_cpp_extra = ""
 
 
 function SetupInputAndOutputDirectories() {
@@ -44,7 +43,7 @@ function SetupInputAndOutputDirectories() {
 
     $global:final_output_cpp_headers = "$global:root_directory\GXOVnT_Shared\include\messages"
     $global:final_output_cpp_source = "$global:root_directory\GXOVnT_Shared\src\messages"
-    $global:final_output_cpp_extra = "$global:root_directory\GXOVnT_Shared\extralibs"
+    
 }
 
 function PrepareGeneratorsDirectory() {
@@ -124,20 +123,30 @@ function GenerateFiles_CPP() {
 function CopyCPPFilesToShared() {
 
     Get-ChildItem $global:src_output_cpp -Filter *.h | Foreach-Object {
-        Copy-Item $_ -Destination "$global:final_output_cpp_headers\${_.Name}" -force 
+        
+        $destinationFileName = $global:final_output_cpp_headers + "\" + $_.NameString
+        Copy-Item $_ -Destination $destinationFileName -force 
+        (Get-Content $destinationFileName) -replace '<pb.h>', """pb.h""" | Set-Content $destinationFileName
     }
 
     Get-ChildItem $global:src_output_cpp -Filter *.c | Foreach-Object {
-        Copy-Item $_ -Destination "$global:final_output_cpp_source\${_.Name}" -force 
+
+        $oldIncludePath = """" + $_.NameString.Replace(".c", ".h") + """"
+        $newIncludePath = """messages/" + $_.NameString.Replace(".c", ".h") + """"
+        $destinationFileName = $global:final_output_cpp_source + "\" + $_.NameString
+        # Copy the c file
+        Copy-Item $_ -Destination $destinationFileName -force 
+        # fix the content
+        (Get-Content $destinationFileName) -replace $oldIncludePath, $newIncludePath | Set-Content $destinationFileName
     }
     
-    Copy-Item "$global:nanopd_extra\pb.h" -Destination "$global:final_output_cpp_extra\pb.h" -force 
-    Copy-Item "$global:nanopd_extra\pb_common.c" -Destination "$global:final_output_cpp_extra\pb_common.c" -force 
-    Copy-Item "$global:nanopd_extra\pb_common.h" -Destination "$global:final_output_cpp_extra\pb_common.h" -force 
-    Copy-Item "$global:nanopd_extra\pb_decode.c" -Destination "$global:final_output_cpp_extra\pb_decode.c" -force 
-    Copy-Item "$global:nanopd_extra\pb_decode.h" -Destination "$global:final_output_cpp_extra\pb_decode.h" -force 
-    Copy-Item "$global:nanopd_extra\pb_encode.h" -Destination "$global:final_output_cpp_extra\pb_encode.h" -force 
-    Copy-Item "$global:nanopd_extra\pb_encode.c" -Destination "$global:final_output_cpp_extra\pb_encode.c" -force 
+    Copy-Item "$global:nanopd_extra\pb.h" -Destination "$global:final_output_cpp_headers\pb.h" -force 
+    Copy-Item "$global:nanopd_extra\pb_common.c" -Destination "$global:final_output_cpp_headers\pb_common.c" -force 
+    Copy-Item "$global:nanopd_extra\pb_common.h" -Destination "$global:final_output_cpp_headers\pb_common.h" -force 
+    Copy-Item "$global:nanopd_extra\pb_decode.c" -Destination "$global:final_output_cpp_headers\pb_decode.c" -force 
+    Copy-Item "$global:nanopd_extra\pb_decode.h" -Destination "$global:final_output_cpp_headers\pb_decode.h" -force 
+    Copy-Item "$global:nanopd_extra\pb_encode.h" -Destination "$global:final_output_cpp_headers\pb_encode.h" -force 
+    Copy-Item "$global:nanopd_extra\pb_encode.c" -Destination "$global:final_output_cpp_headers\pb_encode.c" -force 
 
 }
 
