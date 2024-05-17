@@ -1,4 +1,6 @@
 #include "settings/GXOVnT_Settings.h"
+#include "messages/msg_gxovnt_config.pb.h"
+
 
 void GXOVnT_Settings::readSettingsFromJson(JsonDocument &document) {
 

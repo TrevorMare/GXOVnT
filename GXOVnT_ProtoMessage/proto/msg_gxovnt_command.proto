@@ -1,10 +1,10 @@
 syntax = "proto3";
       
-message GXOVnTCommand {
-   enum COMMAND_ID {
+message MSG_GXOVnT_Command {
+   enum MSG_GXOVnT_Command_Id {
       GET_CONFIG = 0;
       UPDATE_FIRMWARE = 1;
       NOT_SET = 99;
    }
-   COMMAND_ID commandId = 99;
+   MSG_GXOVnT_Command_Id commandId = 1;
 }

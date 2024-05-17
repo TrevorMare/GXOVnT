@@ -44,7 +44,7 @@ class GXOVnT_Settings
 
         // Method to write the section settings to a json document
         void writeSettingsToJson(JsonDocument &document);
-        
+
         // Method to read the section from a json document
         void readSettingsFromJson(JsonDocument &document);
 };
