@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+message GXOVnTConfig {
+
+
+    message SYSTEM_SETTINGS {
+        string _system_name = 1;
+        string _system_id = 2;
+        string _firmware_version = 3;
+        uint32 _system_type = 4;
+    }
+
+    message WIFISETTINGS {
+        string _s_s_i_d = 1;
+        string _password = 2;
+    }
+
+    message BLE_TPMS {
+        string _sensor_id = 1;
+        uint32 _sensor_type = 2;
+        uint32 _sensor_position = 3;
+        string _custom_position = 4;
+    }
+
+    SYSTEM_SETTINGS system_settings = 1;
+    WIFISETTINGS wifi_settings = 2;
+    repeated BLE_TPMS ble_tpms = 3;
+}
