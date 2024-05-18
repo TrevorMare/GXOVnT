@@ -1,12 +1,12 @@
-#include "settings/GXOVnT_SettingsSection.h"
+#include "settings/SettingsSection.h"
 using namespace GXOVnT::settings;
 
 /////////////////////////////////////////////////////////////////
 // Base class for the settings sections
 /////////////////////////////////////////////////////////////////
-GXOVnT_SettingsSection::GXOVnT_SettingsSection() {}
-GXOVnT_SettingsSection::GXOVnT_SettingsSection(JsonDocument &document) { readSettingsFromJson(document); }
-void GXOVnT_SettingsSection::setSettingsChanged(bool settingsChanged, std::string settingName) {
+BaseSettingsSection::BaseSettingsSection() {}
+BaseSettingsSection::BaseSettingsSection(JsonDocument &document) { readSettingsFromJson(document); }
+void BaseSettingsSection::setSettingsChanged(bool settingsChanged, std::string settingName) {
     m_settingsChanged = settingsChanged;
     if (m_settingsChanged) {
         if (settingName == "") {
@@ -16,18 +16,17 @@ void GXOVnT_SettingsSection::setSettingsChanged(bool settingsChanged, std::strin
         }
     }
 }
-bool GXOVnT_SettingsSection::getCustomSettingsChanged() { return false; }
-bool GXOVnT_SettingsSection::getSettingsChanged() { 
+bool BaseSettingsSection::getCustomSettingsChanged() { return false; }
+bool BaseSettingsSection::getSettingsChanged() { 
     return m_settingsChanged || getCustomSettingsChanged();
 }
-void GXOVnT_SettingsSection::writeSettingsToJson(JsonDocument &document) {}
-void GXOVnT_SettingsSection::readSettingsFromJson(JsonDocument &document) {}
-
+void BaseSettingsSection::writeSettingsToJson(JsonDocument &document) {}
+void BaseSettingsSection::readSettingsFromJson(JsonDocument &document) {}
 
 /////////////////////////////////////////////////////////////////
 // System Settings section class
 /////////////////////////////////////////////////////////////////
-GXOVnT_SettingsSection_System::GXOVnT_SettingsSection_System() {
+SytemSettingsSection::SytemSettingsSection() {
     #if GXOVNT_SYSTEM_TYPE == GXOVNT_SYSTEM_TYPE_CLIENT
         m_SystemType = SYSTEM_TYPE_CLIENT;
     #endif                
@@ -37,21 +36,21 @@ GXOVnT_SettingsSection_System::GXOVnT_SettingsSection_System() {
     m_SystemId = DeviceMACAddress();
     m_FirmwareVersion = GXOVnT_FIRMWARE_VERSION;
 };
-std::string GXOVnT_SettingsSection_System::SystemName() { return m_SystemName; }
-std::string GXOVnT_SettingsSection_System::SystemId() { return m_SystemId; }
-std::string GXOVnT_SettingsSection_System::FirmwareVersion() { return m_FirmwareVersion; }
-GXOVnT_SYSTEM_TYPE GXOVnT_SettingsSection_System::SystemType() { return m_SystemType; }
-void GXOVnT_SettingsSection_System::SystemName(std::string input) { 
+std::string SytemSettingsSection::SystemName() { return m_SystemName; }
+std::string SytemSettingsSection::SystemId() { return m_SystemId; }
+std::string SytemSettingsSection::FirmwareVersion() { return m_FirmwareVersion; }
+GXOVnT_SYSTEM_TYPE SytemSettingsSection::SystemType() { return m_SystemType; }
+void SytemSettingsSection::SystemName(std::string input) { 
     if (m_SystemName.compare(input) == 0) return; 
     m_SystemName = input;
     setSettingsChanged(true, "SystemSettings:SystemName");;
 }
-void GXOVnT_SettingsSection_System::writeSettingsToJson(JsonDocument &document) {
+void SytemSettingsSection::writeSettingsToJson(JsonDocument &document) {
     document[m_sectionName][m_valueName_SystemName] = m_SystemName;
     // Reset the settings changed
     setSettingsChanged(false);
 }
-void GXOVnT_SettingsSection_System::readSettingsFromJson(JsonDocument &document) {
+void SytemSettingsSection::readSettingsFromJson(JsonDocument &document) {
     JsonObject sectionJsonObject;
     
     // Reset the settings changed
@@ -70,14 +69,14 @@ void GXOVnT_SettingsSection_System::readSettingsFromJson(JsonDocument &document)
 /////////////////////////////////////////////////////////////////
 // WiFi Settings section class
 /////////////////////////////////////////////////////////////////
-void GXOVnT_SettingsSection_WiFi::writeSettingsToJson(JsonDocument &document) {
+void WiFiSettingsSection::writeSettingsToJson(JsonDocument &document) {
     // Now write the settings
     document[m_sectionName][m_valueName_Password] = m_Password;
     document[m_sectionName][m_valueName_SSID] = m_SSID;
     // Reset the settings changed
     setSettingsChanged(false);
 }
-void GXOVnT_SettingsSection_WiFi::readSettingsFromJson(JsonDocument &document) {
+void WiFiSettingsSection::readSettingsFromJson(JsonDocument &document) {
     JsonObject sectionJsonObject;
     
     // Reset the settings changed
@@ -100,24 +99,24 @@ void GXOVnT_SettingsSection_WiFi::readSettingsFromJson(JsonDocument &document) {
         m_Password = "";
     }
 }
-void GXOVnT_SettingsSection_WiFi::SSID(std::string input) {
+void WiFiSettingsSection::SSID(std::string input) {
     if (m_SSID.compare(input) == 0) return;
     m_SSID = input;
     setSettingsChanged(true, "WiFiSettings:SSID");
 }
-void GXOVnT_SettingsSection_WiFi::Password(std::string input) {
+void WiFiSettingsSection::Password(std::string input) {
     if (m_Password.compare(input) == 0) return;
     m_Password = input;
     setSettingsChanged(true, "WiFiSettings:Password");
 }
-std::string GXOVnT_SettingsSection_WiFi::SSID() { return m_SSID; }
-std::string GXOVnT_SettingsSection_WiFi::Password() { return m_Password; }
+std::string WiFiSettingsSection::SSID() { return m_SSID; }
+std::string WiFiSettingsSection::Password() { return m_Password; }
 
 /////////////////////////////////////////////////////////////////
 // BLE TPMS Settings section class
 /////////////////////////////////////////////////////////////////
 
-int GXOVnT_SettingsSection_BLE_TPMS::getConfigurationIndex(std::string sensorId) {
+int BleTPMSSettingsSection::getConfigurationIndex(std::string sensorId) {
     int result = -1;
     for (size_t i = 0; i < m_bleTPMSSettings.size(); i++) {
         if (m_bleTPMSSettings[i].SensorId().compare(sensorId) == 0) {
@@ -127,7 +126,7 @@ int GXOVnT_SettingsSection_BLE_TPMS::getConfigurationIndex(std::string sensorId)
     }
     return result;
 }
-bool GXOVnT_SettingsSection_BLE_TPMS::getCustomSettingsChanged() {
+bool BleTPMSSettingsSection::getCustomSettingsChanged() {
     bool result = false;
     for (size_t i = 0; i < m_bleTPMSSettings.size(); i++) {
         if (m_bleTPMSSettings[i].ChangesMade()) {
@@ -137,7 +136,7 @@ bool GXOVnT_SettingsSection_BLE_TPMS::getCustomSettingsChanged() {
     }
     return result;
 }
-void GXOVnT_SettingsSection_BLE_TPMS::writeSettingsToJson(JsonDocument &document) {
+void BleTPMSSettingsSection::writeSettingsToJson(JsonDocument &document) {
     for (size_t i = 0; i < m_bleTPMSSettings.size(); i++)
     {
         JsonObject settingsObject = document[m_sectionName].add<JsonObject>();
@@ -152,7 +151,7 @@ void GXOVnT_SettingsSection_BLE_TPMS::writeSettingsToJson(JsonDocument &document
     // Reset the settings changed
     setSettingsChanged(false);
 }
-void GXOVnT_SettingsSection_BLE_TPMS::readSettingsFromJson(JsonDocument &document) {
+void BleTPMSSettingsSection::readSettingsFromJson(JsonDocument &document) {
     // Reset the settings changed
     setSettingsChanged(false);
 
@@ -182,22 +181,22 @@ void GXOVnT_SettingsSection_BLE_TPMS::readSettingsFromJson(JsonDocument &documen
         }
     }
 }
-void GXOVnT_SettingsSection_BLE_TPMS::addTPMSSettings(BLE_TPMS_SETTINGS settings) {
+void BleTPMSSettingsSection::addTPMSSettings(BLE_TPMS_SETTINGS settings) {
     m_bleTPMSSettings.push_back(settings);
     setSettingsChanged(true);
 };
-void GXOVnT_SettingsSection_BLE_TPMS::removeTPMSSettings(int removeAt) {
+void BleTPMSSettingsSection::removeTPMSSettings(int removeAt) {
     m_bleTPMSSettings.erase(m_bleTPMSSettings.begin() + removeAt);
     setSettingsChanged(true);
 }
-void GXOVnT_SettingsSection_BLE_TPMS::removeTPMSSettings(std::string sensorId) {
+void BleTPMSSettingsSection::removeTPMSSettings(std::string sensorId) {
     int removeAtIndex = getConfigurationIndex(sensorId);
     if (removeAtIndex < 0) return;
     removeTPMSSettings(removeAtIndex);
 }
-BLE_TPMS_SETTINGS GXOVnT_SettingsSection_BLE_TPMS::operator[](int index) {
+BLE_TPMS_SETTINGS BleTPMSSettingsSection::operator[](int index) {
     return m_bleTPMSSettings[index];
 }
-std::vector<BLE_TPMS_SETTINGS> GXOVnT_SettingsSection_BLE_TPMS::getBLETPMSSettings() const {
+std::vector<BLE_TPMS_SETTINGS> BleTPMSSettingsSection::getBLETPMSSettings() const {
     return m_bleTPMSSettings;
 }

@@ -9,7 +9,7 @@
 
 // GXOVnT Libraries
 #include "shared/GXOVnT_Shared.h"
-#include "security/GXOVnT_Certificates.h"
+#include "security/Certificates.h"
 
 // Json libraries
 #include <ArduinoJson.h>

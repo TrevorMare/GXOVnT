@@ -1,8 +1,8 @@
-#include "settings/GXOVnT_Settings.h"
+#include "settings/ConfigSettings.h"
 using namespace GXOVnT::settings;
 
 
-void GXOVnT_Settings::readSettingsFromJson(JsonDocument &document) {
+void ConfigSettings::readSettingsFromJson(JsonDocument &document) {
 
     ESP_LOGI(LOG_TAG, "Reading of settings from configuration file \n");
 
@@ -17,7 +17,7 @@ void GXOVnT_Settings::readSettingsFromJson(JsonDocument &document) {
     #endif
 }
 
-void GXOVnT_Settings::writeSettingsToJson(JsonDocument &document) {
+void ConfigSettings::writeSettingsToJson(JsonDocument &document) {
     ESP_LOGI(LOG_TAG, "Writing of settings to configuration file \n");
 
     #if GXOVnT_Settings_HAS_SYSTEM_SETTINGS
@@ -31,7 +31,7 @@ void GXOVnT_Settings::writeSettingsToJson(JsonDocument &document) {
     #endif
 }
 
-bool GXOVnT_Settings::settingsHasChanges() {
+bool ConfigSettings::settingsHasChanges() {
     bool result = false;
     
     #if GXOVnT_Settings_HAS_SYSTEM_SETTINGS

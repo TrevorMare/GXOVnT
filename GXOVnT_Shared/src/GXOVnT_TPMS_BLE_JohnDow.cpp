@@ -1,4 +1,5 @@
 #include "GXOVnT_TPMS_BLE_JohnDow.h"
+using namespace GXOVnT::shared;
 
 bool GXOVnT_TPMS_BLE_JohnDow::setupBLEDeviceSpecific(const char *deviceId) {
   // Must be 5 characters long

@@ -7,14 +7,14 @@
 /////////////////////////////////////////////////////////////////
 #include <SPIFFS.h>
 #include "shared/GXOVnT_Shared.h"
-#include "settings/GXOVnT_Settings.h"
+#include "settings/ConfigSettings.h"
 
 namespace GXOVnT {
 
     namespace settings {
         // Class to handle the configuration
         /////////////////////////////////////////////////////////////////
-        class GXOVnT_Config
+        class Config
         {
             private:
                 const char *config_file_name = "/config.json";
@@ -32,13 +32,13 @@ namespace GXOVnT {
                 bool closeSPIFFS();
 
             public:
-                GXOVnT_Settings Settings;
+                ConfigSettings Settings;
 
                 // Constructor
-                GXOVnT_Config();
+                Config();
                 
                 // Deconstructor
-                ~GXOVnT_Config();
+                ~Config();
 
                 // Checks if the configration file exists
                 bool configurationFileExists(); 

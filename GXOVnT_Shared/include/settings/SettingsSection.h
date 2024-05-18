@@ -7,13 +7,14 @@
 /////////////////////////////////////////////////////////////////
 #include <ArduinoJson.h>
 #include "shared/GXOVnT_Shared.h"
+using namespace GXOVnT::shared;
 
 namespace GXOVnT {
     namespace settings {
         
         // Base class for the settings sections
         /////////////////////////////////////////////////////////////////
-        class GXOVnT_SettingsSection
+        class BaseSettingsSection
         {
             protected: 
                 // Value to indicate if settings section changed
@@ -25,10 +26,10 @@ namespace GXOVnT {
                 virtual bool getCustomSettingsChanged();
             public:
                 // Default constructor
-                GXOVnT_SettingsSection();
+                BaseSettingsSection();
                 
                 // Constructor that will read the settings from a json document
-                GXOVnT_SettingsSection(JsonDocument &document);
+                BaseSettingsSection(JsonDocument &document);
                 
                 // Gets an indicator if this section values changed
                 bool getSettingsChanged();
@@ -44,7 +45,7 @@ namespace GXOVnT {
         /////////////////////////////////////////////////////////////////
         // System Settings section class
         /////////////////////////////////////////////////////////////////
-        class GXOVnT_SettingsSection_System : public GXOVnT_SettingsSection {
+        class SytemSettingsSection : public BaseSettingsSection {
             private:
                 const char *m_sectionName = "SystemSettings";
                 const char *m_valueName_SystemName = "SystemName";
@@ -57,7 +58,7 @@ namespace GXOVnT {
                 GXOVnT_SYSTEM_TYPE m_SystemType = SYSTEM_TYPE_CLIENT;
                 std::string m_FirmwareVersion = "";
             public:
-                GXOVnT_SettingsSection_System();
+                SytemSettingsSection();
                 // Method to write the section settings to a json document
                 void writeSettingsToJson(JsonDocument &document) override;
                 // Method to read the section from a json document
@@ -73,7 +74,7 @@ namespace GXOVnT {
         /////////////////////////////////////////////////////////////////
         // WiFi Settings section class
         /////////////////////////////////////////////////////////////////
-        class GXOVnT_SettingsSection_WiFi : public GXOVnT_SettingsSection
+        class WiFiSettingsSection : public BaseSettingsSection
         {
             private:
                 const char *m_sectionName = "WiFiSettings";
@@ -84,7 +85,7 @@ namespace GXOVnT {
                 std::string m_Password = "";
 
             public:
-                GXOVnT_SettingsSection_WiFi() {}; 
+                WiFiSettingsSection() {}; 
 
                 // Method to write the section settings to a json document
                 void writeSettingsToJson(JsonDocument &document) override;
@@ -143,7 +144,7 @@ namespace GXOVnT {
                 }
         };
 
-        class GXOVnT_SettingsSection_BLE_TPMS : public GXOVnT_SettingsSection {
+        class BleTPMSSettingsSection : public BaseSettingsSection {
             private:
                 const char *m_sectionName = "BLETPMS";
                 const char *m_valueName_SensorId = "SensorId";
@@ -154,7 +155,7 @@ namespace GXOVnT {
                 int getConfigurationIndex(std::string sensorId);
 
             public:
-                GXOVnT_SettingsSection_BLE_TPMS() {};
+                BleTPMSSettingsSection() {};
 
                 bool getCustomSettingsChanged() override;
 

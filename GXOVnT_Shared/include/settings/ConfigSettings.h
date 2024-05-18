@@ -3,7 +3,7 @@
 #ifndef _GXOVNT_SETTINGS_H_
 #define _GXOVNT_SETTINGS_H_
 
-#include "GXOVnT_SettingsSection.h"
+#include "SettingsSection.h"
 #include <ArduinoJson.h>
 
 /////////////////////////////////////////////////////////////////
@@ -23,23 +23,23 @@
 
 namespace GXOVnT {
     namespace settings {
-        class GXOVnT_Settings
+        class ConfigSettings
         {
         public:
 
         #if GXOVnT_Settings_HAS_WIFI_SETTINGS
-                GXOVnT_SettingsSection_WiFi WiFiSettings;
+                WiFiSettingsSection WiFiSettings;
         #endif
         #if GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS
-                GXOVnT_SettingsSection_BLE_TPMS BLETPMSSettings;
+                BleTPMSSettingsSection BLETPMSSettings;
         #endif
         #if GXOVnT_Settings_HAS_SYSTEM_SETTINGS
-                GXOVnT_SettingsSection_System SystemSettings;
+                SytemSettingsSection SystemSettings;
         #endif
 
-                GXOVnT_Settings() { };
-                GXOVnT_Settings(JsonDocument &document) { readSettingsFromJson(document); }
-                ~GXOVnT_Settings() {};
+                ConfigSettings() { };
+                ConfigSettings(JsonDocument &document) { readSettingsFromJson(document); }
+                ~ConfigSettings() {};
                 
                 // Gets a value indicating if there were changes made to the settings
                 bool settingsHasChanges();

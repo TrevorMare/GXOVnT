@@ -1,16 +1,16 @@
-#include "settings/GXOVnT_Config.h"
+#include "settings/Config.h"
 using namespace GXOVnT::settings;
 
 /////////////////////////////////////////////////////////////////
 // Public Methods
 /////////////////////////////////////////////////////////////////
 
-GXOVnT_Config::GXOVnT_Config() {}
-GXOVnT_Config::~GXOVnT_Config() {
+Config::Config() {}
+Config::~Config() {
     closeSPIFFS();
 }
 
-void GXOVnT_Config::deleteConfigurationFile() {
+void Config::deleteConfigurationFile() {
     // Open the file system object
     if (!openSPIFFS()) 
         return;
@@ -21,7 +21,7 @@ void GXOVnT_Config::deleteConfigurationFile() {
     closeSPIFFS();
 }
 
-bool GXOVnT_Config::configurationFileExists() {
+bool Config::configurationFileExists() {
     // Open the file system object
     if (!openSPIFFS()) 
         return false;
@@ -32,7 +32,7 @@ bool GXOVnT_Config::configurationFileExists() {
 }
 
 
-bool GXOVnT_Config::readConfiguration() {
+bool Config::readConfiguration() {
     // Try open the file system object
     if (!openSPIFFS()) return false;
     bool result = false;
@@ -62,7 +62,7 @@ bool GXOVnT_Config::readConfiguration() {
     return result;
 }
 
-void GXOVnT_Config::saveConfiguration() {
+void Config::saveConfiguration() {
     // Try open the file system object
     if (!openSPIFFS()) return;
 
@@ -90,7 +90,7 @@ void GXOVnT_Config::saveConfiguration() {
 /////////////////////////////////////////////////////////////////
 // Private Methods
 /////////////////////////////////////////////////////////////////
-bool GXOVnT_Config::openSPIFFS() {
+bool Config::openSPIFFS() {
     if (m_SPIFFS_open) return true;
     if(!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)){
         ESP_LOGE(LOG_TAG, "SPIFFS mount failed. Unable to continue");
@@ -103,7 +103,7 @@ bool GXOVnT_Config::openSPIFFS() {
     }
 }
 
-bool GXOVnT_Config::closeSPIFFS() {
+bool Config::closeSPIFFS() {
     if (!m_SPIFFS_open) return true;
     // Close the SPIFFS
     SPIFFS.end();
@@ -111,7 +111,7 @@ bool GXOVnT_Config::closeSPIFFS() {
     return true;
 }
 
-String GXOVnT_Config::readConfigurationFromFileSystem() {
+String Config::readConfigurationFromFileSystem() {
     // Check if the configuration file exists
     if (!configurationFileExists()) {
         ESP_LOGW(LOG_TAG, "Unable to read the configuration file from file system. The file does not exist");
@@ -140,7 +140,7 @@ String GXOVnT_Config::readConfigurationFromFileSystem() {
     return fileData;
 }
 
-void GXOVnT_Config::writeConfigurationToFileSystem(String content) {
+void Config::writeConfigurationToFileSystem(String content) {
     
     // Open the file
     File file = SPIFFS.open(config_file_name, FILE_WRITE);
