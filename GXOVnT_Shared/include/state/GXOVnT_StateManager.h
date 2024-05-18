@@ -4,7 +4,7 @@
 #define _GXOVNT_STATE_MANAGER_H
 
 /////////////////////////////////////////////////////////////////
-#include "shared/GXOVnT_Shared.h"
+#include "shared/Shared.h"
 #include "shared/GXOVnT_State.h"
 #include "GXOVnT_State_InitialState.h"
 

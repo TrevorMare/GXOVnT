@@ -6,7 +6,7 @@
 // Includes
 /////////////////////////////////////////////////////////////////
 #include <ArduinoJson.h>
-#include "shared/GXOVnT_Shared.h"
+#include "shared/Shared.h"
 using namespace GXOVnT::shared;
 
 namespace GXOVnT {

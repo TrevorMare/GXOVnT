@@ -26,6 +26,7 @@ param (
 # Source Output Directories
 [string]$global:src_output_csharp = ""
 [string]$global:src_output_cpp = ""
+[string]$global:src_output_ts = ""
 
 # Final Copy directories
 [string]$global:final_output_cpp_headers = ""
@@ -45,6 +46,7 @@ function SetupInputAndOutputDirectories() {
     $global:messages_input_directory = "$global:root_input_directory\proto"
     $global:src_output_csharp = "$global:root_input_directory\src\c#"
     $global:src_output_cpp = "$global:root_input_directory\src\c++"
+    $global:src_output_ts = "$global:root_input_directory\src\ts"
 
     $global:final_output_cpp_headers = "$global:root_directory\GXOVnT_Shared\include\messages"
     $global:final_output_cpp_source = "$global:root_directory\GXOVnT_Shared\src\messages"
@@ -76,6 +78,12 @@ function PrepareGeneratorsDirectory() {
     }
     Get-ChildItem -Path $global:src_output_cpp *.* -File -Recurse | foreach { $_.Delete()}
     
+    #=============== Geneated c++ files output directory ===============
+    if (!(Test-Path -Path $global:src_output_ts )) {
+        New-Item -ItemType Directory -Force -Path $global:src_output_ts 
+    }
+    Get-ChildItem -Path $global:src_output_ts *.* -File -Recurse | foreach { $_.Delete()}
+
     # #=============== Final output headers directory ===============
     if (!(Test-Path -Path $global:final_output_cpp_headers )) {
         New-Item -ItemType Directory -Force -Path $global:final_output_cpp_headers 
@@ -110,6 +118,7 @@ function DownloadAndExtract_nanopd() {
 function PrepareEnvironment() {
     Write-Host "[Powershell] Installing protobuf and grpcio tools"
     pip install protobuf grpcio-tools
+    npm install -g protoc-gen-ts
 }
 
 function GenerateFiles_CSharp() {
@@ -124,6 +133,14 @@ function GenerateFiles_CPP() {
     Write-Host "[Powershell] Generating C++ files to " $global:src_output_cpp
     Get-ChildItem $global:messages_input_directory -Filter *.proto | Foreach-Object {
         $command = "$global:protoc_generator --plugin=protoc-gen-nanopb=$global:nanopd_generator --proto_path=$global:messages_input_directory --nanopb_out=$global:src_output_cpp $_"
+        Invoke-Expression $command
+    }
+}
+
+function GenerateFiles_TS() {
+    Write-Host "[Powershell] Generating Typescript files to " $global:src_output_ts
+    Get-ChildItem $global:messages_input_directory -Filter *.proto | Foreach-Object {
+        $command = "$global:protoc_generator --proto_path=$global:messages_input_directory --ts_out=$global:src_output_ts $_"
         Invoke-Expression $command
     }
 }
@@ -174,4 +191,5 @@ DownloadAndExtract_nanopd
 PrepareEnvironment
 GenerateFiles_CSharp
 GenerateFiles_CPP
+GenerateFiles_TS
 CopyCPPFilesToShared
