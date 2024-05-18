@@ -7,13 +7,15 @@
 
 #include "settings/Config.h"
 #include "services/CommService.h"
+using namespace GXOVnT::services;
+using namespace GXOVnT::settings;
 
 
 
+extern Config GXOVnTConfig;
+extern CommService GXOVnTCommService;
 
 
-GXOVnT::settings::Config GXOVnTConfig;
-GXOVnT::services::CommService CommService;
 #endif
 
 

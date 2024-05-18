@@ -24,7 +24,7 @@ namespace GXOVnT {
                 BLEAdvertising *m_bleAdvertising = nullptr;
 
                 bool m_serverConnected = false;
-                uint16_t m_serverConnectionId = NULL;
+                int m_serverConnectionId = -1;
 
                 // BLEServerCallbacks
                 void onConnect(BLEServer* pServer);
@@ -36,7 +36,7 @@ namespace GXOVnT {
                 void initBleServer();
                 void initBleService();
                 void startAdvertising();
-                
+
             public:
                 BleCommService();
                 ~BleCommService();

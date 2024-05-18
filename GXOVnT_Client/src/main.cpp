@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 // #include <GXOVnT_TPMS_BLE_Manager.h>
-// #include <GXOVnT_WebUpdate.h>
+#include <GXOVnT_WebUpdate.h>
 #include <heltec.h>
 #include <GXOVnT.h>
 
@@ -47,7 +47,7 @@ void setup() {
   
  
   
-  CommService.start();
+  GXOVnTCommService.start();
   
 
 

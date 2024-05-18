@@ -37,7 +37,7 @@ void BleCommService::stop() {
     
     if (m_bleAdvertising != nullptr) m_bleAdvertising->stop();
     if (m_bleService != nullptr) m_bleService->stop();
-    if (m_serverConnectionId != NULL) m_bleServer->disconnect(m_serverConnectionId);
+    if (m_serverConnectionId != -1) m_bleServer->disconnect(m_serverConnectionId);
 
     // Delete the pointer variables
     delete m_bleAdvertising;
@@ -50,6 +50,7 @@ void BleCommService::stop() {
     m_protoCharacteristic = nullptr;
     m_bleServer = nullptr;
     m_bleService = nullptr;
+    m_serverConnectionId = -1;
 
     // De Init the ble device
     BLEDevice::deinit(true);
@@ -95,7 +96,7 @@ void BleCommService::onConnect(BLEServer* pServer) {
 
 void BleCommService::onDisconnect(BLEServer* pServer) {
     m_serverConnected = false;
-    m_serverConnectionId = NULL;
+    m_serverConnectionId = -1;
 }
 
 void BleCommService::onWrite(BLECharacteristic* protoCharacteristic) {
