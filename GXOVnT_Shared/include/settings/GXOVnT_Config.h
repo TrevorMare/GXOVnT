@@ -9,43 +9,52 @@
 #include "shared/GXOVnT_Shared.h"
 #include "settings/GXOVnT_Settings.h"
 
-// Class to handle the configuration
-/////////////////////////////////////////////////////////////////
-class GXOVnT_Config
-{
-    private:
-        const char *config_file_name = "/config.json";
-        bool m_SPIFFS_open = false;
+namespace GXOVnT {
 
-        // Reads the content of the configuration file content
-        String readConfigurationFromFileSystem();
+    namespace settings {
+        // Class to handle the configuration
+        /////////////////////////////////////////////////////////////////
+        class GXOVnT_Config
+        {
+            private:
+                const char *config_file_name = "/config.json";
+                bool m_SPIFFS_open = false;
 
-        void writeConfigurationToFileSystem(String content);
-        
-        void deleteConfigurationFile();
-        
-        bool openSPIFFS();
+                // Reads the content of the configuration file content
+                String readConfigurationFromFileSystem();
 
-        bool closeSPIFFS();
+                void writeConfigurationToFileSystem(String content);
+                
+                void deleteConfigurationFile();
+                
+                bool openSPIFFS();
 
-    public:
-        GXOVnT_Settings Settings;
+                bool closeSPIFFS();
 
-        // Constructor
-        GXOVnT_Config();
-        
-        // Deconstructor
-        ~GXOVnT_Config();
+            public:
+                GXOVnT_Settings Settings;
 
-        // Checks if the configration file exists
-        bool configurationFileExists(); 
+                // Constructor
+                GXOVnT_Config();
+                
+                // Deconstructor
+                ~GXOVnT_Config();
 
-        // Reads the configuration from the file system
-        bool readConfiguration();
+                // Checks if the configration file exists
+                bool configurationFileExists(); 
 
-        // Saves the configuration to the file system
-        void saveConfiguration();
-};
+                // Reads the configuration from the file system
+                bool readConfiguration();
+
+                // Saves the configuration to the file system
+                void saveConfiguration();
+        };
+
+    }
+
+
+}
+
 
 
 #endif

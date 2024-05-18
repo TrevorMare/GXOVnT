@@ -1,4 +1,5 @@
 #include "settings/GXOVnT_SettingsSection.h"
+using namespace GXOVnT::settings;
 
 /////////////////////////////////////////////////////////////////
 // Base class for the settings sections

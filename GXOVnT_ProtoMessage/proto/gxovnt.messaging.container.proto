@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package gxovnt.messaging;
+
+import "gxovnt.messaging.command.proto";
+import "gxovnt.messaging.config.proto";
+
+message Container {
+    enum MessageType_Id {
+        COMMAND = 0;
+        CONFIG = 1;
+        Unknown = 99;
+    }
+    MessageType_Id messageTypeId = 1;
+    oneof msg {
+        Command Command = 2;
+        Configuration Config = 3;
+    }
+}
+

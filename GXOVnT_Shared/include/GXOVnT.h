@@ -6,7 +6,7 @@
 
 #include <settings/GXOVnT_Config.h>
 
-GXOVnT_Config GXOVnTConfig;
+GXOVnT::settings::GXOVnT_Config GXOVnTConfig;
 #endif
 
 

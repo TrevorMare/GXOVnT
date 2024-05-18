@@ -1,5 +1,5 @@
 #include "settings/GXOVnT_Settings.h"
-#include "messages/msg_gxovnt_config.pb.h"
+using namespace GXOVnT::settings;
 
 
 void GXOVnT_Settings::readSettingsFromJson(JsonDocument &document) {

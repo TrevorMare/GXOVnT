@@ -154,7 +154,7 @@ void GXOVnT_WebUpdate::getFileFromServer(const GVOVnT_SystemFirmware *firmwareVe
 
   WiFiClientSecure client;
   //client.setInsecure(); // Set client to allow insecure connections
-  client.setCACert(SSL_BALTIMORE);
+  client.setCACert(GXOVnT::security::SSL_BALTIMORE);
   
 
   if (client.connect(FIRMWARE_DOWNLOAD_HOST, FIRMWARE_DOWNLOAD_PORT)) { // Connect to the server
