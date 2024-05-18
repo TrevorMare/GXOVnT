@@ -92,11 +92,13 @@ void BleCommService::startAdvertising() {
 void BleCommService::onConnect(BLEServer* pServer) {
     m_serverConnectionId = pServer->getConnId();
     m_serverConnected = true;
+    ESP_LOGI(LOG_TAG, "Device connected with connection Id %d", m_serverConnectionId);
 }
 
 void BleCommService::onDisconnect(BLEServer* pServer) {
     m_serverConnected = false;
     m_serverConnectionId = -1;
+    ESP_LOGI(LOG_TAG, "Device disconnected");
 }
 
 void BleCommService::onWrite(BLECharacteristic* protoCharacteristic) {
