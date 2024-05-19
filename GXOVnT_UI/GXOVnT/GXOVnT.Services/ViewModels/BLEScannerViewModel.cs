@@ -1,17 +1,89 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
+using GXOVnT.Services.Common;
+using GXOVnT.Services.Interfaces;
 using Plugin.BLE;
 using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE.Abstractions.EventArgs;
 using Plugin.BLE.Abstractions.Extensions;
 
+
 namespace GXOVnT.Services.ViewModels;
 
-public class BLEScannerViewModel : BaseViewModel
+public class BLEScannerViewModel : NotifyChanged
 {
-    private readonly IBluetoothLE _bluetoothManager;
-    protected IAdapter Adapter;
+
+
+    #region Members
+
+    private readonly IBluetoothService _bluetoothService;
+    private readonly LogViewModel _logViewModel;
+    
+    private bool _viewModelIsValid;
+    private CancellationTokenSource? _scanGXOVnTCancellationToken;
+
+    #endregion
+
+    #region Properties
+
+    public bool ViewModelIsValid
+    {
+        get => _viewModelIsValid;
+        private set => SetField(ref _viewModelIsValid, value);
+    }
+
+    #endregion
+    
+    #region ctor
+
+    public BLEScannerViewModel(IBluetoothService bluetoothService,
+        LogViewModel logViewModel)
+    {
+        _bluetoothService = bluetoothService;
+        _logViewModel = logViewModel;
+    }
+
+    #endregion
+
+    #region Methods
+
+    public async Task InitializeViewModel()
+    {
+        ViewModelIsValid = await _bluetoothService.InitializeService();
+    }
+
+    public async Task StartScanGXOVnTDevices()
+    {
+
+        if (!_bluetoothService.IsBluetoothReady())
+        {
+            _logViewModel.LogError("Bluetooth service is not ready. Unable to scan for devices");
+            return;
+        }
+            
+        
+        
+        _scanGXOVnTCancellationToken = new CancellationTokenSource();
+
+    }
+    
+    public void StopScanGXOVnTDevices()
+    {
+        if (_scanGXOVnTCancellationToken != null)
+        {
+            _scanGXOVnTCancellationToken.Cancel();
+            _scanGXOVnTCancellationToken.Dispose();
+        }
+        
+        _scanGXOVnTCancellationToken = null;
+    }
+    
+    #endregion
+    
+    
+    
+    
 
     public ObservableCollection<BLEDeviceViewModel> BLEDevices { get; private init; } = [];
 
@@ -39,27 +111,6 @@ public class BLEScannerViewModel : BaseViewModel
     public string ScanState => IsScanning ? "Scanning" : "Waiting";
     public string ToggleScanningCmdLabelText => IsScanning ? "Cancel" : "Start Scan";
     #endregion Derived properties
-
-    public BLEScannerViewModel()
-    {
-        _bluetoothManager = CrossBluetoothLE.Current;
-        Adapter = _bluetoothManager?.Adapter;
-
-        if (_bluetoothManager is null)
-        {
-            ShowMessage("BluetoothManager is null");
-        }
-        else if (Adapter is null)
-        {
-            ShowMessage("Adapter is null");
-        }
-        else
-        {
-            ConfigureBLE();
-        }
-        
-        ToggleScanning = new Command(ToggleScanForDevices);
-    }
 
     private string GetStateText()
     {
@@ -97,25 +148,7 @@ public class BLEScannerViewModel : BaseViewModel
         Class1.AlertSvc.ShowAlert("BLE Scanner", message);
     }
 
-    private void DebugMessage(string message)
-    {
-        Debug.WriteLine(message);
-        Class1.Logger.AddMessage(message);
-    }
-
-    private void ConfigureBLE()
-    {
-        DebugMessage("Configuring BLE...");
-        _bluetoothManager.StateChanged += OnBluetoothStateChanged;
-
-        // Set up scanner
-        Adapter.ScanMode = ScanMode.LowLatency;
-        Adapter.ScanTimeout = 30000; // ms
-        Adapter.ScanTimeoutElapsed += Adapter_ScanTimeoutElapsed;
-        Adapter.DeviceAdvertised += OnDeviceAdvertised;
-        Adapter.DeviceDiscovered += OnDeviceDiscovered;
-        DebugMessage("Configuring BLE... DONE");
-    }
+    
     private void OnBluetoothStateChanged(object sender, BluetoothStateChangedArgs e)
     {
         DebugMessage("OnBluetoothStateChanged from " + e.OldState + " to " + e.NewState);
@@ -208,26 +241,6 @@ public class BLEScannerViewModel : BaseViewModel
         _scanCancellationTokenSource.Dispose();
         _scanCancellationTokenSource = null;
         IsScanning = false;
-    }
-
-    private async Task<bool> HasCorrectPermissions()
-    {
-        DebugMessage("Verifying Bluetooth permissions..");
-        var permissionResult = await Permissions.CheckStatusAsync<Permissions.Bluetooth>();
-        if (permissionResult != PermissionStatus.Granted)
-        {
-            permissionResult = await Permissions.RequestAsync<Permissions.Bluetooth>();
-        }
-        DebugMessage($"Result of requesting Bluetooth permissions: '{permissionResult}'");
-        if (permissionResult != PermissionStatus.Granted)
-        {
-            DebugMessage("Permissions not available, direct user to settings screen.");
-            ShowMessage("Permission denied. Not scanning.");
-            AppInfo.ShowSettingsUI();
-            return false;
-        }
-
-        return true;
     }
 
     private async Task UpdateConnectedDevices()
