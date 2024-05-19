@@ -83,7 +83,13 @@ void BleCommService::initBleService() {
 
 void BleCommService::startAdvertising() {
     m_bleAdvertising = BLEDevice::getAdvertising();
+
+    // Set the manufacturer data so that the scanning devices can filter 
+    BLEAdvertisementData advertismentData;
+    advertismentData.setManufacturerData(GXOVNT_BLE_MANUFACTURER);
+    m_bleAdvertising->setAdvertisementData(advertismentData);
     m_bleAdvertising->addServiceUUID(GXOVNT_BLE_SERVICE_UUID);
+
     m_bleAdvertising->setScanResponse(false);
     m_bleAdvertising->setMinPreferred(0x0);  // set value to 0x00 to not advertise this parameter
     BLEDevice::startAdvertising();

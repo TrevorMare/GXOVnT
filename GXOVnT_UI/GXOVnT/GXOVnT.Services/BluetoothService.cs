@@ -14,6 +14,8 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
     #region Events
 
+    private const string GXOVnT_ManufacturerValue = "GXOVnT";
+
     public delegate void OnDeviceFoundHandler(object sender, DeviceEventArgs e);
 
     public event OnDeviceFoundHandler? OnDeviceFound;
@@ -33,7 +35,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
     private BluetoothState _bluetoothState = BluetoothState.Unknown;
     private string _bluetoothStateText = "";
     private bool _isScanningDevices;
-    private CancellationTokenSource _scanCancellationTokenSource;
+    private CancellationTokenSource _scanCancellationTokenSource = default!;
     #endregion
 
     #region Properties
@@ -129,13 +131,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
         IsScanningDevices = true;
 
-        var scanFilterOptions = new ScanFilterOptions();
-        
-        scanFilterOptions.ServiceUuids = new []
-        {
-            new Guid("05c1fba8-cc8b-4534-8787-0e6a0775c3de") 
-        }; 
-        await _bluetoothAdapter.StartScanningForDevicesAsync(scanFilterOptions, _scanCancellationTokenSource.Token);
+        await _bluetoothAdapter.StartScanningForDevicesAsync(_scanCancellationTokenSource.Token);
 
         IsScanningDevices = false;
     }
@@ -196,7 +192,8 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         _bluetoothAdapter.DeviceDiscovered += BluetoothAdapterOnDeviceDiscovered;
         
         // Set up scanner
-        _bluetoothAdapter.ScanMode = ScanMode.LowLatency;
+        _bluetoothAdapter.ScanMode = ScanMode.Balanced;
+        
         _bluetoothAdapter.ScanTimeout = 30000; // ms
         
     }
@@ -207,15 +204,56 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
     private void BluetoothAdapterOnDeviceDiscovered(object? sender, DeviceEventArgs e)
     {
-        
-        
+        var allAdvertisementRecords = e.Device.AdvertisementRecords ?? new List<AdvertisementRecord>();
+        if (!allAdvertisementRecords.Any())
+            return;
+
+        var manufacturerData = allAdvertisementRecords.ToList()
+            .Find(r => r.Type == AdvertisementRecordType.ManufacturerSpecificData);
+
+        if (manufacturerData == null)
+            return;
+
+        var dataString = System.Text.Encoding.UTF8.GetString(manufacturerData.Data);
+
+        if (!dataString.Equals(GXOVnT_ManufacturerValue, StringComparison.CurrentCultureIgnoreCase))
+            return;
         
         OnDeviceFound?.Invoke(this, e);
     }
 
-    private void BluetoothAdapterOnDeviceAdvertised(object? sender, DeviceEventArgs e)
+    private async void BluetoothAdapterOnDeviceAdvertised(object? sender, DeviceEventArgs e)
     {
-        OnDeviceFound?.Invoke(this, e);
+        
+
+        // var services = await e.Device.GetServicesAsync();
+        //
+        // if (services.Count > 0)
+        // {
+        //     int breakPoint = 0;
+        // }
+        
+        // if (e.Device.Name.Equals("MySystemName_34b7da63b5"))
+        // {
+        //     var allAdvertisementRecords = e.Device.AdvertisementRecords;
+        //     if (allAdvertisementRecords != null)
+        //     {
+        //
+        //         foreach (var record in allAdvertisementRecords)
+        //         {
+        //             
+        //             Console.WriteLine(record.Type.ToString());
+        //             
+        //         }
+        //         
+        //         
+        //         int breakPoint = 0;
+        //         
+        //         
+        //     }
+        // }
+        
+        //OnDeviceFound?.Invoke(this, e);
     }
 
     private void BluetoothAdapterOnScanTimeoutElapsed(object? sender, EventArgs e)

@@ -104,6 +104,10 @@ public class BLEScannerViewModel : NotifyChanged
     #region Scan & Discover
     private async void AddOrUpdateDevice(IDevice device)
     {
+
+     
+        
+        
         var gxovntDevice = _scannedDevices.Find(d => d.DeviceName.Equals(device.Name));
         if (gxovntDevice == null)
         {
