@@ -41,7 +41,8 @@
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
+    <DeviceCapability Name="bluetooth" />
   </Capabilities>
-  <DeviceCapability Name="bluetooth" />
+  
 
 </Package>

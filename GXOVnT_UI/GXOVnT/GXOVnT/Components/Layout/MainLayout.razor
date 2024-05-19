@@ -14,6 +14,20 @@
             @Body
         </article>
         
-        <button @onclick="Test">Start scan</button>
+        <label>Is Scanning: @(BLEScannerViewModel.IsScanningDevices ? "Scanning" : "Stopped")</label>
+        
+        <button @onclick="Test">Start/stop scan</button>
+        
+        <ul>
+            
+            @foreach (var item in BLEScannerViewModel.ScannedDevices)
+            {
+                var key = $"item_{item.Id}";
+                
+                <li >@item.DeviceName</li>
+            }
+            
+        </ul>
+        
     </main>
 </div>

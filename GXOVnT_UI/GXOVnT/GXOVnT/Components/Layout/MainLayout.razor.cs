@@ -1,24 +1,49 @@
-﻿using GXOVnT.Services.ViewModels;
+﻿using System.ComponentModel;
+using GXOVnT.Services.ViewModels;
+using Microsoft.AspNetCore.Components;
 
 namespace GXOVnT.Components.Layout;
 
 public partial class MainLayout
 {
-    private BLEScannerViewModel _bleScannerViewModel;
+
+
+    [Inject] 
+    private IServiceProvider ServiceProvider { get; set; } = default!;
+    
+    [Inject]
+    private BLEScannerViewModel BLEScannerViewModel { get; set; } = default!;
+
+    public MainLayout()
+    {
+        
+    }
     
     protected override void OnInitialized()
     {
         base.OnInitialized();
         
-
+        BLEScannerViewModel.PropertyChanged -= BLEScannerViewModelOnPropertyChanged;
+        BLEScannerViewModel.PropertyChanged += BLEScannerViewModelOnPropertyChanged;
     }
 
-    private Task Test()
+    private void BLEScannerViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        _bleScannerViewModel = new BLEScannerViewModel();
-        _bleScannerViewModel.ToggleScanning.Execute(null);
+        InvokeAsync(StateHasChanged);
+    }
+
+
+    private async Task Test()
+    {
+        if (BLEScannerViewModel.IsScanningDevices)
+        {
+            await BLEScannerViewModel.StopScanGXOVnTDevicesAsync();    
+        }
+        else
+        {
+            await BLEScannerViewModel.InitializeViewModel();
         
-        return Task.CompletedTask;
-        
+            await BLEScannerViewModel.StartScanGXOVnTDevicesAsync();
+        }
     }
 }

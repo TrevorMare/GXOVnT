@@ -3,10 +3,8 @@ namespace GXOVnT;
 
 public partial class App : Application
 {
-
-    //https://github.com/dotnet-bluetooth-le/dotnet-bluetooth-le/tree/master/Source/BLE.Client
     
-    public App()
+    public App(IServiceProvider services)
     {
         InitializeComponent();
         MainPage = new MainPage();
