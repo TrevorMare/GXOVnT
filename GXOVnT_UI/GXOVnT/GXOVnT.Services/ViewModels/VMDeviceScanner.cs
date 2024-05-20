@@ -7,7 +7,7 @@ using Plugin.BLE.Abstractions.EventArgs;
 
 namespace GXOVnT.Services.ViewModels;
 
-public class BLEScannerViewModel : NotifyChanged
+public class VMDeviceScanner : NotifyChanged
 {
 
 
@@ -41,7 +41,7 @@ public class BLEScannerViewModel : NotifyChanged
     
     #region ctor
 
-    public BLEScannerViewModel(IBluetoothService bluetoothService,
+    public VMDeviceScanner(IBluetoothService bluetoothService,
         LogViewModel logViewModel)
     {
         _bluetoothService = bluetoothService;

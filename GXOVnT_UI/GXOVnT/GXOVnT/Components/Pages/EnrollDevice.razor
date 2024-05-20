@@ -24,11 +24,11 @@
                      @bind-Value="@SelectedDeviceType"></MudExSelect>
     </MudItem>
 
-
-    
-    <MudItem xs="12" Class="flex-column justify-content-end">
-        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Bluetooth" Label="Scan Devices" />
+    <MudItem xs="12" sm="12">
+        <DeviceScanner></DeviceScanner> 
     </MudItem>
+    
+
 
     <MudItem xs="12">
         <MudAlert Severity="Severity.Normal">Please review the documentation at <MudLink Href="https://github.com/TrevorMare/GXOVnT" Typo="Typo.body2" Color="Color.Inherit"><b>github.com</b></MudLink> if you have any issues enrolling a device.</MudAlert>

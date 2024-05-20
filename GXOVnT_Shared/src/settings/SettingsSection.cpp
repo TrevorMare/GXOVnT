@@ -27,11 +27,14 @@ void BaseSettingsSection::readSettingsFromJson(JsonDocument &document) {}
 // System Settings section class
 /////////////////////////////////////////////////////////////////
 SytemSettingsSection::SytemSettingsSection() {
-    #if GXOVNT_SYSTEM_TYPE == GXOVNT_SYSTEM_TYPE_CLIENT
-        m_SystemType = SYSTEM_TYPE_CLIENT;
+    #if GXOVNT_BUILD_FIRMWARE_TYPE == GXOVNT_SYSTEM_TYPE_UN_INITIALIZED
+        m_SystemType = SYSTEM_TYPE_UN_INITIALIZED;
     #endif                
-    #if GXOVNT_SYSTEM_TYPE == GXOVNT_SYSTEM_TYPE_PRIMARY   
-        m_SystemType = SYSTEM_TYPE_SERVER;
+    #if GXOVNT_BUILD_FIRMWARE_TYPE == GXOVNT_SYSTEM_TYPE_EXTENSION
+        m_SystemType = SYSTEM_TYPE_EXTENSION;
+    #endif                
+    #if GXOVNT_BUILD_FIRMWARE_TYPE == GXOVNT_SYSTEM_TYPE_PRIMARY   
+        m_SystemType = SYSTEM_TYPE_PRIMARY;
     #endif
     m_SystemId = DeviceMACAddress();
     m_FirmwareVersion = GXOVnT_FIRMWARE_VERSION;

@@ -12,7 +12,7 @@ public partial class MainLayout
     private IServiceProvider ServiceProvider { get; set; } = default!;
     
     [Inject]
-    private BLEScannerViewModel BLEScannerViewModel { get; set; } = default!;
+    private VMDeviceScanner VmDeviceScanner { get; set; } = default!;
 
     public MainLayout()
     {
@@ -23,11 +23,11 @@ public partial class MainLayout
     {
         base.OnInitialized();
         
-        BLEScannerViewModel.PropertyChanged -= BLEScannerViewModelOnPropertyChanged;
-        BLEScannerViewModel.PropertyChanged += BLEScannerViewModelOnPropertyChanged;
+        VmDeviceScanner.PropertyChanged -= VmDeviceScannerOnPropertyChanged;
+        VmDeviceScanner.PropertyChanged += VmDeviceScannerOnPropertyChanged;
     }
 
-    private void BLEScannerViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void VmDeviceScannerOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         InvokeAsync(StateHasChanged);
     }
@@ -41,15 +41,15 @@ public partial class MainLayout
 
     private async Task Test()
     {
-        if (BLEScannerViewModel.IsScanningDevices)
+        if (VmDeviceScanner.IsScanningDevices)
         {
-            await BLEScannerViewModel.StopScanGXOVnTDevicesAsync();    
+            await VmDeviceScanner.StopScanGXOVnTDevicesAsync();    
         }
         else
         {
-            await BLEScannerViewModel.InitializeViewModel();
+            await VmDeviceScanner.InitializeViewModel();
         
-            await BLEScannerViewModel.StartScanGXOVnTDevicesAsync();
+            await VmDeviceScanner.StartScanGXOVnTDevicesAsync();
         }
     }
 }

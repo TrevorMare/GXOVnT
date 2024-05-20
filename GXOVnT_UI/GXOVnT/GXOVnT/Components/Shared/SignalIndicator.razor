@@ -1,0 +1,23 @@
+﻿
+<MudIcon Icon="@DisplayIcon" Title="RSSI" Size="Size.Small" Color="Color.Secondary" /> 
+
+@code {
+    
+    [Parameter] public int SignalStrength { get; set; } = 0;
+
+    private string DisplayIcon => GetDisplayIcon();
+
+    private string GetDisplayIcon()
+    {
+        var absoluteSignalStrength = Math.Abs(SignalStrength);
+
+        return absoluteSignalStrength switch
+        {
+            // Closer to 0 means more strength
+            <= 33 => Icons.Material.Rounded.SignalCellularAlt,
+            <= 66 => Icons.Material.Rounded.SignalCellularAlt2Bar,
+            _ => Icons.Material.Rounded.SignalCellularAlt1Bar
+        };
+    }
+    
+}
