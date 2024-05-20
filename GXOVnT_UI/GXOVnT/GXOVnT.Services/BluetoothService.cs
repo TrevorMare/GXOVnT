@@ -14,7 +14,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
     #region Events
 
-    private const string GXOVnT_ManufacturerValue = "GXOVnT";
+    private const string GXOVnTManufacturerValue = "GXOVnT";
 
     public delegate void OnDeviceFoundHandler(object sender, DeviceEventArgs e);
 
@@ -216,7 +216,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
         var dataString = System.Text.Encoding.UTF8.GetString(manufacturerData.Data);
 
-        if (!dataString.Equals(GXOVnT_ManufacturerValue, StringComparison.CurrentCultureIgnoreCase))
+        if (!dataString.Equals(GXOVnTManufacturerValue, StringComparison.CurrentCultureIgnoreCase))
             return;
         
         OnDeviceFound?.Invoke(this, e);
