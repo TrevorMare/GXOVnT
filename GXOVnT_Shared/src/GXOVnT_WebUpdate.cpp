@@ -11,7 +11,7 @@ void GXOVnT_WebUpdate::checkForUpdatesAndInstall() {
 
   downloadSystemFirmwareVersions();
 
-  const GVOVnT_SystemFirmware *latestFirmware = getLatestFirmwareForSystem(GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE_CLIENT);
+  const GVOVnT_SystemFirmware *latestFirmware = getLatestFirmwareForSystem(GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE_INITIAL);
 
   if (latestFirmware == nullptr)
     return;

@@ -55,7 +55,7 @@ namespace GXOVnT {
 
                 std::string m_SystemName = "GXOVnTDevice";
                 std::string m_SystemId = "";
-                GXOVnT_SYSTEM_TYPE m_SystemType = SYSTEM_TYPE_CLIENT;
+                GXOVnT_SYSTEM_TYPE m_SystemType = SYSTEM_TYPE_UN_INITIALIZED;
                 std::string m_FirmwareVersion = "";
             public:
                 SytemSettingsSection();

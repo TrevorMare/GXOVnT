@@ -44,8 +44,9 @@ enum GVOVNT_SYSTEM_FIRMWARE_RELEASE_TYPE {
 
 // Target of release of the firmware
 enum GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE {
-    GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE_CLIENT = 1,
-    GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE_SERVER = 2
+    GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE_INITIAL = 0,
+    GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE_EXTENSION = 1,
+    GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE_PRIMARY = 2
 };
 
 /*
@@ -121,7 +122,7 @@ struct GVOVnT_SystemFirmware {
         enum GVOVNT_SYSTEM_FIRMWARE_RELEASE_TYPE FirmwareType = GVOVNT_SYSTEM_FIRMWARE_RELEASE_TYPE_RELEASE;
         
         // The target system firmware type
-        enum GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE SystemType = GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE_CLIENT;
+        enum GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE SystemType = GVOVNT_SYSTEM_FIRMWARE_SYSTEM_TYPE_INITIAL;
         
         // Constructor
         GVOVnT_SystemFirmware(std::string firmwareName, std::string downloadUrl, std::string versionNumber, uint8_t firmwareType, uint8_t systemType) {
