@@ -44,7 +44,6 @@
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4"/>
 
         <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128"/>
 
         <!-- Images -->
         <MauiImage Include="Resources\Images\*"/>
@@ -70,6 +69,13 @@
 
     <ItemGroup>
       <ProjectReference Include="..\GXOVnT.Services\GXOVnT.Services.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\Splash\splashscreen.svg" />
+      <MauiSplashScreen Include="Resources\Splash\splashscreen.svg" BaseSize="1024,1024" Color="#512BD4">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </MauiSplashScreen>
     </ItemGroup>
 
 </Project>
