@@ -32,6 +32,12 @@ public partial class MainLayout
         InvokeAsync(StateHasChanged);
     }
 
+    bool _drawerOpen = true;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
 
     private async Task Test()
     {

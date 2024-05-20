@@ -1,5 +1,7 @@
 ﻿using GXOVnT.Services;
 using Microsoft.Extensions.Logging;
+using MudBlazor.Extensions;
+using MudBlazor.Services;
 
 namespace GXOVnT;
 
@@ -26,6 +28,8 @@ public static class MauiProgram
         builder.Services.AddMauiBlazorWebView();
         builder.Services.RegisterServices();
         
+        // use this to add MudServices and the MudBlazor.Extensions
+        builder.Services.AddMudServicesWithExtensions(c => c.WithoutAutomaticCssLoading());
 
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();

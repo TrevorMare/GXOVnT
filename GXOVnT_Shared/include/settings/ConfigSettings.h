@@ -9,7 +9,7 @@
 /////////////////////////////////////////////////////////////////
 // Pre-Processor definitions depending on the system type
 /////////////////////////////////////////////////////////////////
-#if defined(GXOVNT_SYSTEM_TYPE) && (GXOVNT_SYSTEM_TYPE == GXOVNT_SYSTEM_TYPE_CLIENT || GXOVNT_SYSTEM_TYPE == GXOVNT_SYSTEM_TYPE_SERVER)
+#if defined(GXOVNT_SYSTEM_TYPE) && (GXOVNT_SYSTEM_TYPE == GXOVNT_SYSTEM_TYPE_CLIENT || GXOVNT_SYSTEM_TYPE == GXOVNT_SYSTEM_TYPE_PRIMARY)
 #define GXOVnT_Settings_HAS_WIFI_SETTINGS true
 #define GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS true
 #define GXOVnT_Settings_HAS_SYSTEM_SETTINGS true

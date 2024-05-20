@@ -30,7 +30,7 @@ SytemSettingsSection::SytemSettingsSection() {
     #if GXOVNT_SYSTEM_TYPE == GXOVNT_SYSTEM_TYPE_CLIENT
         m_SystemType = SYSTEM_TYPE_CLIENT;
     #endif                
-    #if GXOVNT_SYSTEM_TYPE == GXOVNT_SYSTEM_TYPE_SERVER   
+    #if GXOVNT_SYSTEM_TYPE == GXOVNT_SYSTEM_TYPE_PRIMARY   
         m_SystemType = SYSTEM_TYPE_SERVER;
     #endif
     m_SystemId = DeviceMACAddress();

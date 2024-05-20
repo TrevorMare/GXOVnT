@@ -1,0 +1,42 @@
+﻿@page "/EnrollDevice"
+@using GXOVnT.Services.Common
+@using GXOVnT.Services.Models
+@using MudBlazor.Extensions.Options
+
+<PageTitle>Enroll Device</PageTitle>
+
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudText Typo="Typo.h3" GutterBottom="true">Device Enrollment</MudText>
+    </MudItem>
+    
+    
+    <MudItem xs="12" sm="12">
+        <MudExSelect T="ListItem<GXOVnTDeviceType>" 
+                     Label="Device Type" 
+                     ItemCollection="DeviceTypes"
+                     SearchBox="false"
+                     PopoverAnimation="AnimationType.Pulse"
+                     AnchorOrigin="Origin.BottomCenter"
+                     Variant="Variant.Outlined"
+                     ToStringFunc="c => c?.Display"
+                     @bind-Value="@SelectedDeviceType"></MudExSelect>
+    </MudItem>
+
+
+    
+    <MudItem xs="12" Class="flex-column justify-content-end">
+        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Bluetooth" Label="Scan Devices" />
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudAlert Severity="Severity.Normal">Please review the documentation at <MudLink Href="https://github.com/TrevorMare/GXOVnT" Typo="Typo.body2" Color="Color.Inherit"><b>github.com</b></MudLink> if you have any issues enrolling a device.</MudAlert>
+    </MudItem>
+</MudGrid>
+
+
+
+
+
+

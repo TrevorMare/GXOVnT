@@ -1,33 +1,26 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu/>
-    </div>
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
+<MudLayout>
+    <MudAppBar Elevation="0">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank" />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/arbems/.NET-MAUI-Blazor-Hybrid-app-with-MudBlazor" Target="_blank" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">GXOVnT</MudText>
+        </MudDrawerHeader>
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="my-5 pt-5"> 
             @Body
-        </article>
-        
-        <label>Is Scanning: @(BLEScannerViewModel.IsScanningDevices ? "Scanning" : "Stopped")</label>
-        
-        <button @onclick="Test">Start/stop scan</button>
-        
-        <ul>
-            
-            @foreach (var item in BLEScannerViewModel.ScannedDevices)
-            {
-                var key = $"item_{item.Id}";
-                
-                <li >@item.DeviceName</li>
-            }
-            
-        </ul>
-        
-    </main>
-</div>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
