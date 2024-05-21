@@ -38,11 +38,15 @@ void setup() {
   
   
   delay(1500);
+
+  
+
   GXOVnTConfig.readConfiguration();
 
   Serial.printf("System name: %s \n", GXOVnTConfig.Settings.SystemSettings.SystemName().c_str());
   Serial.printf("Firmware version %s \n", GXOVnTConfig.Settings.SystemSettings.FirmwareVersion().c_str());
   Serial.printf("System Id: %s \n", GXOVnTConfig.Settings.SystemSettings.SystemId().c_str());
+  Serial.printf("System Type: %d \n", GXOVnTConfig.Settings.SystemSettings.SystemType());
   Serial.printf("WiFi name: %s", GXOVnTConfig.Settings.WiFiSettings.SSID().c_str());
   
  

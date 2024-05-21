@@ -28,28 +28,35 @@ void BaseSettingsSection::readSettingsFromJson(JsonDocument &document) {}
 /////////////////////////////////////////////////////////////////
 SytemSettingsSection::SytemSettingsSection() {
     #if GXOVNT_BUILD_FIRMWARE_TYPE == GXOVNT_SYSTEM_TYPE_UN_INITIALIZED
-        m_SystemType = SYSTEM_TYPE_UN_INITIALIZED;
+        m_systemType = SYSTEM_TYPE_UN_INITIALIZED;
     #endif                
     #if GXOVNT_BUILD_FIRMWARE_TYPE == GXOVNT_SYSTEM_TYPE_EXTENSION
-        m_SystemType = SYSTEM_TYPE_EXTENSION;
+        m_systemType = SYSTEM_TYPE_EXTENSION;
     #endif                
     #if GXOVNT_BUILD_FIRMWARE_TYPE == GXOVNT_SYSTEM_TYPE_PRIMARY   
-        m_SystemType = SYSTEM_TYPE_PRIMARY;
+        m_systemType = SYSTEM_TYPE_PRIMARY;
     #endif
-    m_SystemId = DeviceMACAddress();
-    m_FirmwareVersion = GXOVnT_FIRMWARE_VERSION;
+    m_systemId = DeviceMACAddress();
+    m_firmwareVersion = GXOVnT_FIRMWARE_VERSION;
 };
-std::string SytemSettingsSection::SystemName() { return m_SystemName; }
-std::string SytemSettingsSection::SystemId() { return m_SystemId; }
-std::string SytemSettingsSection::FirmwareVersion() { return m_FirmwareVersion; }
-GXOVnT_SYSTEM_TYPE SytemSettingsSection::SystemType() { return m_SystemType; }
+std::string SytemSettingsSection::SystemName() { return m_systemName; }
+std::string SytemSettingsSection::SystemId() { return m_systemId; }
+std::string SytemSettingsSection::FirmwareVersion() { return m_firmwareVersion; }
+bool SytemSettingsSection::SystemConfigured() { return m_systemConfigured; }
+GXOVnT_SYSTEM_TYPE SytemSettingsSection::SystemType() { return m_systemType; }
 void SytemSettingsSection::SystemName(std::string input) { 
-    if (m_SystemName.compare(input) == 0) return; 
-    m_SystemName = input;
+    if (m_systemName.compare(input) == 0) return; 
+    m_systemName = input;
     setSettingsChanged(true, "SystemSettings:SystemName");;
 }
+void SytemSettingsSection::SystemConfigured(bool input) { 
+    if (m_systemConfigured == input) return; 
+    m_systemConfigured = input;
+    setSettingsChanged(true, "SystemSettings:SystemConfigured");;
+}
 void SytemSettingsSection::writeSettingsToJson(JsonDocument &document) {
-    document[m_sectionName][m_valueName_SystemName] = m_SystemName;
+    document[m_sectionName][m_valueName_systemName] = m_systemName;
+    document[m_sectionName][m_valueName_systemConfigured] = m_systemConfigured;
     // Reset the settings changed
     setSettingsChanged(false);
 }
@@ -64,8 +71,9 @@ void SytemSettingsSection::readSettingsFromJson(JsonDocument &document) {
     if (document.containsKey(m_sectionName)) {
         // Get section json object
         sectionJsonObject = document[m_sectionName];
-        const char *settingsSystemName = sectionJsonObject[m_valueName_SystemName];
-        m_SystemName = CharToString(settingsSystemName);
+        const char *settingsSystemName = sectionJsonObject[m_valueName_systemName];
+        m_systemName = CharToString(settingsSystemName);
+        m_systemConfigured = sectionJsonObject[m_valueName_systemConfigured].as<bool>();
     }
 }
 

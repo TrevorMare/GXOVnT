@@ -15,7 +15,7 @@ public static class StartupExtensions
         services.AddSingleton<IAlertService, AlertService>();
         
         services.AddSingleton<ViewModels.LogViewModel>();
-        services.AddTransient<ViewModels.VMDeviceScanner>();
+        services.AddTransient<ViewModels.DeviceScannerViewModel>();
 
         return services;
     }

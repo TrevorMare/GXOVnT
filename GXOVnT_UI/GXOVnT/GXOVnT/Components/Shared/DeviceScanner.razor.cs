@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using GXOVnT.Services.Models;
 using GXOVnT.Services.ViewModels;
 using Microsoft.AspNetCore.Components;
 
@@ -10,11 +11,16 @@ public partial class DeviceScanner : ComponentBase
     #region Properties
 
     [Parameter] public bool Enabled { get; set; } = true;
-
-    [Inject] private VMDeviceScanner VMDeviceScanner { get; set; } = default!;
-
     
-    
+    [Parameter] public EventCallback<GXOVnTDevice> DeviceSelected { get; set; }
+
+    [Inject] private DeviceScannerViewModel DeviceScannerViewModel { get; set; } = default!;
+
+    private bool IsScanningDevices => DeviceScannerViewModel.IsScanningDevices;
+
+    private bool HasItems => DeviceScannerViewModel.ScannedDevices.Count > 0;
+
+    private string ScanButtonText => (IsScanningDevices ? "Stop" : "Start") + " scan devices";
     #endregion
 
     #region Methods
@@ -22,16 +28,38 @@ public partial class DeviceScanner : ComponentBase
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        VMDeviceScanner.PropertyChanged -= VMDeviceScannerOnPropertyChanged;
-        VMDeviceScanner.PropertyChanged += VMDeviceScannerOnPropertyChanged;
+        DeviceScannerViewModel.PropertyChanged -= DeviceScannerViewModelOnPropertyChanged;
+        DeviceScannerViewModel.PropertyChanged += DeviceScannerViewModelOnPropertyChanged;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (!firstRender) return;
+
+        DeviceScannerViewModel.InitializeViewModel();
+    }
 
     #endregion
 
     #region Event Callbacks
 
-    private void VMDeviceScannerOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private async Task OnDeviceListItemClick(GXOVnTDevice item)
+    {
+        await DeviceSelected.InvokeAsync(item);
+    }
+    
+    public async Task ToggleScanDevices()
+    {
+        if (DeviceScannerViewModel.IsScanningDevices)
+            await DeviceScannerViewModel.StopScanGXOVnTDevicesAsync();
+        else
+            await DeviceScannerViewModel.StartScanGXOVnTDevicesAsync();
+    }
+    
+
+    private void DeviceScannerViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         InvokeAsync(StateHasChanged);
     }

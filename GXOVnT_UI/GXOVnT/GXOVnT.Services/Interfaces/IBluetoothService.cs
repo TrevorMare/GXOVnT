@@ -6,8 +6,6 @@ namespace GXOVnT.Services.Interfaces;
 public interface IBluetoothService : INotifyPropertyChanged
 {
     event BluetoothService.OnDeviceFoundHandler? OnDeviceFound;
-        
-    Task<bool> InitializeService();
 
     BluetoothState BluetoothState { get; }
     
@@ -15,6 +13,8 @@ public interface IBluetoothService : INotifyPropertyChanged
     
     bool IsScanningDevices { get; }
 
-    Task StartScanForDevicesAsync(CancellationTokenSource? cancellationTokenSource = default);
+    Task<bool> StartScanForDevicesAsync(CancellationTokenSource? cancellationTokenSource = default);
+
+    Task StopScanForDevicesAsync();
 
 }

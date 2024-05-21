@@ -1,10 +1,41 @@
 ﻿<MudPaper Width="100%">
-    <MudList Clickable="true" Dense="true" >
-        <MudListItem>
-            <MudText>Device 123</MudText>
-            <SignalIndicator SignalStrength="-50"></SignalIndicator>
-        </MudListItem>
+
+    @if (IsScanningDevices)
+    {
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />    
+    }
+
+    <MudAlert Severity="Severity.Warning">
+        Ensure that the device is on before running the scan. Once a device has been detected, click on it to start the enrollment process.
+        Be careful and check the current state of the device before enrolling it again, this can wipe the current configuration.
+    </MudAlert>
+    
+    <MudList Clickable="@(HasItems && !IsScanningDevices)" Dense="true">
+        @if (!HasItems)
+        {
+            <MudListItem Dense="true">
+                <MudText>No devices found, please start the scan</MudText>
+            </MudListItem>
+        }
+        else
+        {
+            foreach (var item in DeviceScannerViewModel.ScannedDevices)
+            {
+                var device = item;
+                <MudListItem @key="@item.UUID" Dense="true" @onclick="() => OnDeviceListItemClick(device)">
+                    <div class="d-flex flex-grow-1 gap-4">
+                        <MudText Class="flex-auto">@item.DeviceName</MudText>
+                        <SignalIndicator SignalStrength="@item.Rssi"></SignalIndicator>
+                        <MudText Class="flex-auto">@(item.SystemConfigured ? "Configured" : "Not Configured")</MudText>
+                        <MudText Class="flex-auto">@(item.SystemType.Name)</MudText>
+                    </div>
+                </MudListItem>       
+            }
+        }
     </MudList>
 
-    <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Bluetooth" Label="Scan Devices" />
+    <div class="d-flex m-1" style="align-items: center; justify-content: center">
+        <MudFab Class="m-1" Size="Size.Small" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Bluetooth" Label="@ScanButtonText" @onclick="ToggleScanDevices"/>    
+    </div>
+    
 </MudPaper>

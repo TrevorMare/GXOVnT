@@ -40,10 +40,10 @@ public class LogViewModel : NotifyChanged
         MinLogLevel = logMessageType;
     }
     
-    public void Log(string message, LogMessageType logMessageType = LogMessageType.Information,
+    public void Log(string message, LogMessageType? logMessageType = default,
         DateTime? timestamp = default)
     {
-        var logMessage = new LogMessage(message, timestamp, logMessageType);
+        var logMessage = new LogMessage(message, timestamp, logMessageType ?? LogMessageType.Information);
         
         System.Diagnostics.Debug.WriteLine(logMessage.ToString());
         
@@ -59,7 +59,7 @@ public class LogViewModel : NotifyChanged
     private IReadOnlyList<LogMessage> GetFilteredMessages()
     {
         // Return the last 50 messages of the logs 
-        return _logMessages.Where(msg => (int)_minLogLevel >= (int)msg.LogMessageType)
+        return _logMessages.Where(msg => _minLogLevel.Id >= msg.LogMessageType.Id)
             .OrderBy(msg => msg.TimeStamp)
             .Skip(_logMessages.Count - 50)
             .ToList()

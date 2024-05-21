@@ -86,8 +86,21 @@ void BleCommService::startAdvertising() {
 
     // Set the manufacturer data so that the scanning devices can filter 
     BLEAdvertisementData advertismentData;
-    advertismentData.setManufacturerData(GXOVNT_BLE_MANUFACTURER);
+  
+    int systemType = static_cast<int>(GXOVnTConfig.Settings.SystemSettings.SystemType());
+    int systemConfigured = GXOVnTConfig.Settings.SystemSettings.SystemConfigured() ? 1 : 0;
+
+    // Now build the manufacturer data for the scanning devices
+    // It's in the format GXOVnT|X|Y where X and Y are 1 or 0. X represents the system type 
+    // and Y represents if the system has been configured
+    std::string manufacturerData = CharToString(GXOVNT_BLE_MANUFACTURER) + CharToString(GXOVNT_BLE_MANUFACTURER_DELIMITER) 
+        + std::to_string(systemType) + CharToString(GXOVNT_BLE_MANUFACTURER_DELIMITER) 
+        + std::to_string(systemConfigured) + CharToString(GXOVNT_BLE_MANUFACTURER_DELIMITER);
+
+    advertismentData.setManufacturerData(manufacturerData);
+  
     m_bleAdvertising->setAdvertisementData(advertismentData);
+    
     m_bleAdvertising->addServiceUUID(GXOVNT_BLE_SERVICE_UUID);
 
     m_bleAdvertising->setScanResponse(false);

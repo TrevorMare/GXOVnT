@@ -48,15 +48,17 @@ namespace GXOVnT {
         class SytemSettingsSection : public BaseSettingsSection {
             private:
                 const char *m_sectionName = "SystemSettings";
-                const char *m_valueName_SystemName = "SystemName";
-                const char *m_valueName_SystemId = "SystemId";
-                const char *m_valueName_SystemType = "SystemType";
-                const char *m_valueName_FirmwareVersion = "FirmwareVersion";
+                const char *m_valueName_systemName = "SystemName";
+                const char *m_valueName_systemId = "SystemId";
+                const char *m_valueName_systemType = "SystemType";
+                const char *m_valueName_firmwareVersion = "FirmwareVersion";
+                const char *m_valueName_systemConfigured = "SystemConfigured";
 
-                std::string m_SystemName = "GXOVnTDevice";
-                std::string m_SystemId = "";
-                GXOVnT_SYSTEM_TYPE m_SystemType = SYSTEM_TYPE_UN_INITIALIZED;
-                std::string m_FirmwareVersion = "";
+                std::string m_systemName = "GXOVnTDevice";
+                std::string m_systemId = "";
+                GXOVnT_SYSTEM_TYPE m_systemType = SYSTEM_TYPE_UN_INITIALIZED;
+                std::string m_firmwareVersion = "";
+                bool m_systemConfigured = false;
             public:
                 SytemSettingsSection();
                 // Method to write the section settings to a json document
@@ -67,8 +69,10 @@ namespace GXOVnT {
                 std::string SystemName();
                 std::string SystemId();
                 std::string FirmwareVersion();
+                bool SystemConfigured();
                 GXOVnT_SYSTEM_TYPE SystemType();
                 void SystemName(std::string input);
+                void SystemConfigured(bool input);
         };
 
         /////////////////////////////////////////////////////////////////

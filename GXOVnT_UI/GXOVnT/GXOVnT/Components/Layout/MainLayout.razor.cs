@@ -11,9 +11,7 @@ public partial class MainLayout
     [Inject] 
     private IServiceProvider ServiceProvider { get; set; } = default!;
     
-    [Inject]
-    private VMDeviceScanner VmDeviceScanner { get; set; } = default!;
-
+    
     public MainLayout()
     {
         
@@ -23,11 +21,9 @@ public partial class MainLayout
     {
         base.OnInitialized();
         
-        VmDeviceScanner.PropertyChanged -= VmDeviceScannerOnPropertyChanged;
-        VmDeviceScanner.PropertyChanged += VmDeviceScannerOnPropertyChanged;
     }
 
-    private void VmDeviceScannerOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void DeviceScannerViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         InvokeAsync(StateHasChanged);
     }
@@ -38,18 +34,5 @@ public partial class MainLayout
     {
         _drawerOpen = !_drawerOpen;
     }
-
-    private async Task Test()
-    {
-        if (VmDeviceScanner.IsScanningDevices)
-        {
-            await VmDeviceScanner.StopScanGXOVnTDevicesAsync();    
-        }
-        else
-        {
-            await VmDeviceScanner.InitializeViewModel();
-        
-            await VmDeviceScanner.StartScanGXOVnTDevicesAsync();
-        }
-    }
+  
 }

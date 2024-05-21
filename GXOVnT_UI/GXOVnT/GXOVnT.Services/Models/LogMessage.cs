@@ -19,11 +19,11 @@ public class LogMessage
 
     public LogMessage() { }
     
-    public LogMessage(string message, DateTime? timeStamp, LogMessageType logMessageType = LogMessageType.Information)
+    public LogMessage(string message, DateTime? timeStamp, LogMessageType? logMessageType = default)
     {
         Message = message;
         TimeStamp = timeStamp ?? DateTime.Now;
-        LogMessageType = logMessageType;
+        LogMessageType = logMessageType ?? LogMessageType.Information;
     }
 
     #endregion

@@ -25,57 +25,79 @@ public class RequestPermissionService : IRequestPermissionService
 
     #region Methods
 
-    public async Task<bool> CheckBLEPermissionRequirement()
+    public async Task<bool> ApplicationHasBluetoothPermission() => await ApplicationHasPermission<Permissions.Bluetooth>();
+    
+    public async Task<bool> ApplicationHasPermission<TPermission>() where TPermission : Permissions.BasePermission, new()
     {
+        _logViewModel.LogDebug($"RequestPermissionService: Checking if access granted on type {typeof(TPermission)} ");
+        var currentStatus = await Permissions.CheckStatusAsync<TPermission>();
+        
+        if (currentStatus == PermissionStatus.Granted)
+        {
+            _logViewModel.LogDebug($"RequestPermissionService.ApplicationHasPermission: Permission {typeof(TPermission)} granted");
+            return true;
+        }
+
+        _logViewModel.LogDebug($"RequestPermissionService.ApplicationHasPermission: Permission {typeof(TPermission)} not granted");
+        
+        return false;
+    }
+
+    public async Task<bool> RequestBluetoothPermission() => await RequestApplicationPermission<Permissions.Bluetooth>();
+    
+    public async Task<bool> RequestApplicationPermission<TPermission>()
+        where TPermission : Permissions.BasePermission, new()
+    {
+
         try
         {
-            _logViewModel.LogDebug("Checking permissions for Bluetooth");
-            
-            var currentStatus = await Permissions.CheckStatusAsync<Permissions.Bluetooth>();
-            if (currentStatus == PermissionStatus.Granted)
+            if (await ApplicationHasPermission<TPermission>())
             {
-                _logViewModel.LogDebug("BLE permission granted");
+                _logViewModel.LogDebug($"RequestPermissionService.RequestApplicationPermission: Permission {typeof(TPermission)} already granted");
                 return true;
             }
-
-            if (Permissions.ShouldShowRationale<Permissions.Bluetooth>())
+            
+        
+            if (Permissions.ShouldShowRationale<TPermission>())
             {
-                _logViewModel.LogInformation("Querying user to continue with permissions");
+                _logViewModel.LogDebug($"RequestPermissionService.RequestApplicationPermission: Showing rationale requesting permission type {typeof(TPermission)}");
                 
-                var confirmResult = await _alertService.ShowConfirmationAsync("BLE Requirements",
-                    "The application requires BLE permissions to connect to the devices. You will now be prompted to accept.", "OK",
+                var confirmResult = await _alertService.ShowConfirmationAsync("Permission requirements",
+                    "The application requires this permission to connect to the devices. You will now be prompted to accept.", "OK",
                     "Cancel");
 
                 if (!confirmResult)
                 {
-                    _logViewModel.LogWarning("User did not want to continue with permissions");
+                    _logViewModel.LogDebug($"RequestPermissionService.RequestApplicationPermission: User did not accept the permission");
                     return false;
                 }
             }
-
-            _logViewModel.LogInformation("Requesting BLE permissions");
+            
+            
+            _logViewModel.LogDebug($"RequestPermissionService.RequestApplicationPermission: Starting the request permission task");
             var requestStatus = await Permissions.RequestAsync<Permissions.Bluetooth>();
             
             var result = (requestStatus == PermissionStatus.Granted);
             
             if (result)
-                _logViewModel.LogInformation("User granted BLE Permissions");
+                _logViewModel.LogDebug($"RequestPermissionService.RequestApplicationPermission: User granted the permissions");
             else
             {
-                _logViewModel.LogWarning("User did not grant BLE Permissions");
+                _logViewModel.LogDebug($"RequestPermissionService.RequestApplicationPermission: User did not grant the permissions");
                 AppInfo.ShowSettingsUI();
             }
 
             return result;
+            
         }
         catch (Exception ex)
         {
-            _logViewModel.LogError($"An error occured checking permissions. {ex.Message}");
+            _logViewModel.LogError($"RequestPermissionService.RequestApplicationPermission: An error occured checking permissions. {ex.Message}");
             return false;
         }
     }
+    
 
     #endregion
-    
   
 }

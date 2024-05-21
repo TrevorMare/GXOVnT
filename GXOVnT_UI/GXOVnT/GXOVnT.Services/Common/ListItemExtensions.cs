@@ -32,7 +32,6 @@ public static class ListItemExtensions
         }
 
         return result.OrderBy(i => i.Display).ToList();
-
     }
 
     #endregion

@@ -12,11 +12,16 @@ namespace GXOVnT.Services;
 public class BluetoothService : NotifyChanged, IBluetoothService
 {
 
+    public record GXOVnTDeviceFoundArgs(
+        DeviceEventArgs DeviceArgs,
+        bool SystemConfigured,
+        GXOVnTSystemType SystemType);
+    
     #region Events
 
     private const string GXOVnTManufacturerValue = "GXOVnT";
 
-    public delegate void OnDeviceFoundHandler(object sender, DeviceEventArgs e);
+    public delegate void OnDeviceFoundHandler(object sender, GXOVnTDeviceFoundArgs e);
 
     public event OnDeviceFoundHandler? OnDeviceFound;
 
@@ -29,9 +34,12 @@ public class BluetoothService : NotifyChanged, IBluetoothService
     private readonly LogViewModel _logViewModel;
     private IBluetoothLE? _bluetoothManager;
     private IAdapter? _bluetoothAdapter;
-    
-    private bool _isInitialized;
+
+    private bool _applicationHasBluetoothPermissions;
     private bool _bluetoothIsReady;
+    
+    
+    
     private BluetoothState _bluetoothState = BluetoothState.Unknown;
     private string _bluetoothStateText = "";
     private bool _isScanningDevices;
@@ -39,25 +47,45 @@ public class BluetoothService : NotifyChanged, IBluetoothService
     #endregion
 
     #region Properties
-
-    public string BluetoothStateText
+    /// <summary>
+    /// Gets a value indicating if the application has Bluetooth permissions 
+    /// </summary>
+    public bool ApplicationHasBluetoothPermissions
     {
-        get => _bluetoothStateText;
-        private set => SetField(ref _bluetoothStateText, value);
+        get => _applicationHasBluetoothPermissions;
+        private set => SetField(ref _applicationHasBluetoothPermissions, value);
     }
     
-    public BluetoothState BluetoothState
-    {
-        get => _bluetoothState;
-        private set => SetField(ref _bluetoothState, value);
-    }
-
+    /// <summary>
+    /// Gets a value indicating that the Bluetooth adapter is on and working
+    /// </summary>
     public bool BluetoothIsReady
     {
         get => _bluetoothIsReady;
         private set => SetField(ref _bluetoothIsReady, value);
     }
 
+    /// <summary>
+    /// Gets the Bluetooth state text
+    /// </summary>
+    public string BluetoothStateText
+    {
+        get => _bluetoothStateText;
+        private set => SetField(ref _bluetoothStateText, value);
+    }
+    
+    /// <summary>
+    /// Gets the Bluetooth state
+    /// </summary>
+    public BluetoothState BluetoothState
+    {
+        get => _bluetoothState;
+        private set => SetField(ref _bluetoothState, value);
+    }
+
+    /// <summary>
+    /// Gets a value indicating if the service is actively scanning for devices
+    /// </summary>
     public bool IsScanningDevices
     {
         get => _isScanningDevices;
@@ -79,61 +107,33 @@ public class BluetoothService : NotifyChanged, IBluetoothService
     #endregion
 
     #region Methods
-
-    public async Task<bool> InitializeService()
+    public async Task<bool> StartScanForDevicesAsync(CancellationTokenSource? cancellationTokenSource = default)
     {
-        if (_isInitialized)
+        try
+        {
+            IsScanningDevices = true;
+
+            if (!await InitializeBluetooth())
+                return false;
+            
+            _scanCancellationTokenSource = cancellationTokenSource ?? new CancellationTokenSource();
+            
+            await _bluetoothAdapter.StartScanningForDevicesAsync(_scanCancellationTokenSource.Token);
+
+            IsScanningDevices = false;
+
             return true;
 
-        BluetoothIsReady = false;
-        
-        var hasPermissions = await _requestPermissionService.CheckBLEPermissionRequirement();
-
-        // Cannot continue if we don't have permissions
-        if (!hasPermissions)
-            return false;
-        
-        _bluetoothManager = CrossBluetoothLE.Current;
-            
-
-        if (_bluetoothManager == null)
+        }
+        catch (Exception ex)
         {
-            _logViewModel.LogWarning("Could not get an instance of the bluetooth manager");
+            _logViewModel.LogError($"StartScanForDevicesAsync: An error occured scanning for devices. {ex.Message}");
             return false;
         }
-        
-        _bluetoothAdapter = _bluetoothManager.Adapter;
-
-        if (_bluetoothAdapter == null)
+        finally
         {
-            _logViewModel.LogWarning("Could not get an instance of the bluetooth adapter");
-            return false;
+            IsScanningDevices = false;    
         }
-
-        AttachBluetoothEvents();
-
-        _isInitialized = true;
-        BluetoothIsReady = true;
-
-        return true;
-    }
-
-    public async Task StartScanForDevicesAsync(CancellationTokenSource? cancellationTokenSource = default)
-    {
-        if (!BluetoothIsReady)
-        {
-            await _alertService.ShowAlertAsync("Bluetooth", "Bluetooth is not ON.\nPlease turn on Bluetooth and try again.");
-            IsScanningDevices = false;
-            return;
-        }
-
-        _scanCancellationTokenSource = cancellationTokenSource ?? new CancellationTokenSource();
-
-        IsScanningDevices = true;
-
-        await _bluetoothAdapter.StartScanningForDevicesAsync(_scanCancellationTokenSource.Token);
-
-        IsScanningDevices = false;
     }
 
     public async Task StopScanForDevicesAsync()
@@ -145,6 +145,54 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
     #region Private Methods
 
+    private async Task<bool> InitializeBluetooth()
+    {
+        try
+        {
+            // First we need to detach the existing event handlers
+            DetachBluetoothEvents();
+            
+            // Next, check if we still have the correct permissions
+            BluetoothIsReady = false;
+            BluetoothState = BluetoothState.Unknown;
+            ApplicationHasBluetoothPermissions = await _requestPermissionService.RequestBluetoothPermission();
+
+            if (!ApplicationHasBluetoothPermissions)
+                return false;
+            
+            // Get the references to the current manager and adapter
+            _bluetoothManager = CrossBluetoothLE.Current;
+            _bluetoothAdapter = _bluetoothManager?.Adapter;
+            
+            if (_bluetoothManager == null || _bluetoothAdapter == null)
+            {
+                _logViewModel.LogWarning("InitializeBluetooth: Could not get a reference to the Bluetooth adapter");
+                return false;
+            }
+            
+            // Set up scanner
+            _bluetoothAdapter.ScanMode = ScanMode.Balanced;
+            _bluetoothAdapter.ScanTimeout = 30000; // ms
+            
+            // Re-Attach the events if we have the adapter and manager objects
+            AttachBluetoothEvents();
+            
+            BluetoothState = _bluetoothManager.State;
+            BluetoothIsReady = (BluetoothState == BluetoothState.On);
+
+            if (!BluetoothIsReady)
+                await _alertService.ShowAlertAsync("Bluetooth", "Please check that the bluetooth is on before trying again");
+        }
+        catch (Exception ex)
+        {
+            _logViewModel.LogError($"InitializeBluetooth: An error occured initializing the Bluetooth adapter. {ex.Message}");
+            BluetoothIsReady = false;
+            return false;
+        }
+
+        return BluetoothIsReady;
+    }
+    
     private void SetBluetoothStateText()
     {
         var result = "Unknown BLE state.";
@@ -174,6 +222,19 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         }
         BluetoothStateText = result;
     }
+
+    private void DetachBluetoothEvents()
+    {
+        if (_bluetoothManager != null)
+            _bluetoothManager.StateChanged -= BluetoothManagerOnStateChanged;
+
+        if (_bluetoothAdapter == null) 
+            return;
+        
+        _bluetoothAdapter.ScanTimeoutElapsed -= BluetoothAdapterOnScanTimeoutElapsed;
+        _bluetoothAdapter.DeviceAdvertised -= BluetoothAdapterOnDeviceAdvertised;
+        _bluetoothAdapter.DeviceDiscovered -= BluetoothAdapterOnDeviceDiscovered;
+    }
     
     private void AttachBluetoothEvents()
     {
@@ -181,28 +242,13 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         if (_bluetoothManager == null || _bluetoothAdapter == null)
             return;
         
-        _bluetoothManager.StateChanged -= BluetoothManagerOnStateChanged;
         _bluetoothManager.StateChanged += BluetoothManagerOnStateChanged;
-
-        _bluetoothAdapter.ScanTimeoutElapsed -= BluetoothAdapterOnScanTimeoutElapsed;
         _bluetoothAdapter.ScanTimeoutElapsed += BluetoothAdapterOnScanTimeoutElapsed;
-        _bluetoothAdapter.DeviceAdvertised -= BluetoothAdapterOnDeviceAdvertised;
         _bluetoothAdapter.DeviceAdvertised += BluetoothAdapterOnDeviceAdvertised;
-        _bluetoothAdapter.DeviceDiscovered -= BluetoothAdapterOnDeviceDiscovered;
         _bluetoothAdapter.DeviceDiscovered += BluetoothAdapterOnDeviceDiscovered;
-        
-        // Set up scanner
-        _bluetoothAdapter.ScanMode = ScanMode.Balanced;
-        
-        _bluetoothAdapter.ScanTimeout = 30000; // ms
-        
     }
 
-    #endregion
-
-    #region Event Callbacks
-
-    private void BluetoothAdapterOnDeviceDiscovered(object? sender, DeviceEventArgs e)
+    private void NotifyDeviceFoundIfMatch(DeviceEventArgs e)
     {
         var allAdvertisementRecords = e.Device.AdvertisementRecords ?? new List<AdvertisementRecord>();
         if (!allAdvertisementRecords.Any())
@@ -214,58 +260,48 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         if (manufacturerData == null)
             return;
 
-        var dataString = System.Text.Encoding.UTF8.GetString(manufacturerData.Data);
+        var manufacturerDataValue = System.Text.Encoding.UTF8.GetString(manufacturerData.Data);
 
-        if (!dataString.Equals(GXOVnTManufacturerValue, StringComparison.CurrentCultureIgnoreCase))
+        if (!manufacturerDataValue.StartsWith(GXOVnTManufacturerValue, StringComparison.CurrentCultureIgnoreCase))
             return;
+
+        // It's in the format GXOVnT|X|Y where X and Y are 1 or 0. X represents the system type 
+        // and Y represents if the system has been configured
+        var manufacturerParts = manufacturerDataValue.Split("|");
+        var systemConfigured = false;
+        var systemType = GXOVnTSystemType.UnInitialized;
+
+        if (manufacturerParts.Length >= 2)
+            systemType = Enumeration.FromValue<GXOVnTSystemType>(int.Parse(manufacturerParts[1])) ?? GXOVnTSystemType.UnInitialized;
+        if (manufacturerParts.Length >= 3)
+            systemConfigured = manufacturerParts[2] == "1";
         
-        OnDeviceFound?.Invoke(this, e);
+        OnDeviceFound?.Invoke(this, new GXOVnTDeviceFoundArgs(e, systemConfigured, systemType));        
+    }
+    
+    #endregion
+
+    #region Event Callbacks
+
+    private void BluetoothAdapterOnDeviceDiscovered(object? sender, DeviceEventArgs e)
+    {
+        NotifyDeviceFoundIfMatch(e);
     }
 
     private async void BluetoothAdapterOnDeviceAdvertised(object? sender, DeviceEventArgs e)
     {
-        
-
-        // var services = await e.Device.GetServicesAsync();
-        //
-        // if (services.Count > 0)
-        // {
-        //     int breakPoint = 0;
-        // }
-        
-        // if (e.Device.Name.Equals("MySystemName_34b7da63b5"))
-        // {
-        //     var allAdvertisementRecords = e.Device.AdvertisementRecords;
-        //     if (allAdvertisementRecords != null)
-        //     {
-        //
-        //         foreach (var record in allAdvertisementRecords)
-        //         {
-        //             
-        //             Console.WriteLine(record.Type.ToString());
-        //             
-        //         }
-        //         
-        //         
-        //         int breakPoint = 0;
-        //         
-        //         
-        //     }
-        // }
-        
-        //OnDeviceFound?.Invoke(this, e);
+        // Method intentionally left empty.
     }
 
     private void BluetoothAdapterOnScanTimeoutElapsed(object? sender, EventArgs e)
     {
-        // Not sure what this is for now
+        // Method intentionally left empty.
     }
 
     private void BluetoothManagerOnStateChanged(object? sender, BluetoothStateChangedArgs e)
     {
-        _logViewModel.LogInformation($"Current Bluetooth state changed to {e.NewState.ToString()}");
+        _logViewModel.LogInformation($"BluetoothManagerOnStateChanged: Current Bluetooth state changed to {e.NewState.ToString()}");
         BluetoothState = e.NewState;
-        BluetoothIsReady = (_bluetoothState == BluetoothState.On);
         SetBluetoothStateText();
     }
 

@@ -29,11 +29,6 @@
 
 #define GXOVNT_BUILD_FIRMWARE_TYPE 0
 
-#define GXOVNT_BLE_SERVICE_UUID "05c1fba8-cc8b-4534-8787-0e6a0775c3de"
-#define GXOVNT_BLE_PROTO_CHARACTERISTIC_UUID "4687b690-cd36-4a7c-9134-49ffe62d9e4f"
-#define GXOVNT_BLE_MANUFACTURER "GXOVnT"
-#define GXOVNT_BLE_MANUFACTURER_DELIMITER "|"
-
 
 namespace GXOVnT {
   namespace shared {
@@ -41,6 +36,10 @@ namespace GXOVnT {
     // System firmware version
     /////////////////////////////////////////////////////////////////
     static const char *GXOVnT_FIRMWARE_VERSION = "v1.0.2";
+    static const char *GXOVNT_BLE_SERVICE_UUID = "05c1fba8-cc8b-4534-8787-0e6a0775c3de";
+    static const char *GXOVNT_BLE_PROTO_CHARACTERISTIC_UUID = "4687b690-cd36-4a7c-9134-49ffe62d9e4f";
+    static const char *GXOVNT_BLE_MANUFACTURER = "GXOVnT";
+    static const char *GXOVNT_BLE_MANUFACTURER_DELIMITER = "|";
 
     // Common enums
     /////////////////////////////////////////////////////////////////

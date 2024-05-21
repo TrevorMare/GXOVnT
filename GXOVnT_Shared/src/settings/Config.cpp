@@ -10,17 +10,6 @@ Config::~Config() {
     closeSPIFFS();
 }
 
-void Config::deleteConfigurationFile() {
-    // Open the file system object
-    if (!openSPIFFS()) 
-        return;
-    bool fileExists = SPIFFS.exists(config_file_name);
-    if (fileExists) {
-        SPIFFS.remove(config_file_name);
-    }
-    closeSPIFFS();
-}
-
 bool Config::configurationFileExists() {
     // Open the file system object
     if (!openSPIFFS()) 
@@ -31,10 +20,10 @@ bool Config::configurationFileExists() {
     return result;
 }
 
-
 bool Config::readConfiguration() {
     // Try open the file system object
     if (!openSPIFFS()) return false;
+
     bool result = false;
    
     ESP_LOGI(LOG_TAG, "Reading configuration file");
@@ -90,6 +79,17 @@ void Config::saveConfiguration() {
 /////////////////////////////////////////////////////////////////
 // Private Methods
 /////////////////////////////////////////////////////////////////
+void Config::deleteConfigurationFile() {
+    // Open the file system object
+    if (!openSPIFFS()) 
+        return;
+    bool fileExists = SPIFFS.exists(config_file_name);
+    if (fileExists) {
+        SPIFFS.remove(config_file_name);
+    }
+    closeSPIFFS();
+}
+
 bool Config::openSPIFFS() {
     if (m_SPIFFS_open) return true;
     if(!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)){
