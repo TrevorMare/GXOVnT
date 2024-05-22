@@ -13,9 +13,16 @@
 
 /* Enum definitions */
 typedef enum _gxovnt_messaging_Container_MessageType_Id {
-    gxovnt_messaging_Container_MessageType_Id_COMMAND = 0,
-    gxovnt_messaging_Container_MessageType_Id_CONFIG = 1,
-    gxovnt_messaging_Container_MessageType_Id_Unknown = 99
+    gxovnt_messaging_Container_MessageType_Id_ClearConfig = 0,
+    gxovnt_messaging_Container_MessageType_Id_SaveConfig = 1,
+    gxovnt_messaging_Container_MessageType_Id_SetSystemName = 2,
+    gxovnt_messaging_Container_MessageType_Id_GetSystemName = 3,
+    gxovnt_messaging_Container_MessageType_Id_SetSystemType = 4,
+    gxovnt_messaging_Container_MessageType_Id_GetSystemType = 5,
+    gxovnt_messaging_Container_MessageType_Id_SetWiFiSSID = 6,
+    gxovnt_messaging_Container_MessageType_Id_GetWiFiSSID = 7,
+    gxovnt_messaging_Container_MessageType_Id_SetWiFiPassword = 8,
+    gxovnt_messaging_Container_MessageType_Id_GetWiFiPassword = 9
 } gxovnt_messaging_Container_MessageType_Id;
 
 /* Struct definitions */
@@ -23,8 +30,8 @@ typedef struct _gxovnt_messaging_Container {
     gxovnt_messaging_Container_MessageType_Id messageTypeId;
     pb_size_t which_msg;
     union {
-        gxovnt_messaging_Command Command;
-        gxovnt_messaging_Configuration Config;
+        pb_callback_t TextValue;
+        int32_t IntValue;
     } msg;
 } gxovnt_messaging_Container;
 
@@ -34,31 +41,29 @@ extern "C" {
 #endif
 
 /* Helper constants for enums */
-#define _gxovnt_messaging_Container_MessageType_Id_MIN gxovnt_messaging_Container_MessageType_Id_COMMAND
-#define _gxovnt_messaging_Container_MessageType_Id_MAX gxovnt_messaging_Container_MessageType_Id_Unknown
-#define _gxovnt_messaging_Container_MessageType_Id_ARRAYSIZE ((gxovnt_messaging_Container_MessageType_Id)(gxovnt_messaging_Container_MessageType_Id_Unknown+1))
+#define _gxovnt_messaging_Container_MessageType_Id_MIN gxovnt_messaging_Container_MessageType_Id_ClearConfig
+#define _gxovnt_messaging_Container_MessageType_Id_MAX gxovnt_messaging_Container_MessageType_Id_GetWiFiPassword
+#define _gxovnt_messaging_Container_MessageType_Id_ARRAYSIZE ((gxovnt_messaging_Container_MessageType_Id)(gxovnt_messaging_Container_MessageType_Id_GetWiFiPassword+1))
 
 #define gxovnt_messaging_Container_messageTypeId_ENUMTYPE gxovnt_messaging_Container_MessageType_Id
 
 
 /* Initializer values for message structs */
-#define gxovnt_messaging_Container_init_default  {_gxovnt_messaging_Container_MessageType_Id_MIN, 0, {gxovnt_messaging_Command_init_default}}
-#define gxovnt_messaging_Container_init_zero     {_gxovnt_messaging_Container_MessageType_Id_MIN, 0, {gxovnt_messaging_Command_init_zero}}
+#define gxovnt_messaging_Container_init_default  {_gxovnt_messaging_Container_MessageType_Id_MIN, 0, {{{NULL}, NULL}}}
+#define gxovnt_messaging_Container_init_zero     {_gxovnt_messaging_Container_MessageType_Id_MIN, 0, {{{NULL}, NULL}}}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define gxovnt_messaging_Container_messageTypeId_tag 1
-#define gxovnt_messaging_Container_Command_tag   2
-#define gxovnt_messaging_Container_Config_tag    3
+#define gxovnt_messaging_Container_TextValue_tag 2
+#define gxovnt_messaging_Container_IntValue_tag  3
 
 /* Struct field encoding specification for nanopb */
 #define gxovnt_messaging_Container_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UENUM,    messageTypeId,     1) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (msg,Command,msg.Command),   2) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (msg,Config,msg.Config),   3)
-#define gxovnt_messaging_Container_CALLBACK NULL
+X(a, CALLBACK, ONEOF,    STRING,   (msg,TextValue,msg.TextValue),   2) \
+X(a, STATIC,   ONEOF,    INT32,    (msg,IntValue,msg.IntValue),   3)
+#define gxovnt_messaging_Container_CALLBACK pb_default_field_callback
 #define gxovnt_messaging_Container_DEFAULT NULL
-#define gxovnt_messaging_Container_msg_Command_MSGTYPE gxovnt_messaging_Command
-#define gxovnt_messaging_Container_msg_Config_MSGTYPE gxovnt_messaging_Configuration
 
 extern const pb_msgdesc_t gxovnt_messaging_Container_msg;
 
@@ -66,13 +71,7 @@ extern const pb_msgdesc_t gxovnt_messaging_Container_msg;
 #define gxovnt_messaging_Container_fields &gxovnt_messaging_Container_msg
 
 /* Maximum encoded size of messages (where known) */
-#if defined(gxovnt_messaging_Configuration_size)
-union gxovnt_messaging_Container_msg_size_union {char f3[(6 + gxovnt_messaging_Configuration_size)]; char f0[4];};
-#endif
-#if defined(gxovnt_messaging_Configuration_size)
-#define GXOVNT_MESSAGING_GXOVNT_MESSAGING_CONTAINER_PB_H_MAX_SIZE gxovnt_messaging_Container_size
-#define gxovnt_messaging_Container_size          (2 + sizeof(union gxovnt_messaging_Container_msg_size_union))
-#endif
+/* gxovnt_messaging_Container_size depends on runtime parameters */
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -9,7 +9,7 @@ using Plugin.BLE.Abstractions.Extensions;
 
 namespace GXOVnT.Services;
 
-public class BluetoothService : NotifyChanged, IBluetoothService
+public class BluetoothService : NotifyChanged, IBluetoothService 
 {
 
     public record GXOVnTDeviceFoundArgs(
@@ -37,13 +37,16 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
     private bool _applicationHasBluetoothPermissions;
     private bool _bluetoothIsReady;
-    
-    
-    
     private BluetoothState _bluetoothState = BluetoothState.Unknown;
     private string _bluetoothStateText = "";
     private bool _isScanningDevices;
     private CancellationTokenSource _scanCancellationTokenSource = default!;
+
+
+    private IDevice? _connectedDevice;
+    private IService? _connectedDeviceService;
+    private ICharacteristic? _protoBleCharacteristic;
+    private bool _isConnectedToDevice;
     #endregion
 
     #region Properties
@@ -92,6 +95,14 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         private set => SetField(ref _isScanningDevices, value);
     }
 
+    /// <summary>
+    /// Gets a value indicating if this service is connected to a device
+    /// </summary>
+    public bool IsConnectedToDevice
+    {
+        get => _isConnectedToDevice;
+        private set => SetField(ref _isConnectedToDevice, value);
+    }
     #endregion
     
     #region ctor
@@ -140,7 +151,130 @@ public class BluetoothService : NotifyChanged, IBluetoothService
     {
         await _scanCancellationTokenSource.CancelAsync();
     }
+
+    public async Task<bool> DisConnectFromDevice()
+    {
+        try
+        {
+            if (_bluetoothAdapter == null)
+                return false;
+            
+            if (_connectedDevice != null)
+            {
+                _protoBleCharacteristic = null;
+                _connectedDeviceService = null;
+
+                await _bluetoothAdapter.DisconnectDeviceAsync(_connectedDevice);
+                _connectedDevice = null;
+            }
+            
+            IsConnectedToDevice = false;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logViewModel.LogError($"DisConnectFromDevice: An error occured disconnecting from the device. {ex.Message}");
+            return false;
+        }
+    }
     
+    public async Task<bool> ConnectToDevice(Guid deviceId)
+    {
+        try
+        {
+            // If we are already connected to a device
+            if (IsConnectedToDevice && _connectedDevice != null)
+            {
+                // Same id, no need to re-connect
+                if (_connectedDevice.Id == deviceId)
+                    return true;
+                // Disconnect from the current device
+                await DisConnectFromDevice();
+            }
+            
+            IsConnectedToDevice = false;
+
+            if (_bluetoothAdapter == null)
+                return false;
+
+            _connectedDevice = _bluetoothAdapter.DiscoveredDevices.FirstOrDefault(d => d.Id == deviceId) ??
+                         throw new ArgumentException(
+                             "Could not locate the requested device for the specified device Id", nameof(deviceId));
+
+            if (!_connectedDevice.IsConnectable)
+                throw new ArgumentException(
+                    "The device is not connectable for the specified device Id", nameof(deviceId));
+
+            await _bluetoothAdapter.ConnectToDeviceAsync(_connectedDevice, new ConnectParameters(true));
+            
+            _connectedDeviceService = await _connectedDevice.GetServiceAsync(Guid.Parse("05c1fba8-cc8b-4534-8787-0e6a0775c3de"));
+            if (_connectedDeviceService == null)
+                throw new ArgumentException(
+                    "The device did not broadcast the expected service", nameof(deviceId));
+            
+            _protoBleCharacteristic = await _connectedDeviceService.GetCharacteristicAsync(Guid.Parse("4687b690-cd36-4a7c-9134-49ffe62d9e4f"));
+            if (_protoBleCharacteristic == null)
+                throw new ArgumentException(
+                    "The device service did not broadcast the expected characteristic", nameof(deviceId));
+            
+            IsConnectedToDevice = true;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            await DisConnectFromDevice();
+            _logViewModel.LogError($"StartScanForDevicesAsync: An error occured scanning for devices. {ex.Message}");
+            return false;
+        }
+        
+    }
+
+    private Int16 _messageId = 1;
+    
+    public async Task SendProtoMessageToConnectedDevice(string message)
+    {
+
+        try
+        {
+            if (!IsConnectedToDevice)
+                return;
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(message).ToList();
+            
+            // Split the bytes into 10 byte packages
+            var packets = bytes.Chunk(10).ToList();
+    
+            for (var iPacket = 0; iPacket < packets.Count; iPacket++)
+            {
+                var isFirstPacket = iPacket == 0;
+                var isLastPacket = iPacket == packets.Count - 1;
+
+                var packetInfo = 0;
+                if (isFirstPacket)
+                    packetInfo = 1;
+                if (isLastPacket)
+                    packetInfo += 2;
+
+                var sendBuffer = new List<byte>()
+                {
+                    1, 1, (byte)iPacket, (byte)packetInfo
+                };
+                
+                sendBuffer.AddRange(packets[iPacket]);
+
+                await _protoBleCharacteristic.WriteAsync(sendBuffer.ToArray());
+
+                await Task.Delay(200);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+        _messageId++;
+    }
+
     #endregion
 
     #region Private Methods
@@ -306,5 +440,28 @@ public class BluetoothService : NotifyChanged, IBluetoothService
     }
 
     #endregion
+
+    #region Dispose
+
+    public async ValueTask DisposeAsync()
+    {
+        
+        if (_bluetoothAdapter == null)
+            return;
+            
+        if (_connectedDevice != null)
+            await _bluetoothAdapter.DisconnectDeviceAsync(_connectedDevice);
     
+        _connectedDevice?.Dispose();
+        _connectedDeviceService?.Dispose();
+        
+        _protoBleCharacteristic = null;
+        _connectedDeviceService = null;
+        _connectedDevice = null;
+      
+        
+    }
+
+    #endregion
+  
 }

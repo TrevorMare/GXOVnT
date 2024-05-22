@@ -24,6 +24,8 @@ public class DeviceScannerViewModel : NotifyChanged
 
     public bool IsScanningDevices => _bluetoothService.IsScanningDevices;
     
+    public bool IsConnectedToDevice => _bluetoothService.IsConnectedToDevice;
+    
     public IReadOnlyList<GXOVnTDevice> ScannedDevices
     {
         get => _scannedDevices;
@@ -53,7 +55,6 @@ public class DeviceScannerViewModel : NotifyChanged
 
     public async Task StartScanGXOVnTDevicesAsync()
     {
-        
         _scannedDevices.Clear();
         _scanGXOVnTCancellationToken = new CancellationTokenSource();
         
@@ -66,6 +67,20 @@ public class DeviceScannerViewModel : NotifyChanged
         _scanGXOVnTCancellationToken.Dispose();
     }
     
+    public async Task ConnectToDevice(GXOVnTDevice device)
+    {
+        await _bluetoothService.ConnectToDevice(Guid.Parse(device.Id));
+    }
+    
+    public async Task DisConnectFromDevice()
+    {
+        await _bluetoothService.DisConnectFromDevice();
+    }
+
+    public async Task SendProtoMessage(string message)
+    {
+        await _bluetoothService.SendProtoMessageToConnectedDevice(message);
+    }
     #endregion
 
     #region Event Callbacks

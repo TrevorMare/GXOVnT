@@ -7,14 +7,23 @@ import "gxovnt.messaging.config.proto";
 
 message Container {
     enum MessageType_Id {
-        COMMAND = 0;
-        CONFIG = 1;
-        Unknown = 99;
+        ClearConfig = 0;
+        SaveConfig = 1;
+        SetSystemName = 2;
+        GetSystemName = 3;
+        SetSystemType = 4;
+        GetSystemType = 5;
+        SetWiFiSSID = 6;
+        GetWiFiSSID = 7;
+        SetWiFiPassword = 8;
+        GetWiFiPassword = 9;
     }
+    
     MessageType_Id messageTypeId = 1;
     oneof msg {
-        Command Command = 2;
-        Configuration Config = 3;
+        string TextValue = 2;
+        int32 IntValue = 3;
     }
+
 }
 

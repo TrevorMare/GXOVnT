@@ -38,4 +38,9 @@
         <MudFab Class="m-1" Size="Size.Small" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Bluetooth" Label="@ScanButtonText" @onclick="ToggleScanDevices"/>    
     </div>
     
+    
+    <MudInput T="string" @bind:Value="@_sendToDevice" Label="Send to device message"></MudInput>
+    <MudFab Class="m-1" Size="Size.Small" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Bluetooth" Label="Send Message" @onclick="SendMessage"/>
+    
+    
 </MudPaper>

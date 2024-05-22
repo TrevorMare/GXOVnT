@@ -8,6 +8,12 @@ namespace GXOVnT.Components.Shared;
 public partial class DeviceScanner : ComponentBase
 {
 
+    #region Members
+
+    private string _sendToDevice = string.Empty;
+
+    #endregion
+
     #region Properties
 
     [Parameter] public bool Enabled { get; set; } = true;
@@ -21,6 +27,8 @@ public partial class DeviceScanner : ComponentBase
     private bool HasItems => DeviceScannerViewModel.ScannedDevices.Count > 0;
 
     private string ScanButtonText => (IsScanningDevices ? "Stop" : "Start") + " scan devices";
+    
+   
     #endregion
 
     #region Methods
@@ -48,6 +56,7 @@ public partial class DeviceScanner : ComponentBase
     private async Task OnDeviceListItemClick(GXOVnTDevice item)
     {
         await DeviceSelected.InvokeAsync(item);
+        await DeviceScannerViewModel.ConnectToDevice(item);
     }
     
     public async Task ToggleScanDevices()
@@ -56,6 +65,11 @@ public partial class DeviceScanner : ComponentBase
             await DeviceScannerViewModel.StopScanGXOVnTDevicesAsync();
         else
             await DeviceScannerViewModel.StartScanGXOVnTDevicesAsync();
+    }
+    
+    public async Task SendMessage()
+    {
+        await DeviceScannerViewModel.SendProtoMessage(_sendToDevice);
     }
     
 

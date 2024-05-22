@@ -3,10 +3,12 @@ using Plugin.BLE.Abstractions.Contracts;
 
 namespace GXOVnT.Services.Interfaces;
 
-public interface IBluetoothService : INotifyPropertyChanged
+public interface IBluetoothService : INotifyPropertyChanged, IAsyncDisposable
 {
     event BluetoothService.OnDeviceFoundHandler? OnDeviceFound;
 
+    bool IsConnectedToDevice { get; }
+    
     BluetoothState BluetoothState { get; }
     
     bool BluetoothIsReady { get; }
@@ -17,4 +19,9 @@ public interface IBluetoothService : INotifyPropertyChanged
 
     Task StopScanForDevicesAsync();
 
+    Task<bool> DisConnectFromDevice();
+
+    Task<bool> ConnectToDevice(Guid deviceId);
+    
+    Task SendProtoMessageToConnectedDevice(string message);
 }

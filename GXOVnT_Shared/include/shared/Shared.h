@@ -33,6 +33,8 @@
 namespace GXOVnT {
   namespace shared {
 
+   
+
     // System firmware version
     /////////////////////////////////////////////////////////////////
     static const char *GXOVnT_FIRMWARE_VERSION = "v1.0.2";
@@ -122,6 +124,9 @@ namespace GXOVnT {
         }
 
         Serial.print(' ');
+    }
+    static bool GetFlag(uint8_t value, uint8_t index) {
+      return value & (0x01 << index);
     }
     // Helper method to print a byte in hex the serial monitor
     static void PrintDebugHex(uint8_t value) {

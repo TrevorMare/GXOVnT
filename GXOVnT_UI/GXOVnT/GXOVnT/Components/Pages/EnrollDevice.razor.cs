@@ -12,6 +12,7 @@ public partial class EnrollDevice : ComponentBase
     #region Members
 
     private GXOVnTDevice? _selectedDeviceToEnroll;
+    
 
     #endregion
 
@@ -41,20 +42,24 @@ public partial class EnrollDevice : ComponentBase
     
     private async void EnrollDeviceSelected(GXOVnTDevice obj)
     {
-        _selectedDeviceToEnroll = obj;
-
-        if (_selectedDeviceToEnroll.SystemConfigured)
-        {
-            var confirmResult = await DialogService.ShowMessageBox("Confirm",
-                "This device is already configured. Are you sure you want to continue, all configuration will be overwritten for this device",
-                "Yes", "No");
-
-            if (!(confirmResult ?? false))
-            {
-                _selectedDeviceToEnroll = null;
-                return;
-            }
-        }
+        // _selectedDeviceToEnroll = obj;
+        //
+        // if (_selectedDeviceToEnroll.SystemConfigured)
+        // {
+        //     var confirmResult = await DialogService.ShowMessageBox("Confirm",
+        //         "This device is already configured. Are you sure you want to continue, all configuration will be overwritten for this device",
+        //         "Yes", "No");
+        //
+        //     if (!(confirmResult ?? false))
+        //     {
+        //         _selectedDeviceToEnroll = null;
+        //         return;
+        //     }
+        // }
+        
+        
+        
+        
         
         
         
