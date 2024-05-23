@@ -134,10 +134,7 @@ void BleCommService::onWrite(BLECharacteristic *protoCharacteristic)
 {
 	uint8_t *messageBuffer = protoCharacteristic->getData();
 	size_t messageLength = protoCharacteristic->getLength();
-
-	if (messageLength > 2)
-	{
-		ESP_LOGI(LOG_TAG, "BLE Characteristic Package Received (%s bytes) ", messageLength);
+	if (messageLength > 2) {
 		processCharacteristicMessage(messageBuffer, messageLength);
 	}
 }
@@ -145,24 +142,49 @@ void BleCommService::onWrite(BLECharacteristic *protoCharacteristic)
 // Message handling
 void BleCommService::handleMessageComplete(const uint8_t *buffer, size_t messageLength)
 {
-	if (m_messageHandler != nullptr) {
-		m_messageHandler->handleBLEMessage(buffer, messageLength);
-	}
+	if (m_messageHandler == nullptr) { return; }
+	m_messageHandler->handleBLEMessage(buffer, messageLength);
 }
 
 void BleCommService::handleMessageComplete(BLEMessage *bleMessage)
 {
-	size_t totalSize = bleMessage->MessageSize;
-	std::vector<uint8_t> totalMessage;
-	totalMessage.reserve(totalSize);
+	if (m_messageHandler == nullptr) { return; }
 
-	for (int i = 0; i < bleMessage->MessagePackets.size(); i++)
-	{
-		std::vector<uint8_t> packetBuffer = *(bleMessage->MessagePackets[i]->Data);
+	BLEMessage localMessage = *bleMessage;
+
+	size_t totalSize = localMessage.MessageSize;
+	int numberOfPackets = localMessage.MessagePackets.size();
+
+	ESP_LOGI(LOG_TAG, "Starting the combination of all the packets");
+
+	ESP_LOGI(LOG_TAG, "Number of packets on the message: %d", numberOfPackets);
+	ESP_LOGI(LOG_TAG, "Message Buffer size on the message: %d", totalSize);
+
+	
+	std::vector<uint8_t> totalMessage;
+	totalMessage.reserve(totalSize + 1);
+
+	ESP_LOGI(LOG_TAG, "Space reserved: %d bytes", totalSize + 1);
+
+	for (int i = 0; i < numberOfPackets; i++) {
+		
+		
+		BLEMessagePacket messagePacket = *(localMessage.MessagePackets.at(i));
+		std::vector<uint8_t> packetBuffer = *messagePacket.Data;
+		
+		
 		totalMessage.insert(totalMessage.end(), packetBuffer.begin(), packetBuffer.end());
 	}
 
-	const uint8_t *result = totalMessage.size() ? &totalMessage[0] : NULL;
+	totalMessage.push_back('\0');
+
+	for (size_t i = 0; i < totalMessage.size(); i++)
+	{
+		Serial.printf(" %d ", totalMessage[i]);
+	}
+	
+
+	const uint8_t *result = totalMessage.data();
 	
 	if (m_messageHandler != nullptr) {
 		m_messageHandler->handleBLEMessage(result, totalSize);
@@ -177,8 +199,7 @@ bool BleCommService::processCharacteristicMessage(uint8_t *buffer, size_t messag
 	// Build the message packet
 	BLEMessagePacket *messagePacket = buildMessagePacket(buffer, messageLength);
 	// If the packet could not be built, no need to continue
-	if (messagePacket != nullptr)
-	{
+	if (messagePacket == nullptr) {
 		ESP_LOGI(LOG_TAG, "Message received but could not parse the packet");
 		return false;
 	}
@@ -186,10 +207,10 @@ bool BleCommService::processCharacteristicMessage(uint8_t *buffer, size_t messag
 	// If the message packet contains the complete buffer of the message,
 	// we do not need to keep this message in seperate packages and can continue
 	// processing the buffer per usual
-	if (messagePacket->PacketStart && messagePacket->PacketEnd)
-	{
+	if (messagePacket->PacketStart && messagePacket->PacketEnd) {
 		ESP_LOGI(LOG_TAG, "Message packet contained all data required for processing");
-		handleMessageComplete(messagePacket->toArray(), messagePacket->Data->size());
+		const uint8_t *packetBuffer = (*(messagePacket->Data)).data();
+		handleMessageComplete(packetBuffer, (*(messagePacket->Data)).size());
 		return true;
 	}
 
@@ -197,17 +218,18 @@ bool BleCommService::processCharacteristicMessage(uint8_t *buffer, size_t messag
 	int messageIndex = getMessageIndex(messagePacket->MessageId);
 
 	BLEMessage *message = createOrUpdateMessage(messageIndex, messagePacket, messageLength);
-	if (message == nullptr)
-	{
+	if (message == nullptr) {
+		ESP_LOGE(LOG_TAG, "Could not locate or create the message");
 		return false;
 	}
 
 	// Last we need to check if this is the last packet in the message, if it is
 	// we need to process the message and remove it from memory
-	if (messagePacket->PacketEnd)
-	{
+	if (messagePacket->PacketEnd) {
+		ESP_LOGI(LOG_TAG, "Message end recieved, attempting to handle the message");
 		// Process message
 		handleMessageComplete(message);
+		ESP_LOGI(LOG_TAG, "Message handled, performing cleanup on memory");
 		delete m_messages[messageIndex];
 		m_messages.erase(m_messages.begin() + messageIndex);
 	}
@@ -267,30 +289,28 @@ BLEMessage *BleCommService::createOrUpdateMessage(int messageIndex, BLEMessagePa
 
 BLEMessagePacket *BleCommService::buildMessagePacket(uint8_t *buffer, size_t messageLength) const
 {
-	if (messageLength < 4)
+	if (messageLength <= 4) {
+		ESP_LOGW(LOG_TAG, "buildMessagePacket: Packet length to short");
 		return nullptr;
-	
+	}
 	// First two bytes is message is message Id
 	uint16_t messageId = ((uint16_t)buffer[1] << 8) | buffer[0];
-	
-	// Third byte is the packet Id
 	uint8_t packetId = buffer[2];
-	
-	// Fourth byte is the packet detail, this is the flags of the packet
 	uint8_t packetDetail = buffer[3];
-	
 	// Flags:
 	//  Position 0 - Is message start packet
 	//  Position 1 - Is message end packet
 	bool isPacketStart = GetFlag(packetDetail, 0);
 	bool isPacketEnd = GetFlag(packetDetail, 1);
-	
-	// Data is the rest of the message
+	// Create a vector of the remaining bytes. This represents the actual data in the packet
 	std::vector<uint8_t> messageBuffer;
-	memcpy(messageBuffer.data(), buffer + 4, messageLength - 4);
-	
+	for (int i = 4; i < messageLength; i++) {
+		messageBuffer.push_back(buffer[i]);
+	}
+	// Create the message and return a pointer to the object
 	BLEMessagePacket *messagePacket = new BLEMessagePacket(messageId, packetId, 
 		isPacketStart, isPacketEnd, &messageBuffer); 
 	
 	return messagePacket;
 }
+

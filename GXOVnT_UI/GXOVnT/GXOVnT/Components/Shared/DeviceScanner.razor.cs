@@ -10,7 +10,7 @@ public partial class DeviceScanner : ComponentBase
 
     #region Members
 
-    private string _sendToDevice = string.Empty;
+    public string SendText { get; set; } = string.Empty;
 
     #endregion
 
@@ -69,7 +69,7 @@ public partial class DeviceScanner : ComponentBase
     
     public async Task SendMessage()
     {
-        await DeviceScannerViewModel.SendProtoMessage(_sendToDevice);
+        await DeviceScannerViewModel.SendProtoMessage(SendText);
     }
     
 

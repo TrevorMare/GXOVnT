@@ -113,16 +113,15 @@ namespace GXOVnT {
       Serial.printf("%03d ", value);
     }
     // Helper method to print a byte in 8 bit flags to the serial monitor
-    static void PrintDebugFlags(uint8_t value) {
+    static void PrintDebugFlags(uint8_t value) 
+    {
         Serial.printf("(%d) ", value);
-
         for(byte mask = 0x80; mask; mask >>= 1){
           if(mask & value)
             Serial.print('1');
           else
             Serial.print('0');
         }
-
         Serial.print(' ');
     }
     static bool GetFlag(uint8_t value, uint8_t index) {
@@ -130,9 +129,7 @@ namespace GXOVnT {
     }
     // Helper method to print a byte in hex the serial monitor
     static void PrintDebugHex(uint8_t value) {
-      #ifdef GXOVnT_DEBUG_ENABLE
-        Serial.printf("%02X ", value);
-      #endif
+      Serial.printf("%02X ", value);
     }
     // Compares two float values by converting them to int values to 2 decimal points
     static bool CompareFloatWithFixedPrecision(float fval1, float fval2) {

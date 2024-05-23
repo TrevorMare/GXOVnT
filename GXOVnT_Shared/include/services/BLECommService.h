@@ -15,7 +15,7 @@ namespace GXOVnT
 {
 	namespace services
 	{
-
+		
 		// Callback handler definition when either a LORA message or bluetooth message has been received
 		class BLECommServiceMessageCallback
 		{
@@ -39,12 +39,6 @@ namespace GXOVnT
 				PacketStart = packetStart;
 				PacketEnd = packetEnd;
 				Data = data;
-			}
-
-			const uint8_t *toArray()  {
-				std::vector<uint8_t> data = *Data;
-				const uint8_t *result = data.size() ? &data[0] : NULL;
-				return result;
 			}
 
 		};

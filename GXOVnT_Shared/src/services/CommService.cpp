@@ -21,8 +21,11 @@ void CommService::stop() {
 }
 
 void CommService::handleBLEMessage(const uint8_t *buffer, size_t size) {
+    ESP_LOGI(LOG_TAG, "Handle BLE input size: %d", size);
 
-    String str = (char*)buffer;
-    std::string s(str.c_str()); 
-    ESP_LOGI(LOG_TAG, "Handle BLE message: %s", s.c_str());
+    Serial.println("Package Content Start");
+    Serial.printf("%s", (char*)buffer);
+    Serial.println();
+    Serial.println("Package Content End");
+    
 }

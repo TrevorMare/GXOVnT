@@ -37,9 +37,9 @@
     <div class="d-flex m-1" style="align-items: center; justify-content: center">
         <MudFab Class="m-1" Size="Size.Small" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Bluetooth" Label="@ScanButtonText" @onclick="ToggleScanDevices"/>    
     </div>
-    
-    
-    <MudInput T="string" @bind:Value="@_sendToDevice" Label="Send to device message"></MudInput>
+
+
+    <MudTextField @bind-Value="SendText" Label="Standard" Variant="Variant.Text"></MudTextField>
     <MudFab Class="m-1" Size="Size.Small" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Bluetooth" Label="Send Message" @onclick="SendMessage"/>
     
     

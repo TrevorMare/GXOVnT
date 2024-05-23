@@ -257,7 +257,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
                 var sendBuffer = new List<byte>()
                 {
-                    1, 1, (byte)iPacket, (byte)packetInfo
+                    1, 0, (byte)iPacket, (byte)packetInfo
                 };
                 
                 sendBuffer.AddRange(packets[iPacket]);
