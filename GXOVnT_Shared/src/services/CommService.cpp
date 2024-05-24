@@ -1,7 +1,9 @@
 #include "services/CommService.h"
+#include "messages/CommMessage.h"
 #include "services/BLECommService.h"
 
 using namespace GXOVnT::services;
+using namespace GXOVnT::messages;
 
 CommService::CommService() {}
 CommService::~CommService() {}
@@ -20,12 +22,6 @@ void CommService::stop() {
 
 }
 
-void CommService::handleBLEMessage(const uint8_t *buffer, size_t size) {
-    ESP_LOGI(LOG_TAG, "Handle BLE input size: %d", size);
-
-    Serial.println("Package Content Start");
-    Serial.printf("%s", (char*)buffer);
-    Serial.println();
-    Serial.println("Package Content End");
-    
+void CommService::handleMessage(CommMessage *commMessage) {
+    commMessage->PrintMessage();
 }

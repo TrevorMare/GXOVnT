@@ -88,13 +88,13 @@ function PrepareGeneratorsDirectory() {
     if (!(Test-Path -Path $global:final_output_cpp_headers )) {
         New-Item -ItemType Directory -Force -Path $global:final_output_cpp_headers 
     }
-    Get-ChildItem -Path $global:final_output_cpp_headers *.* -File | foreach { $_.Delete()}
+    Get-ChildItem -Path $global:final_output_cpp_headers *.pb.h -File | foreach { $_.Delete()}
 
     # #=============== Final output source directory ===============
     if (!(Test-Path -Path $global:final_output_cpp_source )) {
         New-Item -ItemType Directory -Force -Path $global:final_output_cpp_source 
     }
-    Get-ChildItem -Path $global:final_output_cpp_source *.* -File | foreach { $_.Delete()}
+    Get-ChildItem -Path $global:final_output_cpp_source *.pb.c -File | foreach { $_.Delete()}
 }
 
 function DownloadAndExtract_protoc() {

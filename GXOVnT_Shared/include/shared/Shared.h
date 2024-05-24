@@ -71,6 +71,12 @@ namespace GXOVnT {
       TPMS_POSITION_CUSTOM = 5
     };
 
+    enum GXOVnT_COMM_SERVICE_TYPE {
+      COMM_SERVICE_TYPE_BLE = 1, 
+      COMM_SERVICE_TYPE_LORA = 2, 
+      COMM_SERVICE_TYPE_WIFI = 3
+    };
+
     // Common structures
     /////////////////////////////////////////////////////////////////
     // Custom exception structure type for the GXOVnT 
