@@ -52,6 +52,8 @@ void CommMessagePacket::parseMessageBytes(const uint8_t *messageBytes, size_t me
 	//  Position 1 - Is message end packet
 	m_packetStart = GetFlag(packetDetail, 0);
 	m_packetEnd = GetFlag(packetDetail, 1);
+    // ESP_LOGI(LOG_TAG, "Parsed package MessageId: %d, PacketId: %d, PacketDetail: %d, IsStart: %s, IsEnd: %s",
+    // m_messageId, m_packetId, packetDetail, (m_packetStart ? "true" : "false"), (m_packetStart ? "true" : "false"));
     m_packetBuffer.reserve(20);
     // Create a vector of the remaining bytes. This represents the actual data in the packet
 	for (int i = 4; i < messageSize; i++) {

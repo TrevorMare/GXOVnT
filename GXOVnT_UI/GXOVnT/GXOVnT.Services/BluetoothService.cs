@@ -1,6 +1,7 @@
 ﻿using GXOVnT.Services.Common;
 using GXOVnT.Services.Interfaces;
 using GXOVnT.Services.ViewModels;
+using GXOVnT.Shared.Helpers;
 using Plugin.BLE;
 using Plugin.BLE.Abstractions;
 using Plugin.BLE.Abstractions.Contracts;
@@ -107,8 +108,9 @@ public class BluetoothService : NotifyChanged, IBluetoothService
     
     #region ctor
 
-    public BluetoothService(IAlertService alertService, 
-        IRequestPermissionService requestPermissionService, LogViewModel logViewModel)
+    public BluetoothService(IAlertService alertService,
+        IRequestPermissionService requestPermissionService, 
+        LogViewModel logViewModel)
     {
         _alertService = alertService;
         _requestPermissionService = requestPermissionService;
@@ -229,6 +231,9 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         
     }
 
+
+
+
     private Int16 _messageId = 1;
     
     public async Task SendProtoMessageToConnectedDevice(string message)
@@ -236,36 +241,19 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
         try
         {
-            if (!IsConnectedToDevice)
+            if (!IsConnectedToDevice || _protoBleCharacteristic == null)
                 return;
 
-            var bytes = System.Text.Encoding.UTF8.GetBytes(message).ToList();
-            
-            // Split the bytes into 10 byte packages
-            var packets = bytes.Chunk(10).ToList();
-    
-            for (var iPacket = 0; iPacket < packets.Count; iPacket++)
+            var commMessage = Shared.Helpers.ProtoMessageBuilder
+                .BuildEchoMessage(message).ToCommMessage(_messageId);
+
+            while (commMessage.MoveNext())
             {
-                var isFirstPacket = iPacket == 0;
-                var isLastPacket = iPacket == packets.Count - 1;
-
-                var packetInfo = 0;
-                if (isFirstPacket)
-                    packetInfo = 1;
-                if (isLastPacket)
-                    packetInfo += 2;
-
-                var sendBuffer = new List<byte>()
-                {
-                    1, 0, (byte)iPacket, (byte)packetInfo
-                };
-                
-                sendBuffer.AddRange(packets[iPacket]);
-
-                await _protoBleCharacteristic.WriteAsync(sendBuffer.ToArray());
-
+                await _protoBleCharacteristic.WriteAsync(commMessage.Current.SerializePacket());
                 await Task.Delay(200);
             }
+            
+            
         }
         catch (Exception ex)
         {

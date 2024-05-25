@@ -2,8 +2,7 @@ syntax = "proto3";
 
 package gxovnt.messaging;
 
-import "gxovnt.messaging.command.proto";
-import "gxovnt.messaging.config.proto";
+
 
 message Container {
     enum MessageType_Id {
@@ -17,6 +16,8 @@ message Container {
         GetWiFiSSID = 7;
         SetWiFiPassword = 8;
         GetWiFiPassword = 9;
+
+        Echo = 10;
     }
     
     MessageType_Id messageTypeId = 1;

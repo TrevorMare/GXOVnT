@@ -24,8 +24,8 @@
 #include "Update.h"
 
 
-#define ssid "HouseMare"
-#define password "X@Kbi-Rh3$"
+#define ssid_XXX "HouseMare"
+#define password_XXX "X@Kbi-Rh3$"
 #define FIRMWARE_LIST_URL "https://github.com/TrevorMare/GXOVnT/raw/main/firmware_versions.json"
 
 // Define server details and file path

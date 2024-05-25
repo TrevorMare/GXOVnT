@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GXOVnT", "GXOVnT\GXOVnT.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GXOVnT.Services", "GXOVnT.Services\GXOVnT.Services.csproj", "{73684F81-A812-4627-A2C4-937D82BAF91D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GXOVnT.Shared", "GXOVnT.Shared\GXOVnT.Shared.csproj", "{26B7AA26-D294-4BEA-871A-710268D49B62}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{73684F81-A812-4627-A2C4-937D82BAF91D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73684F81-A812-4627-A2C4-937D82BAF91D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73684F81-A812-4627-A2C4-937D82BAF91D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26B7AA26-D294-4BEA-871A-710268D49B62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26B7AA26-D294-4BEA-871A-710268D49B62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26B7AA26-D294-4BEA-871A-710268D49B62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26B7AA26-D294-4BEA-871A-710268D49B62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

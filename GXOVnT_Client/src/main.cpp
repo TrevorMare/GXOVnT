@@ -1,10 +1,17 @@
 #define GXOVnT_DEBUG_ENABLE
 
 #include <Arduino.h>
-// #include <GXOVnT_TPMS_BLE_Manager.h>
+
 #include <GXOVnT_WebUpdate.h>
 #include <heltec.h>
 #include <GXOVnT.h>
+// This is required to get the nanopb library into the dependency graph
+
+#include <pb.h>
+
+
+// #include <pb_decode.h>
+// #include <pb_common.h>
 
 //https://medium.com/@adityabangde/esp32-firmware-updates-from-github-a-simple-ota-solution-173a95f4a97b
 
@@ -20,7 +27,9 @@ int scanTime = 10; //In seconds
 
 void setup() {
   
-  
+   uint8_t buffer[512];
+    size_t count = fread(buffer, 1, sizeof(buffer), stdin);
+    pb_istream_t stream = pb_istream_from_buffer(buffer, count);
 
   Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Disable*/, true /*Serial Enable*/, true /*PABOOST Enable*/, 470E6 /**/);
   Serial.begin(115200);

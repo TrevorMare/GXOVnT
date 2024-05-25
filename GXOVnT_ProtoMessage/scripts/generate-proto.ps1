@@ -161,8 +161,12 @@ function CopyCPPFilesToShared() {
         $sourceFileName = $_.FullName
         $destinationFileName = $global:final_output_cpp_headers + "\" + $_.Name
 
-        $oldIncludePath = """" + $_.Name.Replace(".c", ".h") + """"
-        $newIncludePath = """messages/" + $_.Name.Replace(".c", ".h") + """"
+        $oldIncludePath = """" + $_.Name.Substring(0, $_.Name.Length -2) + ".h" + """"
+        $newIncludePath = """messages/" + $_.Name.Substring(0, $_.Name.Length -2) + ".h" + """"
+
+        Write-Host "Replacing " $oldIncludePath " with "$newIncludePath
+
+
         $destinationFileName = $global:final_output_cpp_source + "\" + $_.Name
         # Copy the c file
         Copy-Item $sourceFileName -Destination $destinationFileName -force 
@@ -184,12 +188,12 @@ function CopyCPPFilesToShared() {
 
 Write-Host "[Powershell] Starting generation of proto files: " $rootDirectory
 
-SetupInputAndOutputDirectories
-PrepareGeneratorsDirectory
-DownloadAndExtract_protoc
-DownloadAndExtract_nanopd
-PrepareEnvironment
-GenerateFiles_CSharp
-GenerateFiles_CPP
-GenerateFiles_TS
-CopyCPPFilesToShared
+# SetupInputAndOutputDirectories
+# PrepareGeneratorsDirectory
+# DownloadAndExtract_protoc
+# DownloadAndExtract_nanopd
+# PrepareEnvironment
+# GenerateFiles_CSharp
+# GenerateFiles_CPP
+# GenerateFiles_TS
+# CopyCPPFilesToShared

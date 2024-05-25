@@ -40,6 +40,9 @@ namespace GXOVnT
 						/// @brief Gets the message Id associated with the message
 						/// @return 
 						uint16_t MessageId();
+						/// @brief Gets the total size of all the message packets
+						/// @return 
+						size_t TotalSize();
 						/// @brief Gets the source service that created this message
 						/// @return 
 						enum GXOVnT_COMM_SERVICE_TYPE GetSourceService();

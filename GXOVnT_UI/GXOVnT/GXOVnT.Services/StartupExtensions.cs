@@ -13,7 +13,7 @@ public static class StartupExtensions
         services.AddTransient<IBluetoothService, BluetoothService>();
         
         services.AddSingleton<IAlertService, AlertService>();
-        
+      
         services.AddSingleton<ViewModels.LogViewModel>();
         services.AddTransient<ViewModels.DeviceScannerViewModel>();
 

@@ -42,6 +42,8 @@ void CommMessage::AddPackage(CommMessagePacket *messagePacket) {
 
 bool CommMessage::ReceivedAllPackets() { return m_receivedAllPackets; }
 
+size_t CommMessage::TotalSize() { return m_totalSize; }
+
 enum GXOVnT_COMM_SERVICE_TYPE CommMessage::GetSourceService() { return m_commServiceType; }
 
 uint16_t CommMessage::MessageId() { return m_messageId; }

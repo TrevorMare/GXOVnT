@@ -1,6 +1,9 @@
 ﻿namespace GXOVnT.Shared.Common;
 
-public class Enums
+[Flags]
+public enum CommMessageDetail : byte
 {
-    
+    None = 0,
+    IsStartPacket = 1,
+    IsEndPacket = 2
 }

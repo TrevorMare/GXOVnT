@@ -4,8 +4,6 @@
 #ifndef PB_GXOVNT_MESSAGING_GXOVNT_MESSAGING_CONTAINER_PB_H_INCLUDED
 #define PB_GXOVNT_MESSAGING_GXOVNT_MESSAGING_CONTAINER_PB_H_INCLUDED
 #include "pb.h"
-#include "gxovnt.messaging.command.pb.h"
-#include "gxovnt.messaging.config.pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
 #error Regenerate this file with the current version of nanopb generator.
@@ -22,7 +20,8 @@ typedef enum _gxovnt_messaging_Container_MessageType_Id {
     gxovnt_messaging_Container_MessageType_Id_SetWiFiSSID = 6,
     gxovnt_messaging_Container_MessageType_Id_GetWiFiSSID = 7,
     gxovnt_messaging_Container_MessageType_Id_SetWiFiPassword = 8,
-    gxovnt_messaging_Container_MessageType_Id_GetWiFiPassword = 9
+    gxovnt_messaging_Container_MessageType_Id_GetWiFiPassword = 9,
+    gxovnt_messaging_Container_MessageType_Id_Echo = 10
 } gxovnt_messaging_Container_MessageType_Id;
 
 /* Struct definitions */
@@ -42,8 +41,8 @@ extern "C" {
 
 /* Helper constants for enums */
 #define _gxovnt_messaging_Container_MessageType_Id_MIN gxovnt_messaging_Container_MessageType_Id_ClearConfig
-#define _gxovnt_messaging_Container_MessageType_Id_MAX gxovnt_messaging_Container_MessageType_Id_GetWiFiPassword
-#define _gxovnt_messaging_Container_MessageType_Id_ARRAYSIZE ((gxovnt_messaging_Container_MessageType_Id)(gxovnt_messaging_Container_MessageType_Id_GetWiFiPassword+1))
+#define _gxovnt_messaging_Container_MessageType_Id_MAX gxovnt_messaging_Container_MessageType_Id_Echo
+#define _gxovnt_messaging_Container_MessageType_Id_ARRAYSIZE ((gxovnt_messaging_Container_MessageType_Id)(gxovnt_messaging_Container_MessageType_Id_Echo+1))
 
 #define gxovnt_messaging_Container_messageTypeId_ENUMTYPE gxovnt_messaging_Container_MessageType_Id
 
