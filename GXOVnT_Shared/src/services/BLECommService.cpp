@@ -197,15 +197,8 @@ bool BleCommService::processCharacteristicMessage(uint8_t *buffer, size_t messag
 	// If this is the last packet in the message, handle it
 	if (messagePacket->PacketEnd()) {
 		m_messageHandler->handleMessage(commMessage);
-		delete commMessage;
-		delete m_commMessages[commMessageIndex];
 		m_commMessages.erase(m_commMessages.begin() + commMessageIndex);
+		delete commMessage;
 	}
-
-		
-	
-	
-	
-
 	return true;
 }

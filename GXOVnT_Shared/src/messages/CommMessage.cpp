@@ -61,11 +61,13 @@ void CommMessage::PrintMessage() {
     }
 
     const uint8_t * messageBuffer = GetMessageBuffer();
+    
     std::string bufferValues = "";
     for (size_t iIndex = 0; iIndex < m_totalSize; iIndex++) {
         uint8_t value = messageBuffer[iIndex];
         bufferValues += " " + std::to_string(value) + " ";
     }
+    
     ESP_LOGI(LOG_TAG, "Message bytes: %s", bufferValues.c_str());
 }
 
@@ -73,22 +75,19 @@ const uint8_t* CommMessage::GetMessageBuffer() {
     if (!ReceivedAllPackets()) {
         ESP_LOGW(LOG_TAG, "CommMessage: Get buffer called before all packets were received");
     }
-
     m_messageBuffer.clear();
     m_messageBuffer.reserve(m_totalSize);
- // This fails somewhere
     int numberOfPackets = m_messagePackets.size();
+    // For each of the packets
     for (int iPacket = 0; iPacket < numberOfPackets; iPacket++) {
-        
+        // Get the packet buffer and size
         const uint8_t *packetBuffer = m_messagePackets[iPacket]->GetData();
         size_t packetBufferSize = m_messagePackets[iPacket]->PacketBufferSize();
-
-
-        for (int iPacketBuffer = 0; iPacketBuffer < packetBufferSize; packetBufferSize++) {
+        // Copy the packet buffer data into the message buffer
+        for (int iPacketBuffer = 0; iPacketBuffer < packetBufferSize; iPacketBuffer++) {
             uint8_t value = packetBuffer[iPacketBuffer];
             m_messageBuffer.push_back(value);
         }
     }
-
     return m_messageBuffer.data();
 }
