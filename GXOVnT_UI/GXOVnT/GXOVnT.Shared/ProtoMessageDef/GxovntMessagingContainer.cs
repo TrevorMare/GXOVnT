@@ -26,17 +26,19 @@ namespace Gxovnt.Messaging {
           string.Concat(
             "CiBneG92bnQubWVzc2FnaW5nLmNvbnRhaW5lci5wcm90bxIQZ3hvdm50Lm1l",
             "c3NhZ2luZxoeZ3hvdm50Lm1lc3NhZ2luZy5jb21tYW5kLnByb3RvGh1neG92",
-            "bnQubWVzc2FnaW5nLmNvbmZpZy5wcm90byLuAQoJQ29udGFpbmVyEkEKDW1l",
+            "bnQubWVzc2FnaW5nLmNvbmZpZy5wcm90byLUAgoJQ29udGFpbmVyEkEKDW1l",
             "c3NhZ2VUeXBlSWQYASABKA4yKi5neG92bnQubWVzc2FnaW5nLkNvbnRhaW5l",
-            "ci5NZXNzYWdlVHlwZV9JZBIsCgdDb21tYW5kGAIgASgLMhkuZ3hvdm50Lm1l",
-            "c3NhZ2luZy5Db21tYW5kSAASMQoGQ29uZmlnGAMgASgLMh8uZ3hvdm50Lm1l",
-            "c3NhZ2luZy5Db25maWd1cmF0aW9uSAAiNgoOTWVzc2FnZVR5cGVfSWQSCwoH",
-            "Q09NTUFORBAAEgoKBkNPTkZJRxABEgsKB1Vua25vd24QY0IFCgNtc2diBnBy",
-            "b3RvMw=="));
+            "ci5NZXNzYWdlVHlwZV9JZBITCglUZXh0VmFsdWUYAiABKAlIABISCghJbnRW",
+            "YWx1ZRgDIAEoBUgAItMBCg5NZXNzYWdlVHlwZV9JZBIPCgtDbGVhckNvbmZp",
+            "ZxAAEg4KClNhdmVDb25maWcQARIRCg1TZXRTeXN0ZW1OYW1lEAISEQoNR2V0",
+            "U3lzdGVtTmFtZRADEhEKDVNldFN5c3RlbVR5cGUQBBIRCg1HZXRTeXN0ZW1U",
+            "eXBlEAUSDwoLU2V0V2lGaVNTSUQQBhIPCgtHZXRXaUZpU1NJRBAHEhMKD1Nl",
+            "dFdpRmlQYXNzd29yZBAIEhMKD0dldFdpRmlQYXNzd29yZBAJEggKBEVjaG8Q",
+            "CkIFCgNtc2diBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Gxovnt.Messaging.GxovntMessagingCommandReflection.Descriptor, global::Gxovnt.Messaging.GxovntMessagingConfigReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Gxovnt.Messaging.Container), global::Gxovnt.Messaging.Container.Parser, new[]{ "MessageTypeId", "Command", "Config" }, new[]{ "Msg" }, new[]{ typeof(global::Gxovnt.Messaging.Container.Types.MessageType_Id) }, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Gxovnt.Messaging.Container), global::Gxovnt.Messaging.Container.Parser, new[]{ "MessageTypeId", "TextValue", "IntValue" }, new[]{ "Msg" }, new[]{ typeof(global::Gxovnt.Messaging.Container.Types.MessageType_Id) }, null, null)
           }));
     }
     #endregion
@@ -80,11 +82,11 @@ namespace Gxovnt.Messaging {
     public Container(Container other) : this() {
       messageTypeId_ = other.messageTypeId_;
       switch (other.MsgCase) {
-        case MsgOneofCase.Command:
-          Command = other.Command.Clone();
+        case MsgOneofCase.TextValue:
+          TextValue = other.TextValue;
           break;
-        case MsgOneofCase.Config:
-          Config = other.Config.Clone();
+        case MsgOneofCase.IntValue:
+          IntValue = other.IntValue;
           break;
       }
 
@@ -99,7 +101,7 @@ namespace Gxovnt.Messaging {
 
     /// <summary>Field number for the "messageTypeId" field.</summary>
     public const int MessageTypeIdFieldNumber = 1;
-    private global::Gxovnt.Messaging.Container.Types.MessageType_Id messageTypeId_ = global::Gxovnt.Messaging.Container.Types.MessageType_Id.Command;
+    private global::Gxovnt.Messaging.Container.Types.MessageType_Id messageTypeId_ = global::Gxovnt.Messaging.Container.Types.MessageType_Id.ClearConfig;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Gxovnt.Messaging.Container.Types.MessageType_Id MessageTypeId {
@@ -109,27 +111,55 @@ namespace Gxovnt.Messaging {
       }
     }
 
-    /// <summary>Field number for the "Command" field.</summary>
-    public const int CommandFieldNumber = 2;
+    /// <summary>Field number for the "TextValue" field.</summary>
+    public const int TextValueFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Gxovnt.Messaging.Command Command {
-      get { return msgCase_ == MsgOneofCase.Command ? (global::Gxovnt.Messaging.Command) msg_ : null; }
+    public string TextValue {
+      get { return HasTextValue ? (string) msg_ : ""; }
       set {
-        msg_ = value;
-        msgCase_ = value == null ? MsgOneofCase.None : MsgOneofCase.Command;
+        msg_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        msgCase_ = MsgOneofCase.TextValue;
+      }
+    }
+    /// <summary>Gets whether the "TextValue" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasTextValue {
+      get { return msgCase_ == MsgOneofCase.TextValue; }
+    }
+    /// <summary> Clears the value of the oneof if it's currently set to "TextValue" </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearTextValue() {
+      if (HasTextValue) {
+        ClearMsg();
       }
     }
 
-    /// <summary>Field number for the "Config" field.</summary>
-    public const int ConfigFieldNumber = 3;
+    /// <summary>Field number for the "IntValue" field.</summary>
+    public const int IntValueFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Gxovnt.Messaging.Configuration Config {
-      get { return msgCase_ == MsgOneofCase.Config ? (global::Gxovnt.Messaging.Configuration) msg_ : null; }
+    public int IntValue {
+      get { return HasIntValue ? (int) msg_ : 0; }
       set {
         msg_ = value;
-        msgCase_ = value == null ? MsgOneofCase.None : MsgOneofCase.Config;
+        msgCase_ = MsgOneofCase.IntValue;
+      }
+    }
+    /// <summary>Gets whether the "IntValue" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasIntValue {
+      get { return msgCase_ == MsgOneofCase.IntValue; }
+    }
+    /// <summary> Clears the value of the oneof if it's currently set to "IntValue" </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearIntValue() {
+      if (HasIntValue) {
+        ClearMsg();
       }
     }
 
@@ -137,8 +167,8 @@ namespace Gxovnt.Messaging {
     /// <summary>Enum of possible cases for the "msg" oneof.</summary>
     public enum MsgOneofCase {
       None = 0,
-      Command = 2,
-      Config = 3,
+      TextValue = 2,
+      IntValue = 3,
     }
     private MsgOneofCase msgCase_ = MsgOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -170,8 +200,8 @@ namespace Gxovnt.Messaging {
         return true;
       }
       if (MessageTypeId != other.MessageTypeId) return false;
-      if (!object.Equals(Command, other.Command)) return false;
-      if (!object.Equals(Config, other.Config)) return false;
+      if (TextValue != other.TextValue) return false;
+      if (IntValue != other.IntValue) return false;
       if (MsgCase != other.MsgCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -180,9 +210,9 @@ namespace Gxovnt.Messaging {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (MessageTypeId != global::Gxovnt.Messaging.Container.Types.MessageType_Id.Command) hash ^= MessageTypeId.GetHashCode();
-      if (msgCase_ == MsgOneofCase.Command) hash ^= Command.GetHashCode();
-      if (msgCase_ == MsgOneofCase.Config) hash ^= Config.GetHashCode();
+      if (MessageTypeId != global::Gxovnt.Messaging.Container.Types.MessageType_Id.ClearConfig) hash ^= MessageTypeId.GetHashCode();
+      if (HasTextValue) hash ^= TextValue.GetHashCode();
+      if (HasIntValue) hash ^= IntValue.GetHashCode();
       hash ^= (int) msgCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -202,17 +232,17 @@ namespace Gxovnt.Messaging {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (MessageTypeId != global::Gxovnt.Messaging.Container.Types.MessageType_Id.Command) {
+      if (MessageTypeId != global::Gxovnt.Messaging.Container.Types.MessageType_Id.ClearConfig) {
         output.WriteRawTag(8);
         output.WriteEnum((int) MessageTypeId);
       }
-      if (msgCase_ == MsgOneofCase.Command) {
+      if (HasTextValue) {
         output.WriteRawTag(18);
-        output.WriteMessage(Command);
+        output.WriteString(TextValue);
       }
-      if (msgCase_ == MsgOneofCase.Config) {
-        output.WriteRawTag(26);
-        output.WriteMessage(Config);
+      if (HasIntValue) {
+        output.WriteRawTag(24);
+        output.WriteInt32(IntValue);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -224,17 +254,17 @@ namespace Gxovnt.Messaging {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (MessageTypeId != global::Gxovnt.Messaging.Container.Types.MessageType_Id.Command) {
+      if (MessageTypeId != global::Gxovnt.Messaging.Container.Types.MessageType_Id.ClearConfig) {
         output.WriteRawTag(8);
         output.WriteEnum((int) MessageTypeId);
       }
-      if (msgCase_ == MsgOneofCase.Command) {
+      if (HasTextValue) {
         output.WriteRawTag(18);
-        output.WriteMessage(Command);
+        output.WriteString(TextValue);
       }
-      if (msgCase_ == MsgOneofCase.Config) {
-        output.WriteRawTag(26);
-        output.WriteMessage(Config);
+      if (HasIntValue) {
+        output.WriteRawTag(24);
+        output.WriteInt32(IntValue);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -246,14 +276,14 @@ namespace Gxovnt.Messaging {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (MessageTypeId != global::Gxovnt.Messaging.Container.Types.MessageType_Id.Command) {
+      if (MessageTypeId != global::Gxovnt.Messaging.Container.Types.MessageType_Id.ClearConfig) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) MessageTypeId);
       }
-      if (msgCase_ == MsgOneofCase.Command) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Command);
+      if (HasTextValue) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(TextValue);
       }
-      if (msgCase_ == MsgOneofCase.Config) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Config);
+      if (HasIntValue) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(IntValue);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -267,21 +297,15 @@ namespace Gxovnt.Messaging {
       if (other == null) {
         return;
       }
-      if (other.MessageTypeId != global::Gxovnt.Messaging.Container.Types.MessageType_Id.Command) {
+      if (other.MessageTypeId != global::Gxovnt.Messaging.Container.Types.MessageType_Id.ClearConfig) {
         MessageTypeId = other.MessageTypeId;
       }
       switch (other.MsgCase) {
-        case MsgOneofCase.Command:
-          if (Command == null) {
-            Command = new global::Gxovnt.Messaging.Command();
-          }
-          Command.MergeFrom(other.Command);
+        case MsgOneofCase.TextValue:
+          TextValue = other.TextValue;
           break;
-        case MsgOneofCase.Config:
-          if (Config == null) {
-            Config = new global::Gxovnt.Messaging.Configuration();
-          }
-          Config.MergeFrom(other.Config);
+        case MsgOneofCase.IntValue:
+          IntValue = other.IntValue;
           break;
       }
 
@@ -305,21 +329,11 @@ namespace Gxovnt.Messaging {
             break;
           }
           case 18: {
-            global::Gxovnt.Messaging.Command subBuilder = new global::Gxovnt.Messaging.Command();
-            if (msgCase_ == MsgOneofCase.Command) {
-              subBuilder.MergeFrom(Command);
-            }
-            input.ReadMessage(subBuilder);
-            Command = subBuilder;
+            TextValue = input.ReadString();
             break;
           }
-          case 26: {
-            global::Gxovnt.Messaging.Configuration subBuilder = new global::Gxovnt.Messaging.Configuration();
-            if (msgCase_ == MsgOneofCase.Config) {
-              subBuilder.MergeFrom(Config);
-            }
-            input.ReadMessage(subBuilder);
-            Config = subBuilder;
+          case 24: {
+            IntValue = input.ReadInt32();
             break;
           }
         }
@@ -342,21 +356,11 @@ namespace Gxovnt.Messaging {
             break;
           }
           case 18: {
-            global::Gxovnt.Messaging.Command subBuilder = new global::Gxovnt.Messaging.Command();
-            if (msgCase_ == MsgOneofCase.Command) {
-              subBuilder.MergeFrom(Command);
-            }
-            input.ReadMessage(subBuilder);
-            Command = subBuilder;
+            TextValue = input.ReadString();
             break;
           }
-          case 26: {
-            global::Gxovnt.Messaging.Configuration subBuilder = new global::Gxovnt.Messaging.Configuration();
-            if (msgCase_ == MsgOneofCase.Config) {
-              subBuilder.MergeFrom(Config);
-            }
-            input.ReadMessage(subBuilder);
-            Config = subBuilder;
+          case 24: {
+            IntValue = input.ReadInt32();
             break;
           }
         }
@@ -370,9 +374,17 @@ namespace Gxovnt.Messaging {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
       public enum MessageType_Id {
-        [pbr::OriginalName("COMMAND")] Command = 0,
-        [pbr::OriginalName("CONFIG")] Config = 1,
-        [pbr::OriginalName("Unknown")] Unknown = 99,
+        [pbr::OriginalName("ClearConfig")] ClearConfig = 0,
+        [pbr::OriginalName("SaveConfig")] SaveConfig = 1,
+        [pbr::OriginalName("SetSystemName")] SetSystemName = 2,
+        [pbr::OriginalName("GetSystemName")] GetSystemName = 3,
+        [pbr::OriginalName("SetSystemType")] SetSystemType = 4,
+        [pbr::OriginalName("GetSystemType")] GetSystemType = 5,
+        [pbr::OriginalName("SetWiFiSSID")] SetWiFiSsid = 6,
+        [pbr::OriginalName("GetWiFiSSID")] GetWiFiSsid = 7,
+        [pbr::OriginalName("SetWiFiPassword")] SetWiFiPassword = 8,
+        [pbr::OriginalName("GetWiFiPassword")] GetWiFiPassword = 9,
+        [pbr::OriginalName("Echo")] Echo = 10,
       }
 
     }
