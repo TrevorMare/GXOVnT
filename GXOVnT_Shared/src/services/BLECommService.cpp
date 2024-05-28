@@ -143,26 +143,49 @@ void BleCommService::onDisconnect(BLEServer *pServer)
 
 void BleCommService::onWrite(BLECharacteristic *protoCharacteristic)
 {
+	std::lock_guard<std::mutex> lck(m_mutexLock);
 	uint8_t *messageBuffer = protoCharacteristic->getData();
 	size_t messageLength = protoCharacteristic->getLength();
 	if (messageLength > 2) {
-		processCharacteristicMessage(messageBuffer, messageLength);
+
+		CommMessage *commMessage = processCharacteristicMessage(messageBuffer, messageLength);
+		if (commMessage != nullptr) {
+			m_messageHandler->handleMessage(commMessage);
+			//removeProcessedMessage(commMessage->MessageId());
+		}
 	}
 }
 
 // Characteristic Parsing
 /////////////////////////////////////////////////////////////////
+void BleCommService::removeProcessedMessage(uint16_t messageId) {
 
-bool BleCommService::processCharacteristicMessage(uint8_t *buffer, size_t messageLength)
+	int commMessageIndex = -1;
+	// We need to find the 
+	for (int iCommMessage = 0; iCommMessage < m_commMessages.size(); iCommMessage++) {
+		if (messageId == m_commMessages[iCommMessage]->MessageId()) {
+			commMessageIndex = iCommMessage;
+			break;
+		}
+	}
+	if (commMessageIndex == -1) return;
+
+	ESP_LOGI(LOG_TAG, "Message processed, deleting message at index %d", commMessageIndex);
+
+	delete m_commMessages[commMessageIndex];
+	m_commMessages.erase(m_commMessages.begin() + commMessageIndex);
+
+}
+
+CommMessage *BleCommService::processCharacteristicMessage(uint8_t *buffer, size_t messageLength)
 {
-	if (m_messageHandler == nullptr) { return false; }
-
+	if (m_messageHandler == nullptr) { return nullptr; }
 	// Build the message package
 	CommMessagePacket *messagePacket = new CommMessagePacket(buffer, messageLength);
 	if (!messagePacket->ValidPacket()) {
 		ESP_LOGI(LOG_TAG, "Packet not valid, quiting");
 		delete messagePacket;
-		return false;
+		return nullptr;
 	}
 	
 	CommMessage *commMessage = nullptr;
@@ -170,7 +193,6 @@ bool BleCommService::processCharacteristicMessage(uint8_t *buffer, size_t messag
 
 	// If this is the start of the message, create a new message object and add it to the messages
 	if (messagePacket->PacketStart()) {
-		ESP_LOGI(LOG_TAG, "Packet start, creating message");
 		commMessage = new CommMessage(COMM_SERVICE_TYPE_BLE);
 		m_commMessages.push_back(commMessage);
 		commMessageIndex = m_commMessages.size() -1;
@@ -188,17 +210,16 @@ bool BleCommService::processCharacteristicMessage(uint8_t *buffer, size_t messag
 
 	// Check that we did find the message, if not ignore it 
 	if (commMessage == nullptr) {
+		ESP_LOGI(LOG_TAG, "Deleting message packet as message not found");
 		delete messagePacket;
-		return false;
+		return nullptr;
 	}
 	// Add the message packet
 	commMessage->AddPackage(messagePacket);
 
 	// If this is the last packet in the message, handle it
 	if (messagePacket->PacketEnd()) {
-		m_messageHandler->handleMessage(commMessage);
-		m_commMessages.erase(m_commMessages.begin() + commMessageIndex);
-		delete commMessage;
+		return commMessage;
 	}
-	return true;
+	return nullptr;
 }

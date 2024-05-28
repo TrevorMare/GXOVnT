@@ -22,6 +22,7 @@ namespace GXOVnT
 						std::vector<CommMessagePacket*> m_messagePackets;
 						std::vector<uint8_t> m_messageBuffer;
 						enum GXOVnT_COMM_SERVICE_TYPE m_commServiceType = COMM_SERVICE_TYPE_BLE;
+						bool m_IsProcessed = false;
 					public:
 						CommMessage(enum GXOVnT_COMM_SERVICE_TYPE commServiceType);
 						~CommMessage();
@@ -48,6 +49,12 @@ namespace GXOVnT
 						enum GXOVnT_COMM_SERVICE_TYPE GetSourceService();
 						/// @brief Prints the debug message to the output
 						void PrintMessage();
+						/// @brief Gets a value to indicate if the message has been processed
+						/// @return 
+						bool IsProcessed();
+						/// @brief Sets the is processed indicator
+						/// @param processed 
+						void IsProcessed(bool processed);
 				};
     }
 }

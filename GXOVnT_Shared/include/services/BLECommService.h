@@ -9,6 +9,7 @@
 #include <BLE2902.h>
 #include <memory>
 #include "shared/Shared.h"
+#include <mutex>
 #include "messages/CommMessage.h"
 #include "messages/CommMessagePacket.h"
 #include "messages/CommMessageHandler.h"
@@ -32,6 +33,7 @@ namespace GXOVnT
 			BLEAdvertising *m_bleAdvertising = nullptr;
 			CommMessageHandler *m_messageHandler = nullptr;
 			std::vector<CommMessage*> m_commMessages;
+			std::mutex m_mutexLock;
 			
 			bool m_stopRequested = false;
 			bool m_serverConnected = false;
@@ -50,7 +52,8 @@ namespace GXOVnT
 			// Starts the advertising for discovery
 			void startAdvertising();
 			// Parses a Characteristic message
-			bool processCharacteristicMessage(uint8_t* buffer, size_t messageLength); 
+			CommMessage *processCharacteristicMessage(uint8_t* buffer, size_t messageLength); 
+			void removeProcessedMessage(uint16_t messageId);
 		public:
 			BleCommService();
 			~BleCommService();

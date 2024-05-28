@@ -57,7 +57,8 @@ void CommMessagePacket::parseMessageBytes(const uint8_t *messageBytes, size_t me
     m_packetBuffer.reserve(20);
     // Create a vector of the remaining bytes. This represents the actual data in the packet
 	for (int i = 4; i < messageSize; i++) {
-		m_packetBuffer.push_back(messageBytes[i]);
+        uint8_t indexValue = messageBytes[i];
+		m_packetBuffer.push_back(indexValue);
 	}
     m_packetBufferSize = messageSize - 4;
     m_validPacket = true;

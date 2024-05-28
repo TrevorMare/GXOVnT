@@ -4,6 +4,8 @@ param (
     [string]$rootDirectory
  )
 
+#https://app.quicktype.io/
+
 # Nanopd is used to generate the c++ file proto source files
 [string]$global:nanopd_git_url = "https://github.com/nanopb/nanopb/archive/refs/heads/master.zip"
 # Standard protoc is used to generate the c# proto source files
@@ -132,7 +134,8 @@ function GenerateFiles_CSharp() {
 function GenerateFiles_CPP() {
     Write-Host "[Powershell] Generating C++ files to " $global:src_output_cpp
     Get-ChildItem $global:messages_input_directory -Filter *.proto | Foreach-Object {
-        $command = "$global:protoc_generator --plugin=protoc-gen-nanopb=$global:nanopd_generator --proto_path=$global:messages_input_directory --nanopb_out=$global:src_output_cpp $_"
+        $command = "$global:protoc_generator --proto_path=$global:messages_input_directory --cpp_out=$global:src_output_cpp $_"
+        #$command = "$global:protoc_generator --plugin=protoc-gen-nanopb=$global:nanopd_generator --proto_path=$global:messages_input_directory --nanopb_opt=-v --nanopb_out=$global:src_output_cpp $_"
         Invoke-Expression $command
     }
 }
@@ -188,12 +191,12 @@ function CopyCPPFilesToShared() {
 
 Write-Host "[Powershell] Starting generation of proto files: " $rootDirectory
 
-# SetupInputAndOutputDirectories
-# PrepareGeneratorsDirectory
-# DownloadAndExtract_protoc
-# DownloadAndExtract_nanopd
-# PrepareEnvironment
-# GenerateFiles_CSharp
-# GenerateFiles_CPP
-# GenerateFiles_TS
-# CopyCPPFilesToShared
+SetupInputAndOutputDirectories
+PrepareGeneratorsDirectory
+DownloadAndExtract_protoc
+DownloadAndExtract_nanopd
+PrepareEnvironment
+GenerateFiles_CSharp
+GenerateFiles_CPP
+GenerateFiles_TS
+CopyCPPFilesToShared

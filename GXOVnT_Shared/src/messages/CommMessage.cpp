@@ -9,6 +9,7 @@ CommMessage::CommMessage(enum GXOVnT_COMM_SERVICE_TYPE commServiceType) {
 }
 
 CommMessage::~CommMessage() {
+    ESP_LOGI(LOG_TAG, "Disposing CommMessage");
     for (size_t iIndex = 0; iIndex < m_messagePackets.size(); iIndex++) {
         delete m_messagePackets[iIndex];
     }
@@ -43,6 +44,10 @@ void CommMessage::AddPackage(CommMessagePacket *messagePacket) {
 bool CommMessage::ReceivedAllPackets() { return m_receivedAllPackets; }
 
 size_t CommMessage::TotalSize() { return m_totalSize; }
+
+bool CommMessage::IsProcessed() { return m_IsProcessed; }
+
+void CommMessage::IsProcessed(bool processed) { m_IsProcessed = processed; }
 
 enum GXOVnT_COMM_SERVICE_TYPE CommMessage::GetSourceService() { return m_commServiceType; }
 

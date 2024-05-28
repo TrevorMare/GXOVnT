@@ -3,7 +3,6 @@ syntax = "proto3";
 package gxovnt.messaging;
 
 
-
 message Container {
     enum MessageType_Id {
         ClearConfig = 0;

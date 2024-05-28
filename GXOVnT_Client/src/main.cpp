@@ -23,6 +23,45 @@
 int scanTime = 10; //In seconds
 
 
+bool decode_pb_string(pb_istream_t *stream, const pb_field_t *field, void **arg)
+{
+    //https://github.com/nanopb/nanopb/blob/master/tests/callbacks/decode_callbacks.c#L10
+    uint8_t buffer[1024] = {0};
+
+    /* We could read block-by-block to avoid the large buffer... */
+    if (stream->bytes_left > sizeof(buffer) - 1)
+        return false;
+    
+    
+
+    ESP_LOGW(LOG_TAG, "Reading from the stream into buffer");
+    if (!pb_read(stream, buffer, stream->bytes_left))
+        return false;
+    /* Print the string, in format comparable with protoc --decode.
+     * Format comes from the arg defined in main().
+     */
+    ESP_LOGW(LOG_TAG, "Printing the value");
+    printf((char*)*arg, buffer);
+    return true;
+}
+
+bool encode_string(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
+{
+    std::string dataToEncode = "Ensure that the device is on before running the scan. Once a device has been detected, ";
+    const char *str = dataToEncode.c_str();
+    
+    if (!pb_encode_tag_for_field(stream, field))
+        return false;
+    
+    return pb_encode_string(stream, (uint8_t*)str, strlen(str));
+}
+
+
+void testProto() {
+
+
+
+}
 
 
 void setup() {
@@ -68,15 +107,18 @@ void setup() {
 }
 
 void loop() {
+
+    //GXOVnTCommService.run();
+
   // put your main code here, to run repeatedly:
   if (Serial.available() && Serial.readString() == "update") {
 
-    Serial.println("Starting updates");
-
+    // Serial.println("Starting updates");
+//testProto();
     //updater->checkForUpdatesAndInstall();
   }
   //m_bleManager->run();
-  delay(2000);
+  
 
 }
 

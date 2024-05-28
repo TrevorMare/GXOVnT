@@ -4,11 +4,11 @@
 #define _GXOVNT_COMMSERVICE_H_
 
 #include "services/BLECommService.h"
-
 #include "messages/CommMessageHandler.h"
 #include "messages/CommMessage.h"
 
 #include "messages/gxovnt.messaging.container.pb.h"
+
 
 #include "messages/pb_encode.h"
 #include "messages/pb_decode.h"
@@ -30,13 +30,19 @@ namespace GXOVnT
 			BleCommService *m_BleCommService = nullptr;
 			// Handles the incoming comm message
 			void handleMessage(CommMessage *commMessage) override;
-			bool decode_pb_string(pb_istream_t *stream, const pb_field_t *field, void **arg);
+			std::vector<CommMessage*> m_messagesToRun;
+			std::mutex m_mutexLock;
+			void processMessage(CommMessage *commMessage);
+
+			
+			
 		public:
 			CommService();
 			~CommService();
 
 			void start();
 			void stop();
+			void run();
 		};
 	}
 }
