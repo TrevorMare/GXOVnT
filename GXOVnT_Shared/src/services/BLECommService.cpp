@@ -74,7 +74,7 @@ void BleCommService::stop()
 
 bool BleCommService::sendMessage(CommMessage *commMessage) {
 	if (commMessage == nullptr) return false;
-	processWriteCharacteristicMessage(commMessage);
+	return processWriteCharacteristicMessage(commMessage);
 }
 
 // Bluetooth connections and methods
@@ -204,7 +204,7 @@ bool BleCommService::processWriteCharacteristicMessage(CommMessage *commMessage)
 
 		m_protoWriteCharacteristic->setValue(packetBuffer, packetLength);
 
-		m_protoWriteCharacteristic->setCallbacks
+		
 
 		delay(100);
 	}

@@ -72,7 +72,7 @@ void CommMessage::PrintMessage() {
         m_messagePackets[i]->PrintPacket();
     }
 
-    const uint8_t * messageBuffer = GetMessageBuffer();
+    const uint8_t * messageBuffer = Read();
     
     std::string bufferValues = "";
     for (size_t iIndex = 0; iIndex < m_totalSize; iIndex++) {
@@ -104,7 +104,7 @@ const uint8_t* CommMessage::Read() {
     return m_messageBuffer.data();
 }
 
-std::vector<CommMessagePacket*> *CommMessage::Write(uint16_t messageId, uint8_t *buffer, size_t messageSize, uint16_t chunkSize = 20) {
+std::vector<CommMessagePacket*> *CommMessage::Write(uint16_t messageId, uint8_t *buffer, size_t messageSize, uint16_t chunkSize) {
      
     m_messageId = messageId;
 
