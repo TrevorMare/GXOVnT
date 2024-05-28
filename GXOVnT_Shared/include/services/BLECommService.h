@@ -12,7 +12,8 @@
 #include <mutex>
 #include "messages/CommMessage.h"
 #include "messages/CommMessagePacket.h"
-#include "messages/CommMessageHandler.h"
+#include "messages/CommMessageReceiveHandler.h"
+#include "messages/CommMessageSendHandler.h"
 
 using namespace GXOVnT::messages;
 
@@ -23,15 +24,16 @@ namespace GXOVnT
 	{
 		
 		/////////////////////////////////////////////////////////////////
-		class BleCommService : public BLEServerCallbacks, public BLECharacteristicCallbacks
+		class BleCommService : public BLEServerCallbacks, public BLECharacteristicCallbacks, public CommMessageSendHandler
 		{
 		private:
 			/* data */
 			BLEServer *m_bleServer = nullptr;
 			BLEService *m_bleService = nullptr;
-			BLECharacteristic *m_protoCharacteristic = nullptr;
+			BLECharacteristic *m_protoReadCharacteristic = nullptr;
+			BLECharacteristic *m_protoWriteCharacteristic = nullptr;
 			BLEAdvertising *m_bleAdvertising = nullptr;
-			CommMessageHandler *m_messageHandler = nullptr;
+			CommMessageReceiveHandler *m_messageHandler = nullptr;
 			std::vector<CommMessage*> m_commMessages;
 			std::mutex m_mutexLock;
 			
@@ -52,13 +54,15 @@ namespace GXOVnT
 			// Starts the advertising for discovery
 			void startAdvertising();
 			// Parses a Characteristic message
-			CommMessage *processCharacteristicMessage(uint8_t* buffer, size_t messageLength); 
+			CommMessage *processReadCharacteristicMessage(uint8_t* buffer, size_t messageLength);
+			bool processWriteCharacteristicMessage(CommMessage *commMessage);
+			// Removes a message from the buffer 
 			void removeProcessedMessage(uint16_t messageId);
 		public:
 			BleCommService();
 			~BleCommService();
-
-			void start(CommMessageHandler *messageHandler);
+			bool sendMessage(CommMessage *commMessage) override;
+			void start(CommMessageReceiveHandler *messageHandler);
 			void stop();
 		};
 	}

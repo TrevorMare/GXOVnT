@@ -4,7 +4,7 @@
 #define _GXOVNT_COMMSERVICE_H_
 
 #include "services/BLECommService.h"
-#include "messages/CommMessageHandler.h"
+#include "messages/CommMessageReceiveHandler.h"
 #include "messages/CommMessage.h"
 
 #include "messages/gxovnt.messaging.container.pb.h"
@@ -23,22 +23,33 @@ namespace GXOVnT
 	namespace services
 	{
 
-		class CommService : public CommMessageHandler
+		class CommService : public CommMessageReceiveHandler
 		{
 		private:
 			/* data */
 			BleCommService *m_BleCommService = nullptr;
-			// Handles the incoming comm message
-			void handleMessage(CommMessage *commMessage) override;
+			uint16_t m_sendMessageId = 1;
+			
+			// Trigger for when a new comm service message is received from a channel
+			void onMessageReceived(CommMessage *commMessage) override;
+			// Parses the message into an object and handles the response if any
+			void processMessage(CommMessage *commMessage);
+			
+			
+
+
+			//
 			std::vector<CommMessage*> m_messagesToRun;
 			std::mutex m_mutexLock;
-			void processMessage(CommMessage *commMessage);
-
 			
 			
 		public:
 			CommService();
 			~CommService();
+			
+			// Sends a message to the comm service
+			bool sendMessage(uint8_t *buffer, size_t messageSize, enum GXOVnT_COMM_SERVICE_TYPE commServiceType);
+			bool sendMessage(CommMessage *commMessage);
 
 			void start();
 			void stop();

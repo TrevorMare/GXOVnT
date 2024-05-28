@@ -4,6 +4,8 @@
 using namespace GXOVnT::shared;
 using namespace GXOVnT::messages;
 
+/////////////////////////////////////////////////////////////////
+
 CommMessage::CommMessage(enum GXOVnT_COMM_SERVICE_TYPE commServiceType) {
     m_commServiceType = commServiceType;
 }
@@ -17,7 +19,24 @@ CommMessage::~CommMessage() {
     m_messageBuffer.clear();
 }
 
-void CommMessage::AddPackage(CommMessagePacket *messagePacket) {
+// Property getters
+/////////////////////////////////////////////////////////////////
+uint16_t CommMessage::MessageId() { return m_messageId; }
+bool CommMessage::ReceivedAllPackets() { return m_receivedAllPackets; }
+size_t CommMessage::TotalSize() { return m_totalSize; }
+bool CommMessage::IsProcessed() { return m_IsProcessed; }
+void CommMessage::IsProcessed(bool processed) { m_IsProcessed = processed; }
+enum GXOVnT_COMM_SERVICE_TYPE CommMessage::GetSourceService() { return m_commServiceType; }
+std::vector<CommMessagePacket*> *CommMessage::MessagePackets() { return &m_messagePackets; }
+bool CommMessage::IsExpired() {
+    unsigned long explicitExpiry = m_lastPacketReceivedTimeStamp + 30000;
+    return explicitExpiry < millis();
+}
+
+// Packet helpers
+/////////////////////////////////////////////////////////////////
+
+void CommMessage::AddIncomingPackage(CommMessagePacket *messagePacket) {
     if (messagePacket == nullptr) {
         ESP_LOGW(LOG_TAG, "Message packet was null, could not add it");
     }
@@ -34,29 +53,15 @@ void CommMessage::AddPackage(CommMessagePacket *messagePacket) {
     // Get the size of the packet buffer
     m_totalSize += messagePacket->PacketBufferSize();
 
-    m_expiryMillis = millis();
+    m_lastPacketReceivedTimeStamp = millis();
 
     if (messagePacket->PacketEnd()) {
         m_receivedAllPackets = true;
     }
 }
 
-bool CommMessage::ReceivedAllPackets() { return m_receivedAllPackets; }
-
-size_t CommMessage::TotalSize() { return m_totalSize; }
-
-bool CommMessage::IsProcessed() { return m_IsProcessed; }
-
-void CommMessage::IsProcessed(bool processed) { m_IsProcessed = processed; }
-
-enum GXOVnT_COMM_SERVICE_TYPE CommMessage::GetSourceService() { return m_commServiceType; }
-
-uint16_t CommMessage::MessageId() { return m_messageId; }
-
-bool CommMessage::IsExpired() {
-    unsigned long explicitExpiry = m_expiryMillis + 30000;
-    return explicitExpiry < millis();
-}
+// Helper Methods
+/////////////////////////////////////////////////////////////////
 
 void CommMessage::PrintMessage() {
     ESP_LOGI(LOG_TAG, "MessageId: %d, TotalSize: %d (bytes), NumberOfPackets: %d",
@@ -78,9 +83,9 @@ void CommMessage::PrintMessage() {
     ESP_LOGI(LOG_TAG, "Message bytes: %s", bufferValues.c_str());
 }
 
-const uint8_t* CommMessage::GetMessageBuffer() {
+const uint8_t* CommMessage::Read() {
     if (!ReceivedAllPackets()) {
-        ESP_LOGW(LOG_TAG, "CommMessage: Get buffer called before all packets were received");
+        ESP_LOGW(LOG_TAG, "CommMessage: Read called before all packets were received");
     }
     m_messageBuffer.clear();
     m_messageBuffer.reserve(m_totalSize);
@@ -97,4 +102,29 @@ const uint8_t* CommMessage::GetMessageBuffer() {
         }
     }
     return m_messageBuffer.data();
+}
+
+std::vector<CommMessagePacket*> *CommMessage::Write(uint16_t messageId, uint8_t *buffer, size_t messageSize, uint16_t chunkSize = 20) {
+     
+    m_messageId = messageId;
+
+    uint8_t chunkBuffer[chunkSize];
+    // Calculate the chunk size as each packet uses 4 bytes for meta data
+    uint16_t calculatedBytesSize = chunkSize - 4;
+    // Calculate the number of chunks
+    uint8_t numberOfChunks = ceil(messageSize / calculatedBytesSize);
+    // Now we can start by building the chunks
+    for (int iChunk = 0; iChunk < numberOfChunks; iChunk++) {
+        bool isPacketStart = (iChunk == 0);
+        bool isPacketEnd = (iChunk == (numberOfChunks - 1));
+        CommMessagePacket *commMessagePacket = new CommMessagePacket();
+
+        commMessagePacket->buildOutgoingPacketData(messageId, iChunk, 
+            isPacketStart, isPacketEnd, buffer, messageSize);
+
+        m_messagePackets.push_back(commMessagePacket);
+        m_totalSize += commMessagePacket->PacketBufferSize();
+    }
+
+    return &m_messagePackets;
 }

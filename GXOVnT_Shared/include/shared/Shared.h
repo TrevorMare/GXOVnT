@@ -39,7 +39,8 @@ namespace GXOVnT {
     /////////////////////////////////////////////////////////////////
     static const char *GXOVnT_FIRMWARE_VERSION = "v1.0.2";
     static const char *GXOVNT_BLE_SERVICE_UUID = "05c1fba8-cc8b-4534-8787-0e6a0775c3de";
-    static const char *GXOVNT_BLE_PROTO_CHARACTERISTIC_UUID = "4687b690-cd36-4a7c-9134-49ffe62d9e4f";
+    static const char *GXOVNT_BLE_PROTO_CHARACTERISTIC_READ_UUID = "4687b690-cd36-4a7c-9134-49ffe62d9e4f";
+    static const char *GXOVNT_BLE_PROTO_CHARACTERISTIC_WRITE_UUID = "4687b690-cd36-4a7c-9134-49ffe62d954f";
     static const char *GXOVNT_BLE_MANUFACTURER = "GXOVnT";
     static const char *GXOVNT_BLE_MANUFACTURER_DELIMITER = "|";
 
@@ -75,6 +76,11 @@ namespace GXOVnT {
       COMM_SERVICE_TYPE_BLE = 1, 
       COMM_SERVICE_TYPE_LORA = 2, 
       COMM_SERVICE_TYPE_WIFI = 3
+    };
+
+    enum GXOVnT_COMM_MESSAGE_DIRECTION {
+      COMM_MESSAGE_DIRECTION_INCOMING = 1,
+      COMM_MESSAGE_DIRECTION_OUTGOING = 2
     };
 
     // Common structures

@@ -12,7 +12,7 @@ BleCommService::~BleCommService() {}
 
 // Public
 /////////////////////////////////////////////////////////////////
-void BleCommService::start(CommMessageHandler *messageHandler)
+void BleCommService::start(CommMessageReceiveHandler *messageHandler)
 {
 	m_stopRequested = false;
 	// Check if we already started the service
@@ -55,13 +55,15 @@ void BleCommService::stop()
 
 	// Delete the pointer variables
 	delete m_bleAdvertising;
-	delete m_protoCharacteristic;
+	delete m_protoReadCharacteristic;
+	delete m_protoWriteCharacteristic;
 	delete m_bleService;
 	delete m_bleServer;
 
 	// Set the values to null
 	m_bleAdvertising = nullptr;
-	m_protoCharacteristic = nullptr;
+	m_protoReadCharacteristic = nullptr;
+	m_protoWriteCharacteristic = nullptr;
 	m_bleServer = nullptr;
 	m_bleService = nullptr;
 	m_serverConnectionId = -1;
@@ -70,7 +72,12 @@ void BleCommService::stop()
 	BLEDevice::deinit(true);
 }
 
-// Private
+bool BleCommService::sendMessage(CommMessage *commMessage) {
+	if (commMessage == nullptr) return false;
+	processWriteCharacteristicMessage(commMessage);
+}
+
+// Bluetooth connections and methods
 /////////////////////////////////////////////////////////////////
 void BleCommService::initBleServer()
 {
@@ -83,15 +90,25 @@ void BleCommService::initBleService()
 {
 	m_bleService = m_bleServer->createService(GXOVNT_BLE_SERVICE_UUID);
 
-	m_protoCharacteristic = m_bleService->createCharacteristic(
-			GXOVNT_BLE_PROTO_CHARACTERISTIC_UUID,
+	m_protoReadCharacteristic = m_bleService->createCharacteristic(
+			GXOVNT_BLE_PROTO_CHARACTERISTIC_READ_UUID,
 			BLECharacteristic::PROPERTY_READ |
 					BLECharacteristic::PROPERTY_WRITE |
 					BLECharacteristic::PROPERTY_NOTIFY |
 					BLECharacteristic::PROPERTY_INDICATE);
 
-	m_protoCharacteristic->setCallbacks(this);
-	m_protoCharacteristic->addDescriptor(new BLE2902());
+	m_protoWriteCharacteristic = m_bleService->createCharacteristic(
+			GXOVNT_BLE_PROTO_CHARACTERISTIC_WRITE_UUID,
+			BLECharacteristic::PROPERTY_READ |
+					BLECharacteristic::PROPERTY_WRITE |
+					BLECharacteristic::PROPERTY_NOTIFY |
+					BLECharacteristic::PROPERTY_INDICATE);		 			
+
+	m_protoReadCharacteristic->setCallbacks(this);
+	m_protoReadCharacteristic->addDescriptor(new BLE2902());
+
+	m_protoWriteCharacteristic->setCallbacks(this);
+	m_protoWriteCharacteristic->addDescriptor(new BLE2902());
 
 	m_bleService->start();
 }
@@ -148,9 +165,9 @@ void BleCommService::onWrite(BLECharacteristic *protoCharacteristic)
 	size_t messageLength = protoCharacteristic->getLength();
 	if (messageLength > 2) {
 
-		CommMessage *commMessage = processCharacteristicMessage(messageBuffer, messageLength);
+		CommMessage *commMessage = processReadCharacteristicMessage(messageBuffer, messageLength);
 		if (commMessage != nullptr) {
-			m_messageHandler->handleMessage(commMessage);
+			m_messageHandler->onMessageReceived(commMessage);
 			//removeProcessedMessage(commMessage->MessageId());
 		}
 	}
@@ -177,11 +194,32 @@ void BleCommService::removeProcessedMessage(uint16_t messageId) {
 
 }
 
-CommMessage *BleCommService::processCharacteristicMessage(uint8_t *buffer, size_t messageLength)
+bool BleCommService::processWriteCharacteristicMessage(CommMessage *commMessage) {
+	size_t numberOfChunks = commMessage->MessagePackets()->size();
+
+	for (size_t iChunk = 0; iChunk < numberOfChunks; iChunk++) {
+		CommMessagePacket *packet = commMessage->MessagePackets()->at(0);
+		uint8_t *packetBuffer = packet->GetData();
+		size_t packetLength = packet->PacketBufferSize();
+
+		m_protoWriteCharacteristic->setValue(packetBuffer, packetLength);
+
+		m_protoWriteCharacteristic->setCallbacks
+
+		delay(100);
+	}
+	return true;
+}
+
+CommMessage *BleCommService::processReadCharacteristicMessage(uint8_t *buffer, size_t messageLength)
 {
 	if (m_messageHandler == nullptr) { return nullptr; }
 	// Build the message package
-	CommMessagePacket *messagePacket = new CommMessagePacket(buffer, messageLength);
+	CommMessagePacket *messagePacket = new CommMessagePacket();
+
+	// Build the packet from the incoming data
+	messagePacket->buildIncomingPacketData(buffer, messageLength);
+
 	if (!messagePacket->ValidPacket()) {
 		ESP_LOGI(LOG_TAG, "Packet not valid, quiting");
 		delete messagePacket;
@@ -214,8 +252,9 @@ CommMessage *BleCommService::processCharacteristicMessage(uint8_t *buffer, size_
 		delete messagePacket;
 		return nullptr;
 	}
+
 	// Add the message packet
-	commMessage->AddPackage(messagePacket);
+	commMessage->AddIncomingPackage(messagePacket);
 
 	// If this is the last packet in the message, handle it
 	if (messagePacket->PacketEnd()) {

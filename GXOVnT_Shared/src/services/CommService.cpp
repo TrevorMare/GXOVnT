@@ -40,7 +40,7 @@ void CommService::stop() {
 
 
 void CommService::processMessage(CommMessage *commMessage) {
-    const uint8_t *buffer = commMessage->GetMessageBuffer();
+    const uint8_t *buffer = commMessage->Read();
     const size_t message_length = commMessage->TotalSize();
     gxovnt_messaging_Container containerProtoDecode = gxovnt_messaging_Container_init_zero;
     containerProtoDecode.msg.TextValue.arg = (void*)" submsg {\n  stringvalue: \"%s\"\n";
@@ -52,9 +52,24 @@ void CommService::processMessage(CommMessage *commMessage) {
     /* Check for errors... */
     if (!status) {
         ESP_LOGE(LOG_TAG, "Decoding failed: %s\n", PB_GET_ERROR(&istream));
-    }
+    } 
 }
 
+bool CommService::sendMessage(uint8_t *buffer, size_t messageSize, enum GXOVnT_COMM_SERVICE_TYPE commServiceType) {
+    
+    CommMessage commMessage = { commServiceType };
+    commMessage.Write(m_sendMessageId, buffer, messageSize);
+    return sendMessage(&commMessage);
+}
+
+bool CommService::sendMessage(CommMessage *commMessage) {
+    if (commMessage == nullptr) return false;
+    if (commMessage->GetSourceService() == COMM_SERVICE_TYPE_BLE) {
+        return m_BleCommService->sendMessage(commMessage);
+    }
+    m_sendMessageId++;
+    return false;
+}
 
 void CommService::run() {
 
@@ -66,7 +81,7 @@ void CommService::run() {
     m_messagesToRun.clear();
 }
 
-void CommService::handleMessage(CommMessage *commMessage) {
+void CommService::onMessageReceived(CommMessage *commMessage) {
     std::lock_guard<std::mutex> lck(m_mutexLock);
     if (commMessage == nullptr) {
         ESP_LOGW(LOG_TAG, "Could not handle null ptr comm message");

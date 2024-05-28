@@ -5,15 +5,25 @@
 using namespace GXOVnT::shared;
 using namespace GXOVnT::messages;
 
-// Public Methods
+// Constructors
 /////////////////////////////////////////////////////////////////
+CommMessagePacket::CommMessagePacket() {}
+CommMessagePacket::~CommMessagePacket() {
+    m_packetBuffer.clear();
+}
+
+// Property Getters
 uint16_t CommMessagePacket::MessageId() { return m_messageId; }
 uint8_t CommMessagePacket::PacketId() { return m_packetId; }
 bool CommMessagePacket::PacketStart() { return m_packetStart; }
 bool CommMessagePacket::PacketEnd() { return m_packetEnd; }
 bool CommMessagePacket::ValidPacket() { return m_validPacket; }
-std::vector<uint8_t> CommMessagePacket::PacketBuffer() { return m_packetBuffer; }
+uint8_t *CommMessagePacket::GetData() { return m_packetBuffer.data(); }
+std::vector<uint8_t> CommMessagePacket::GetDataVector() { return m_packetBuffer; }
 size_t CommMessagePacket::PacketBufferSize() { return m_packetBufferSize; }
+enum GXOVnT_COMM_MESSAGE_DIRECTION CommMessagePacket::MessageDirection() { return m_commMessageDirection; }
+// Helper Methods
+/////////////////////////////////////////////////////////////////
 void CommMessagePacket::PrintPacket() {
     if (!m_validPacket) {
         ESP_LOGI(LOG_TAG, "Packet is not valid");
@@ -28,17 +38,39 @@ void CommMessagePacket::PrintPacket() {
             m_packetId, (m_packetStart ? "true" : "false"), (m_packetEnd ? "true" : "false"), bufferValues.c_str());
     }
 }
-CommMessagePacket::CommMessagePacket() {}
-CommMessagePacket::CommMessagePacket(const uint8_t *messageBytes, size_t messageSize) {
-    parseMessageBytes(messageBytes, messageSize);
-}
-CommMessagePacket::~CommMessagePacket() {
-    m_packetBuffer.clear();
+
+// Packet builder methods
+/////////////////////////////////////////////////////////////////
+void CommMessagePacket::buildOutgoingPacketData(uint16_t messageId, uint8_t packetId, bool isStartPacket, bool isEndPacket, const uint8_t *messageBytes, size_t messageSize) {
+    m_commMessageDirection = COMM_MESSAGE_DIRECTION_OUTGOING;
+    m_messageId = messageId;
+    m_packetId = packetId;
+    m_packetStart = isStartPacket;
+    m_packetEnd = isEndPacket;
+    // Add 4 bytes to the packet buffer size for meta data
+    m_packetBufferSize = messageSize + 4;
+    // Start writing the buffer;
+    uint8_t messageIdPart1 = (messageId >> 8);
+    uint8_t messageIdPart2 = (uint8_t)messageId;
+
+    uint8_t flags = 0;
+    if (isStartPacket) flags += 1;
+    if (isEndPacket) flags += 2;
+
+    m_packetBuffer.push_back(messageIdPart1);
+    m_packetBuffer.push_back(messageIdPart2);
+    m_packetBuffer.push_back(m_packetId);
+    m_packetBuffer.push_back(flags);
+
+    for (size_t i = 0; i < messageSize; i++) {
+        m_packetBuffer.push_back(messageBytes[i]);
+    }
+    m_validPacket = m_packetBufferSize > 4;
 }
 
-// Private methods
-/////////////////////////////////////////////////////////////////
-void CommMessagePacket::parseMessageBytes(const uint8_t *messageBytes, size_t messageSize) {
+void CommMessagePacket::buildIncomingPacketData(const uint8_t *messageBytes, size_t messageSize) {
+    m_commMessageDirection = COMM_MESSAGE_DIRECTION_INCOMING;
+
     if (messageSize <= 4) {
 		ESP_LOGW(LOG_TAG, "CommMessagePacket: Packet length to short to build the packet");
 		return;
@@ -62,8 +94,4 @@ void CommMessagePacket::parseMessageBytes(const uint8_t *messageBytes, size_t me
 	}
     m_packetBufferSize = messageSize - 4;
     m_validPacket = true;
-}
-
-uint8_t *CommMessagePacket::GetData() {
-    return m_packetBuffer.data();
 }

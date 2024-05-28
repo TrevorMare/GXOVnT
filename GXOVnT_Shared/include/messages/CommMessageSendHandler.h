@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef _GXOVNT_COMMMESSAGEHANDLER_H_
-#define _GXOVNT_COMMMESSAGEHANDLER_H_
+#ifndef _GXOVNT_COMMMESSAGESENDHANDLER_H_
+#define _GXOVNT_COMMMESSAGESENDHANDLER_H_
 
 #include "CommMessage.h"
 
@@ -10,10 +10,10 @@ namespace GXOVnT
     namespace messages
     {
 		// Callback handler definition when either a LORA message or bluetooth message has been received
-		class CommMessageHandler
+		class CommMessageSendHandler
 		{
 			public:
-				virtual void handleMessage(CommMessage *commMessage) {};
+				virtual bool sendMessage(CommMessage *commMessage) { return true; };
 		};
     }
 }
