@@ -1,4 +1,5 @@
 ﻿<MudPaper Width="100%">
+    <MudButton @onclick="LogViewModel.ClearLogMessages">Clear Logs</MudButton>
     <MudTable Items="@LogViewModel.LogMessages" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
         <HeaderContent>
             <MudTh>Time</MudTh>
@@ -11,5 +12,5 @@
             <MudTd DataLabel="Message">@context.Message</MudTd>
         </RowTemplate>
     </MudTable>
-    
+
 </MudPaper>

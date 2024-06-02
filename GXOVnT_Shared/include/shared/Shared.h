@@ -41,7 +41,7 @@ namespace GXOVnT {
     static const char *GXOVNT_BLE_PROTO_CHARACTERISTIC_WRITE_UUID = "4687b690-cd36-4a7c-9134-49ffe62d954f";
     static const char *GXOVNT_BLE_MANUFACTURER = "GXOVnT";
     static const char *GXOVNT_BLE_MANUFACTURER_DELIMITER = "|";
-    static const uint8_t BLE_SERVER_WRITE_DELAY = 50;
+    static const uint8_t BLE_SERVER_WRITE_DELAY = 200;
 
     // Common enums
     /////////////////////////////////////////////////////////////////

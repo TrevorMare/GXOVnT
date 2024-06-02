@@ -8,7 +8,7 @@ public class LogViewModel : NotifyChanged
 
     #region Members
 
-    private List<Models.LogMessage> _logMessages = new();
+    private readonly List<Models.LogMessage> _logMessages = new();
 
     private LogMessageType _minLogLevel = LogMessageType.Information; 
     #endregion
@@ -18,7 +18,6 @@ public class LogViewModel : NotifyChanged
     public IReadOnlyCollection<Models.LogMessage> LogMessages
     {
         get => GetFilteredMessages();
-        private set => SetField(ref _logMessages, value.ToList());
     }
 
     public LogMessageType MinLogLevel
@@ -32,7 +31,8 @@ public class LogViewModel : NotifyChanged
 
     public void ClearLogMessages()
     {
-        LogMessages = new List<LogMessage>();
+        _logMessages.Clear();
+        OnPropertyChanged(nameof(LogMessages));
     }
 
     public void SetMinLogLevel(LogMessageType logMessageType)
@@ -59,11 +59,15 @@ public class LogViewModel : NotifyChanged
     private IReadOnlyList<LogMessage> GetFilteredMessages()
     {
         // Return the last 50 messages of the logs 
-        return _logMessages.Where(msg => _minLogLevel.Id >= msg.LogMessageType.Id)
-            .OrderBy(msg => msg.TimeStamp)
-            .Skip(_logMessages.Count - 50)
-            .ToList()
-            .AsReadOnly();
+
+        lock (_logMessages)
+        {
+            return _logMessages.Where(msg => _minLogLevel.Id >= msg.LogMessageType.Id)
+                .OrderBy(msg => msg.TimeStamp)
+                .TakeLast(50)
+                .ToList()
+                .AsReadOnly();
+        }
     }
     #endregion
 

@@ -25,68 +25,11 @@ void CommService::startProcessMessagesTask(void* _this) {
 void CommService::ProcessMessagesTask() {
     
     while(1) {
-        std::lock_guard<std::mutex> lck(m_messagesReceivedLock);
-        size_t numberOfIncomingMessages = m_messagesReceived.size();
-        if (numberOfIncomingMessages > 0) {
-
-            try
-            {
-                
-               
-                for (int iMessageToProcess = 0; iMessageToProcess < numberOfIncomingMessages; iMessageToProcess++) {
-                    CommMessage *commMessage = m_messagesReceived[iMessageToProcess];
-
-                    const uint8_t *readBuffer = commMessage->Read();
-                    const size_t message_length = commMessage->TotalSize();
-                    JsonDocument doc;
-
-                    deserializeJson(doc, readBuffer);
-
-                    int messageTypeId = doc["messageTypeId"];
-                    const char* messageDataChar = doc["messageData"];
-                    std::string messageData(messageDataChar);
-                    // Echo the message
-
-                    ESP_LOGI(LOG_TAG, "Received Incoming Message: %s", messageData.c_str());
-                }
-            }
-            catch(...)
-            {
-               
-            }
-
-            m_messagesReceived.clear();
-        }
-
-        
-        
-
-        std::lock_guard<std::mutex> guard(m_messagesToSendLock);
-        int numberOfOutgoingMessages = m_messagesToSend.size();
-
-        if (numberOfOutgoingMessages > 0) {
-            ESP_LOGI(LOG_TAG, "Found messages to Send");
-            for (size_t i = 0; i < numberOfOutgoingMessages; i++)
-            {
-                CommMessage *messageToSend = m_messagesToSend[i];
-                if (messageToSend->GetSourceService() == COMM_SERVICE_TYPE_BLE) {
-                    m_BleCommService->sendMessage(messageToSend);
-                }
-
-                ESP_LOGI(LOG_TAG, "message sent");
-            }
-
-            m_messagesToSend.clear();
-            
-
-        }
-
-
-        // Delay for 500 ms to give the app time to run
-        vTaskDelay(1500);
+        processReceivedMessages();
+        processSendMessages();
+        vTaskDelay(200);
     }
 }
-
 
 /////////////////////////////////////////////////////////////////
 void CommService::start() {
@@ -125,4 +68,67 @@ bool CommService::sendMessage(CommMessage *commMessage) {
     return true; 
 }
 
+// Message handling
+//////////////////////////////////////////////////////////////
+void CommService::processReceivedMessages() {
+    std::lock_guard<std::mutex> lck(m_messagesReceivedLock);
+    size_t numberOfIncomingMessages = m_messagesReceived.size();
+    if (numberOfIncomingMessages > 0) {
 
+       for (int iMessageToProcess = 0; iMessageToProcess < numberOfIncomingMessages; iMessageToProcess++) {
+            CommMessage *commMessage = m_messagesReceived[iMessageToProcess];
+
+            const uint8_t *readBuffer = commMessage->Read();
+            const size_t message_length = commMessage->TotalSize();
+            JsonDocument doc;
+
+            deserializeJson(doc, readBuffer);
+
+            int messageTypeId = doc["messageTypeId"];
+            const char* messageDataChar = doc["messageData"];
+            std::string messageData(messageDataChar);
+            
+            
+            // Echo the message
+            messageData = "ECHO - " + messageData;
+            
+            doc["messageData"] = messageData;
+
+            std::string echoData = "";
+            serializeJson(doc, echoData);
+
+            uint8_t *echoPayload = CharPtrToUInt8Ptr(echoData.c_str());
+            sendMessage(echoPayload, echoData.length(), COMM_SERVICE_TYPE_BLE);
+
+            if (commMessage->GetSourceService() == COMM_SERVICE_TYPE_BLE) {
+                m_BleCommService->receivedMessageHandled(commMessage->MessageId());
+            }
+        }
+        // Do not delete the object here as we are not the owner, rather let the owner service know that we are 
+        // done processing the message
+        m_messagesReceived.clear();
+    }
+}
+
+void CommService::processSendMessages() {
+    std::lock_guard<std::mutex> guard(m_messagesToSendLock);
+    size_t numberOfOutgoingMessages = m_messagesToSend.size();
+
+    if (numberOfOutgoingMessages > 0) {
+        ESP_LOGI(LOG_TAG, "Preparing to send %d message(s)", numberOfOutgoingMessages);
+        
+        for (size_t i = 0; i < numberOfOutgoingMessages; i++) {
+            CommMessage *messageToSend = m_messagesToSend[i];
+            if (messageToSend->GetSourceService() == COMM_SERVICE_TYPE_BLE) {
+                m_BleCommService->sendMessage(messageToSend);
+            } else {
+                ESP_LOGW(LOG_TAG, "Message could not be sent, source service type not implemented");
+            }
+        }
+        // Clear the outgoing messages
+        for (CommMessage* obj : m_messagesToSend)
+            delete obj;
+
+        m_messagesToSend.clear();
+    }
+}

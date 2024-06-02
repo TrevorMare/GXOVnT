@@ -11,7 +11,6 @@ CommMessage::CommMessage(enum GXOVnT_COMM_SERVICE_TYPE commServiceType) {
 }
 
 CommMessage::~CommMessage() {
-    ESP_LOGI(LOG_TAG, "Disposing CommMessage");
     for (size_t iIndex = 0; iIndex < m_messagePackets.size(); iIndex++) {
         delete m_messagePackets[iIndex];
     }
