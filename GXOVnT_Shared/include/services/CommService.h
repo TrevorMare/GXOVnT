@@ -7,14 +7,10 @@
 #include "messages/CommMessageReceiveHandler.h"
 #include "messages/CommMessage.h"
 
-#include "messages/gxovnt.messaging.container.pb.h"
+
+#include <ArduinoJson.h>
 
 
-#include "messages/pb_encode.h"
-#include "messages/pb_decode.h"
-#include "messages/pb_common.h"
-
-// #include "messages/pb_common.h"
 
 using namespace GXOVnT::messages;
 
@@ -29,19 +25,22 @@ namespace GXOVnT
 			/* data */
 			BleCommService *m_BleCommService = nullptr;
 			uint16_t m_sendMessageId = 1;
+
+
+			std::vector<CommMessage*> m_messagesReceived;
+			std::vector<CommMessage*> m_messagesToSend;
+			std::mutex m_messagesReceivedLock;
+			std::mutex m_messagesToSendLock;
+
+			TaskHandle_t m_ProcessMessagesTaskHandle;
 			
-			// Trigger for when a new comm service message is received from a channel
+			
+			// Trigger for when a new comm service message is received from a channel. It adds
+			// a message into the received messages
 			void onMessageReceived(CommMessage *commMessage) override;
-			// Parses the message into an object and handles the response if any
-			void processMessage(CommMessage *commMessage);
-			
-			
+			void ProcessMessagesTask();
+			static void startProcessMessagesTask(void* _this);
 
-
-			//
-			std::vector<CommMessage*> m_messagesToRun;
-			std::mutex m_mutexLock;
-			
 			
 		public:
 			CommService();
@@ -53,7 +52,7 @@ namespace GXOVnT
 
 			void start();
 			void stop();
-			void run();
+			
 		};
 	}
 }

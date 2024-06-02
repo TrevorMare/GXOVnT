@@ -14,6 +14,7 @@ public class CommMessage : IEnumerator<CommMessagePacket>
 
     private readonly List<CommMessagePacket> _messagePackets = new();
     private int _position = -1;
+    
     #endregion
     
     #region Properties
@@ -23,9 +24,17 @@ public class CommMessage : IEnumerator<CommMessagePacket>
     public IReadOnlyList<CommMessagePacket> MessagePackets => _messagePackets.AsReadOnly();
 
     public int Count => MessagePackets.Count;
+
+    public bool MessageComplete => _messagePackets.Exists(x => x.CommMessageDetail.HasFlag(CommMessageDetail.IsEndPacket));
     #endregion
 
     #region ctor
+
+    public CommMessage(CommMessagePacket commMessagePacket)
+    {
+        MessageId = commMessagePacket.CommMessageId;
+        _messagePackets.Add(commMessagePacket);
+    }
 
     public CommMessage(Int16 messageId, byte[] messageBuffer, int packetChunkSize = 20)
     {
@@ -51,7 +60,27 @@ public class CommMessage : IEnumerator<CommMessagePacket>
 
     #endregion
 
+    #region Overrides
+
+    public override string ToString()
+    {
+        var orderedMessagePackets = _messagePackets.OrderBy(p => p.CommMessagePacketId);
+        var buffer = new List<byte>();
+
+        foreach (var orderedMessagePacket in orderedMessagePackets)
+        {
+            buffer.AddRange(orderedMessagePacket.Buffer);
+        }
+        return System.Text.Encoding.UTF8.GetString(buffer.ToArray());
+    }
+
+    #endregion
+
     #region Methods
+    public void AddCommMessagePacket(CommMessagePacket commMessagePacket)
+    {
+        _messagePackets.Add(commMessagePacket);
+    }
 
     public bool MoveNext()
     {
@@ -79,5 +108,6 @@ public class CommMessage : IEnumerator<CommMessagePacket>
         
     }
     #endregion
+
  
 }

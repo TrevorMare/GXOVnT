@@ -73,10 +73,12 @@ void BleCommService::stop()
 }
 
 bool BleCommService::sendMessage(CommMessage *commMessage) {
-	if (commMessage == nullptr) return false;
 	return processWriteCharacteristicMessage(commMessage);
 }
 
+void BleCommService::receivedMessageHandled(uint16_t commMessageId) {
+	removeProcessedMessage(commMessageId);
+}
 // Bluetooth connections and methods
 /////////////////////////////////////////////////////////////////
 void BleCommService::initBleServer()
@@ -102,12 +104,13 @@ void BleCommService::initBleService()
 			BLECharacteristic::PROPERTY_READ |
 					BLECharacteristic::PROPERTY_WRITE |
 					BLECharacteristic::PROPERTY_NOTIFY |
-					BLECharacteristic::PROPERTY_INDICATE);		 			
+					BLECharacteristic::PROPERTY_INDICATE |
+					BLECharacteristic::PROPERTY_WRITE_NR);		 			
 
 	m_protoReadCharacteristic->setCallbacks(this);
 	m_protoReadCharacteristic->addDescriptor(new BLE2902());
 
-	m_protoWriteCharacteristic->setCallbacks(this);
+	//m_protoWriteCharacteristic->setCallbacks(this);
 	m_protoWriteCharacteristic->addDescriptor(new BLE2902());
 
 	m_bleService->start();
@@ -158,17 +161,16 @@ void BleCommService::onDisconnect(BLEServer *pServer)
 	}
 }
 
-void BleCommService::onWrite(BLECharacteristic *protoCharacteristic)
+// Callback for when another system writes to the Characteristic
+void BleCommService::onWrite(BLECharacteristic *bleCharacteristic)
 {
-	std::lock_guard<std::mutex> lck(m_mutexLock);
-	uint8_t *messageBuffer = protoCharacteristic->getData();
-	size_t messageLength = protoCharacteristic->getLength();
+	uint8_t *messageBuffer = bleCharacteristic->getData();
+	size_t messageLength = bleCharacteristic->getLength();
 	if (messageLength > 2) {
 
 		CommMessage *commMessage = processReadCharacteristicMessage(messageBuffer, messageLength);
 		if (commMessage != nullptr) {
 			m_messageHandler->onMessageReceived(commMessage);
-			//removeProcessedMessage(commMessage->MessageId());
 		}
 	}
 }
@@ -195,24 +197,23 @@ void BleCommService::removeProcessedMessage(uint16_t messageId) {
 }
 
 bool BleCommService::processWriteCharacteristicMessage(CommMessage *commMessage) {
-	size_t numberOfChunks = commMessage->MessagePackets()->size();
-
-	for (size_t iChunk = 0; iChunk < numberOfChunks; iChunk++) {
-		CommMessagePacket *packet = commMessage->MessagePackets()->at(0);
+	if (m_protoWriteCharacteristic == nullptr) {
+		ESP_LOGE(LOG_TAG, "Could not find the write characteristic");
+		return false;
+	}
+	size_t numberOfPackets = commMessage->MessagePackets()->size();
+	for (size_t iPacket = 0; iPacket < numberOfPackets; iPacket++) {
+		CommMessagePacket *packet = commMessage->MessagePackets()->at(iPacket);
 		uint8_t *packetBuffer = packet->GetData();
 		size_t packetLength = packet->PacketBufferSize();
-
 		m_protoWriteCharacteristic->setValue(packetBuffer, packetLength);
-
-		
-
-		delay(100);
+		m_protoWriteCharacteristic->notify(true);
+		delay(BLE_SERVER_WRITE_DELAY);
 	}
 	return true;
 }
 
-CommMessage *BleCommService::processReadCharacteristicMessage(uint8_t *buffer, size_t messageLength)
-{
+CommMessage *BleCommService::processReadCharacteristicMessage(uint8_t *buffer, size_t messageLength) {
 	if (m_messageHandler == nullptr) { return nullptr; }
 	// Build the message package
 	CommMessagePacket *messagePacket = new CommMessagePacket();
@@ -248,7 +249,7 @@ CommMessage *BleCommService::processReadCharacteristicMessage(uint8_t *buffer, s
 
 	// Check that we did find the message, if not ignore it 
 	if (commMessage == nullptr) {
-		ESP_LOGI(LOG_TAG, "Deleting message packet as message not found");
+		ESP_LOGE(LOG_TAG, "Deleting message packet as message not found");
 		delete messagePacket;
 		return nullptr;
 	}

@@ -41,6 +41,18 @@
 
     <MudTextField @bind-Value="SendText" Label="Standard" Variant="Variant.Text"></MudTextField>
     <MudFab Class="m-1" Size="Size.Small" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Bluetooth" Label="Send Message" @onclick="SendMessage"/>
+
+
+    <MudList Dense="true">
+        @foreach (var item in _receivedMessages)
+        {
+            <MudListItem>
+                <MudText>@item</MudText>
+            </MudListItem>
+        }
+    </MudList>
     
+
     
 </MudPaper>
+<LogViewer></LogViewer>

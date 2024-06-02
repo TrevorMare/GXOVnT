@@ -6,6 +6,7 @@ namespace GXOVnT.Services.Interfaces;
 public interface IBluetoothService : INotifyPropertyChanged, IAsyncDisposable
 {
     event BluetoothService.OnDeviceFoundHandler? OnDeviceFound;
+    event BluetoothService.OnMessagePacketReceivedHandler? OnMessagePacketReceived; 
 
     bool IsConnectedToDevice { get; }
     

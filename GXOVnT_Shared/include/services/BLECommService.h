@@ -14,6 +14,7 @@
 #include "messages/CommMessagePacket.h"
 #include "messages/CommMessageReceiveHandler.h"
 #include "messages/CommMessageSendHandler.h"
+#include "messages/CommMessageReceivedCompleteHandler.h"
 
 using namespace GXOVnT::messages;
 
@@ -24,7 +25,7 @@ namespace GXOVnT
 	{
 		
 		/////////////////////////////////////////////////////////////////
-		class BleCommService : public BLEServerCallbacks, public BLECharacteristicCallbacks, public CommMessageSendHandler
+		class BleCommService : public BLEServerCallbacks, public BLECharacteristicCallbacks, public CommMessageSendHandler, public CommMessageReceivedCompleteHandler
 		{
 		private:
 			/* data */
@@ -45,8 +46,8 @@ namespace GXOVnT
 			void onConnect(BLEServer *pServer);
 			// Callback when the Bluetooth server has been disconnected
 			void onDisconnect(BLEServer *pServer);
-			// Callback method triggered when the GRPC BLE Characteristic has been written
-			void onWrite(BLECharacteristic *pLedCharacteristic);
+			// Callback method triggered when the BLE Characteristic has been written from another connection
+			void onWrite(BLECharacteristic *bleCharacteristic);
 			// Method to setup the BLE server
 			void initBleServer();
 			// Method to setup the BLE service and the characteristics
@@ -62,6 +63,7 @@ namespace GXOVnT
 			BleCommService();
 			~BleCommService();
 			bool sendMessage(CommMessage *commMessage) override;
+			void receivedMessageHandled(uint16_t commMessageId) override;
 			void start(CommMessageReceiveHandler *messageHandler);
 			void stop();
 		};

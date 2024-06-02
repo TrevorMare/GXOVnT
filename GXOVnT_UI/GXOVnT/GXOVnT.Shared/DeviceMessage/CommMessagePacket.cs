@@ -14,9 +14,9 @@ public sealed class CommMessagePacket
 
     public byte CommMessagePacketId { get; set; } = 0x0;
 
-    public CommMessageDetail CommMessageDetail { get; set; } 
-    
-    public byte[] Buffer { get; set; }
+    public CommMessageDetail CommMessageDetail { get; set; }
+
+    public byte[] Buffer { get; set; } = Array.Empty<byte>();
     #endregion
 
     #region ctor
@@ -32,6 +32,11 @@ public sealed class CommMessagePacket
         Buffer = buffer;
     }
 
+    public CommMessagePacket()
+    {
+        
+    }
+
     #endregion
     
     #region Methods
@@ -44,6 +49,14 @@ public sealed class CommMessagePacket
         };
         result.AddRange(Buffer);
         return result.ToArray();
+    }
+
+    public void DeSerializePacket(byte[] buffer)
+    {
+        CommMessageId = (short)((buffer[0] << 8) | buffer[1]);
+        CommMessagePacketId = buffer[2];
+        CommMessageDetail = (CommMessageDetail)buffer[3];
+        Buffer = buffer[4..];
     }
 
     #endregion

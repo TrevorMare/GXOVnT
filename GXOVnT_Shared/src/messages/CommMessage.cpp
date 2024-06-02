@@ -105,22 +105,36 @@ const uint8_t* CommMessage::Read() {
 }
 
 std::vector<CommMessagePacket*> *CommMessage::Write(uint16_t messageId, uint8_t *buffer, size_t messageSize, uint16_t chunkSize) {
-     
+    // Set the message Id 
     m_messageId = messageId;
+    // Calculate the chunk size as each packet. Take into account that the first 4 bytes are used
+    // for meta data and should be added to the total packet size
+    uint16_t offsetChunkSize = chunkSize - 4;
 
-    uint8_t chunkBuffer[chunkSize];
-    // Calculate the chunk size as each packet uses 4 bytes for meta data
-    uint16_t calculatedBytesSize = chunkSize - 4;
-    // Calculate the number of chunks
-    uint8_t numberOfChunks = ceil(messageSize / calculatedBytesSize);
-    // Now we can start by building the chunks
-    for (int iChunk = 0; iChunk < numberOfChunks; iChunk++) {
+    // Now that we have the chunk size, we can calulate the number of message packets that needs to be created
+    uint8_t numberOfChunks = static_cast<uint8_t>(ceil((double)messageSize / (double)offsetChunkSize));
+
+    // Variables required by the loops
+    size_t currentWriteIndex = 0;
+    
+    // Loop through the number of packets indexes and create them.
+    for (size_t iChunk = 0; iChunk < numberOfChunks; iChunk++) {
         bool isPacketStart = (iChunk == 0);
         bool isPacketEnd = (iChunk == (numberOfChunks - 1));
+        // Calculate the number of bytes left to write for this chunk
+        size_t bytesLeftThisChunk = messageSize - (iChunk * offsetChunkSize);
+        if (bytesLeftThisChunk > offsetChunkSize) bytesLeftThisChunk = offsetChunkSize;
+        uint8_t *chunkBuffer = new uint8_t[bytesLeftThisChunk];
+
+        for (size_t iChunkBufferIndex = 0; iChunkBufferIndex < bytesLeftThisChunk; iChunkBufferIndex++) {
+            chunkBuffer[iChunkBufferIndex] = buffer[currentWriteIndex];
+            currentWriteIndex ++;
+        }
+            
         CommMessagePacket *commMessagePacket = new CommMessagePacket();
 
         commMessagePacket->buildOutgoingPacketData(messageId, iChunk, 
-            isPacketStart, isPacketEnd, buffer, messageSize);
+            isPacketStart, isPacketEnd, chunkBuffer, bytesLeftThisChunk);
 
         m_messagePackets.push_back(commMessagePacket);
         m_totalSize += commMessagePacket->PacketBufferSize();
@@ -128,3 +142,4 @@ std::vector<CommMessagePacket*> *CommMessage::Write(uint16_t messageId, uint8_t 
 
     return &m_messagePackets;
 }
+

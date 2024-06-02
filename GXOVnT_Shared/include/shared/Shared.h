@@ -33,8 +33,6 @@
 namespace GXOVnT {
   namespace shared {
 
-   
-
     // System firmware version
     /////////////////////////////////////////////////////////////////
     static const char *GXOVnT_FIRMWARE_VERSION = "v1.0.2";
@@ -43,6 +41,7 @@ namespace GXOVnT {
     static const char *GXOVNT_BLE_PROTO_CHARACTERISTIC_WRITE_UUID = "4687b690-cd36-4a7c-9134-49ffe62d954f";
     static const char *GXOVNT_BLE_MANUFACTURER = "GXOVnT";
     static const char *GXOVNT_BLE_MANUFACTURER_DELIMITER = "|";
+    static const uint8_t BLE_SERVER_WRITE_DELAY = 50;
 
     // Common enums
     /////////////////////////////////////////////////////////////////
@@ -124,6 +123,12 @@ namespace GXOVnT {
     static void PrintDebugFixed(uint8_t value) {
       Serial.printf("%03d ", value);
     }
+
+    static void PrintDebugFixedArr(uint8_t *value, size_t length) {
+      for (size_t i = 0; i < length; i++) {
+        Serial.printf("%03d ", value[i]);  
+      }
+    }
     // Helper method to print a byte in 8 bit flags to the serial monitor
     static void PrintDebugFlags(uint8_t value) 
     {
@@ -156,6 +161,23 @@ namespace GXOVnT {
       std::string s(c);
       return s;
     }
+    static uint8_t *CharPtrToUInt8Ptr(char *c) {
+      size_t size = strlen(c);
+      uint8_t *result = new uint8_t[size];
+      for (size_t i = 0; i < size; i++) {
+          result[i] = (uint8_t)c[i];
+      }
+      return result;
+    }
+    static uint8_t *CharPtrToUInt8Ptr(const char *c) {
+      size_t size = strlen(c);
+      uint8_t *result = new uint8_t[size];
+      for (size_t i = 0; i < size; i++) {
+          result[i] = (uint8_t)c[i];
+      }
+      return result;
+    }
+
     // Gets the STA MAC Address of the device
     static std::string DeviceMACAddress() {
       uint8_t baseMac[6];

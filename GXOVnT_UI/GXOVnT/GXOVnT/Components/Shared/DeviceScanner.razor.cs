@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using GXOVnT.Services.Models;
 using GXOVnT.Services.ViewModels;
+using GXOVnT.Shared.DeviceMessage;
 using Microsoft.AspNetCore.Components;
 
 namespace GXOVnT.Components.Shared;
@@ -38,7 +39,11 @@ public partial class DeviceScanner : ComponentBase
         base.OnInitialized();
         DeviceScannerViewModel.PropertyChanged -= DeviceScannerViewModelOnPropertyChanged;
         DeviceScannerViewModel.PropertyChanged += DeviceScannerViewModelOnPropertyChanged;
+        
+        
+        DeviceScannerViewModel.OnCommMessageReceived += DeviceScannerViewModelOnOnCommMessageReceived;
     }
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -53,6 +58,22 @@ public partial class DeviceScanner : ComponentBase
 
     #region Event Callbacks
 
+    private readonly List<string> _receivedMessages = new List<string>();
+    
+    private void DeviceScannerViewModelOnOnCommMessageReceived(object sender, CommMessage commMessage)
+    {
+
+
+        var text = commMessage.ToString();
+        
+        _receivedMessages.Add(text);
+
+        InvokeAsync(StateHasChanged);
+
+
+    }
+
+    
     private async Task OnDeviceListItemClick(GXOVnTDevice item)
     {
         await DeviceSelected.InvokeAsync(item);
