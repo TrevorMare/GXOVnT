@@ -50,7 +50,7 @@ void CommMessagePacket::buildOutgoingPacketData(uint16_t messageId, uint8_t pack
     // Add 4 bytes to the packet buffer size for meta data
     m_packetBufferSize = messageSize + 4;
     // Start writing the buffer;
-    uint8_t messageIdPart1 = (messageId >> 8);
+    uint8_t messageIdPart1 = (messageId << 8);
     uint8_t messageIdPart2 = (uint8_t)messageId;
 
     uint8_t flags = 0;
@@ -76,7 +76,7 @@ void CommMessagePacket::buildIncomingPacketData(const uint8_t *messageBytes, siz
 		return;
 	}
 	// First two bytes is message is message Id
-	m_messageId = ((uint16_t)messageBytes[1] << 8) | messageBytes[0];
+	m_messageId = ((uint16_t)messageBytes[0] << 8) | messageBytes[1];
 	m_packetId = messageBytes[2];
 	uint8_t packetDetail = messageBytes[3];
     // Flags:

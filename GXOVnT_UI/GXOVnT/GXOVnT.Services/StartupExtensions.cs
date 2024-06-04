@@ -10,11 +10,13 @@ public static class StartupExtensions
     {
 
         services.AddTransient<IRequestPermissionService, RequestPermissionService>();
-        services.AddTransient<IBluetoothService, BluetoothService>();
-        
+
+        services.AddSingleton<IBluetoothService, BluetoothService>();
+        services.AddSingleton<IMessageOrchestrator, MessageOrchestrator>();
         services.AddSingleton<IAlertService, AlertService>();
-      
         services.AddSingleton<ViewModels.LogViewModel>();
+        
+        
         services.AddTransient<ViewModels.DeviceScannerViewModel>();
 
         return services;

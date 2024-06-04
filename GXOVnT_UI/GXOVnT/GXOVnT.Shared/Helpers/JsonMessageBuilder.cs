@@ -10,11 +10,9 @@ public static class JsonMessageBuilder
     public static byte[] BuildEchoMessage(string echoMessage)
     {
 
-        var container = new GXOVnTMessagingContainer()
+        var container = new EchoModel()
         {
-            MessageTypeId = 10,
-            MessageData = echoMessage,
-            HasMessageData = true
+            EchoMessage = echoMessage
         };
 
         var payload = System.Text.Json.JsonSerializer.Serialize(container);

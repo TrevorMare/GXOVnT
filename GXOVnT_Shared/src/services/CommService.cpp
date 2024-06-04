@@ -77,29 +77,23 @@ void CommService::processReceivedMessages() {
 
        for (int iMessageToProcess = 0; iMessageToProcess < numberOfIncomingMessages; iMessageToProcess++) {
             CommMessage *commMessage = m_messagesReceived[iMessageToProcess];
-
-            const uint8_t *readBuffer = commMessage->Read();
-            const size_t message_length = commMessage->TotalSize();
-            JsonDocument doc;
-
-            deserializeJson(doc, readBuffer);
-
-            int messageTypeId = doc["messageTypeId"];
-            const char* messageDataChar = doc["messageData"];
-            std::string messageData(messageDataChar);
             
+            ESP_LOGI(LOG_TAG, "processReceivedMessages: Comm message Id - %d", commMessage->MessageId());
+
+            // Handle the json document and get a response
+            JsonDocument *responseDocument = m_jsonMessageService.handleJsonMessage(commMessage);
             
-            // Echo the message
-            messageData = "ECHO - " + messageData;
-            
-            doc["messageData"] = messageData;
+            // If there is a response to be written to the comm service, add it to the outgoing messages
+            if (responseDocument != nullptr) {
+                // Build the outgoing message response
+                std::string responseJsonString = "";
+                serializeJson(*responseDocument, responseJsonString);
+                uint8_t *responseBuffer = CharPtrToUInt8Ptr(responseJsonString.c_str());
+                // Add the message to the outgoing queue
+                sendMessage(responseBuffer, responseJsonString.length(), commMessage->GetSourceService());
+            }
 
-            std::string echoData = "";
-            serializeJson(doc, echoData);
-
-            uint8_t *echoPayload = CharPtrToUInt8Ptr(echoData.c_str());
-            sendMessage(echoPayload, echoData.length(), COMM_SERVICE_TYPE_BLE);
-
+            // Lastly mark the message as completed in the applicable service
             if (commMessage->GetSourceService() == COMM_SERVICE_TYPE_BLE) {
                 m_BleCommService->receivedMessageHandled(commMessage->MessageId());
             }

@@ -37,10 +37,15 @@ namespace GXOVnT {
     /////////////////////////////////////////////////////////////////
     static const char *GXOVnT_FIRMWARE_VERSION = "v1.0.2";
     static const char *GXOVNT_BLE_SERVICE_UUID = "05c1fba8-cc8b-4534-8787-0e6a0775c3de";
-    static const char *GXOVNT_BLE_PROTO_CHARACTERISTIC_READ_UUID = "4687b690-cd36-4a7c-9134-49ffe62d9e4f";
-    static const char *GXOVNT_BLE_PROTO_CHARACTERISTIC_WRITE_UUID = "4687b690-cd36-4a7c-9134-49ffe62d954f";
+    /// @brief Characteristic for the incoming messages relative to this device
+    static const char *GXOVNT_BLE_INCOMING_CHARACTERISTIC_UUID = "4687b690-cd36-4a7c-9134-49ffe62d9e4f";
+    /// @brief Characteristic for the outgoing messages relative to this device
+    static const char *GXOVNT_BLE_OUTGOING_CHARACTERISTIC_UUID = "4687b690-cd36-4a7c-9134-49ffe62d954f";
     static const char *GXOVNT_BLE_MANUFACTURER = "GXOVnT";
     static const char *GXOVNT_BLE_MANUFACTURER_DELIMITER = "|";
+
+    // BLE Settings and adjustments
+    /////////////////////////////////////////////////////////////////
     static const uint8_t BLE_SERVER_WRITE_DELAY = 200;
 
     // Common enums
@@ -123,7 +128,6 @@ namespace GXOVnT {
     static void PrintDebugFixed(uint8_t value) {
       Serial.printf("%03d ", value);
     }
-
     static void PrintDebugFixedArr(uint8_t *value, size_t length) {
       for (size_t i = 0; i < length; i++) {
         Serial.printf("%03d ", value[i]);  

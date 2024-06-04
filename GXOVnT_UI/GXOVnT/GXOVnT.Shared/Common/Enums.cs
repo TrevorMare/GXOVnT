@@ -7,3 +7,11 @@ public enum CommMessageDetail : byte
     IsStartPacket = 1,
     IsEndPacket = 2
 }
+
+public enum JsonModelType 
+{
+    
+    EchoRequest = 3,
+    
+    Unknown = 999
+}

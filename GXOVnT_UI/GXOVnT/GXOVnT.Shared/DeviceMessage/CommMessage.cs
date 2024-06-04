@@ -19,7 +19,7 @@ public class CommMessage : IEnumerator<CommMessagePacket>
     
     #region Properties
 
-    public Int16 MessageId { get; set; } 
+    public short MessageId { get; set; } 
 
     public IReadOnlyList<CommMessagePacket> MessagePackets => _messagePackets.AsReadOnly();
 
@@ -36,7 +36,7 @@ public class CommMessage : IEnumerator<CommMessagePacket>
         _messagePackets.Add(commMessagePacket);
     }
 
-    public CommMessage(Int16 messageId, byte[] messageBuffer, int packetChunkSize = 20)
+    public CommMessage(short messageId, byte[] messageBuffer, int packetChunkSize = 20)
     {
         if (messageId <= 0)
             throw new ArgumentOutOfRangeException(nameof(messageId), "Message Id should be greater than 0");

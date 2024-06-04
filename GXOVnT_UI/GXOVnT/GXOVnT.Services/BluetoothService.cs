@@ -13,19 +13,38 @@ namespace GXOVnT.Services;
 public class BluetoothService : NotifyChanged, IBluetoothService 
 {
 
+    #region Helpers
+
     public record GXOVnTDeviceFoundArgs(
         DeviceEventArgs DeviceArgs,
         bool SystemConfigured,
         GXOVnTSystemType SystemType);
+
+    #endregion
+
+    #region Members
+
+    private const string GXOVnTManufacturerValue = "GXOVnT";
+    private static readonly Guid GXOVnTBluetoothServiceId = new ("05c1fba8-cc8b-4534-8787-0e6a0775c3de");
+    /// <summary>
+    /// This id is relative to the GXOVnT device and not the incoming for this service
+    /// </summary>
+    private static readonly Guid GXOVnTBluetoothIncomingCharacteristic = new ("4687b690-cd36-4a7c-9134-49ffe62d9e4f");
+    /// <summary>
+    /// This id is relative to the GXOVnT device and not the outgoing for this service
+    /// </summary>
+    private static readonly Guid GXOVnTBluetoothOutgoingCharacteristic = new ("4687b690-cd36-4a7c-9134-49ffe62d954f");
+    private short _outgoingMessageId = 1;
+    #endregion
     
     #region Events
 
-    private const string GXOVnTManufacturerValue = "GXOVnT";
-
     public delegate void OnDeviceFoundHandler(object sender, GXOVnTDeviceFoundArgs e);
+    
     public delegate void OnMessagePacketReceivedHandler(object sender, byte[]? buffer);
 
     public event OnDeviceFoundHandler? OnDeviceFound;
+    
     public event OnMessagePacketReceivedHandler? OnMessagePacketReceived; 
 
     #endregion
@@ -48,8 +67,9 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
     private IDevice? _connectedDevice;
     private IService? _connectedDeviceService;
-    private ICharacteristic? _protoBleWriteCharacteristic;
-    private ICharacteristic? _protoBleReadCharacteristic;
+    
+    private ICharacteristic? _incomingMessageCharacteristic;
+    private ICharacteristic? _outgoingMessageCharacteristic;
     private bool _isConnectedToDevice;
     #endregion
 
@@ -166,7 +186,12 @@ public class BluetoothService : NotifyChanged, IBluetoothService
             
             if (_connectedDevice != null)
             {
-                _protoBleWriteCharacteristic = null;
+                if (_incomingMessageCharacteristic != null)
+                    _incomingMessageCharacteristic.ValueUpdated -= IncomingMessageCharacteristicOnValueUpdated;
+
+                _outgoingMessageCharacteristic = null;
+                _incomingMessageCharacteristic = null;
+                
                 _connectedDeviceService = null;
 
                 await _bluetoothAdapter.DisconnectDeviceAsync(_connectedDevice);
@@ -212,23 +237,25 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
             await _bluetoothAdapter.ConnectToDeviceAsync(_connectedDevice, new ConnectParameters(true));
             
-            _connectedDeviceService = await _connectedDevice.GetServiceAsync(Guid.Parse("05c1fba8-cc8b-4534-8787-0e6a0775c3de"));
+            _connectedDeviceService = await _connectedDevice.GetServiceAsync(GXOVnTBluetoothServiceId);
             if (_connectedDeviceService == null)
                 throw new ArgumentException(
                     "The device did not broadcast the expected service", nameof(deviceId));
             
-            _protoBleWriteCharacteristic = await _connectedDeviceService.GetCharacteristicAsync(Guid.Parse("4687b690-cd36-4a7c-9134-49ffe62d9e4f"));
-            if (_protoBleWriteCharacteristic == null)
+            // Map the incoming message characteristic to the outgoing of the device
+            _incomingMessageCharacteristic = await _connectedDeviceService.GetCharacteristicAsync(GXOVnTBluetoothOutgoingCharacteristic);
+            if (_incomingMessageCharacteristic == null)
+                throw new ArgumentException(
+                    "The device service did not broadcast the expected characteristic", nameof(deviceId));
+            _incomingMessageCharacteristic.ValueUpdated += IncomingMessageCharacteristicOnValueUpdated;
+            
+            // Map the outgoing message characteristic to the incoming of the device
+            _outgoingMessageCharacteristic = await _connectedDeviceService.GetCharacteristicAsync(GXOVnTBluetoothIncomingCharacteristic);
+            if (_incomingMessageCharacteristic == null)
                 throw new ArgumentException(
                     "The device service did not broadcast the expected characteristic", nameof(deviceId));
             
-            _protoBleReadCharacteristic = await _connectedDeviceService.GetCharacteristicAsync(Guid.Parse("4687b690-cd36-4a7c-9134-49ffe62d954f"));
-            if (_protoBleWriteCharacteristic == null)
-                throw new ArgumentException(
-                    "The device service did not broadcast the expected characteristic", nameof(deviceId));
-            _protoBleReadCharacteristic.ValueUpdated += ProtoBleReadCharacteristicOnValueUpdated;
-            await _protoBleReadCharacteristic.StartUpdatesAsync();
-            
+            await _incomingMessageCharacteristic.StartUpdatesAsync();
             
             IsConnectedToDevice = true;
             return true;
@@ -242,57 +269,62 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         
     }
 
-    private async void ProtoBleReadCharacteristicOnValueUpdated(object? sender, CharacteristicUpdatedEventArgs e)
-    {
-        var (data, _) = await _protoBleReadCharacteristic!.ReadAsync();
-
-        if (data != null && data.Length != 0)
-        {
-            Trace.Message($"Received data: \n");
-            for (int i = 0; i < data.Length; i++)
-            {
-                Trace.Message($"{data[i]}");
-            }
-            Trace.Message("\n");
-            OnMessagePacketReceived?.Invoke(this, data);
-        }
-            
-    }
-
-
-    private Int16 _messageId = 1;
-    
-    public async Task SendProtoMessageToConnectedDevice(string message)
+    public async Task<short> SendJsonModelToDevice<T>(T jsonModel, Action<int>? progressChangedCallback = default) where T : Shared.JsonModels.BaseModel
     {
 
         try
         {
-            if (!IsConnectedToDevice || _protoBleWriteCharacteristic == null)
-                return;
+            if (!IsConnectedToDevice || _outgoingMessageCharacteristic == null)
+                return -1;
 
-            var commMessage = JsonMessageBuilder
-                .BuildEchoMessage(message).ToCommMessage(_messageId);
+            var commMessage = jsonModel.ToCommMessage(_outgoingMessageId);
 
+            var currentIndex = 0;
+            var numberOfPackets = commMessage.MessagePackets.Count;
+            
             while (commMessage.MoveNext())
             {
-                await _protoBleWriteCharacteristic.WriteAsync(commMessage.Current.SerializePacket());
+                await _outgoingMessageCharacteristic.WriteAsync(commMessage.Current.SerializePacket());
+
+                currentIndex++;
+                
+                // Raise the progress changed
+                if (progressChangedCallback != null)
+                {
+                    var calculatedProgress = ((decimal)currentIndex / (decimal)numberOfPackets) * 100;
+                    var intProgress = (int)Math.Ceiling(calculatedProgress);
+                    progressChangedCallback.Invoke(intProgress);
+                }
+                
                 await Task.Delay(200);
             }
-            
-            
+
+            return _outgoingMessageId;
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
-            throw;
+            _logViewModel.LogError($"An error occured writing the value to the device: {ex.Message}");
+            return -1;
         }
-        _messageId++;
+        finally
+        {
+            _outgoingMessageId++;
+            if (_outgoingMessageId >= short.MaxValue)
+                _outgoingMessageId = 1;
+        }
     }
 
     #endregion
 
     #region Private Methods
+    private async void IncomingMessageCharacteristicOnValueUpdated(object? sender, CharacteristicUpdatedEventArgs e)
+    {
+        var (data, _) = await _incomingMessageCharacteristic!.ReadAsync();
 
+        if (data != null && data.Length != 0)
+            OnMessagePacketReceived?.Invoke(this, data);
+    }
+    
     private async Task<bool> InitializeBluetooth()
     {
         try
@@ -469,7 +501,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         _connectedDevice?.Dispose();
         _connectedDeviceService?.Dispose();
         
-        _protoBleWriteCharacteristic = null;
+        _incomingMessageCharacteristic = null;
         _connectedDeviceService = null;
         _connectedDevice = null;
       

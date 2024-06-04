@@ -55,15 +55,15 @@ void BleCommService::stop()
 
 	// Delete the pointer variables
 	delete m_bleAdvertising;
-	delete m_protoReadCharacteristic;
-	delete m_protoWriteCharacteristic;
+	delete m_incomingMessagesCharacteristic;
+	delete m_outgoingMessagesCharacteristic;
 	delete m_bleService;
 	delete m_bleServer;
 
 	// Set the values to null
 	m_bleAdvertising = nullptr;
-	m_protoReadCharacteristic = nullptr;
-	m_protoWriteCharacteristic = nullptr;
+	m_incomingMessagesCharacteristic = nullptr;
+	m_outgoingMessagesCharacteristic = nullptr;
 	m_bleServer = nullptr;
 	m_bleService = nullptr;
 	m_serverConnectionId = -1;
@@ -73,7 +73,7 @@ void BleCommService::stop()
 }
 
 bool BleCommService::sendMessage(CommMessage *commMessage) {
-	return processWriteCharacteristicMessage(commMessage);
+	return processOutgoingCharacteristicMessage(commMessage);
 }
 
 void BleCommService::receivedMessageHandled(uint16_t commMessageId) {
@@ -92,26 +92,25 @@ void BleCommService::initBleService()
 {
 	m_bleService = m_bleServer->createService(GXOVNT_BLE_SERVICE_UUID);
 
-	m_protoReadCharacteristic = m_bleService->createCharacteristic(
-			GXOVNT_BLE_PROTO_CHARACTERISTIC_READ_UUID,
+	m_incomingMessagesCharacteristic = m_bleService->createCharacteristic(
+			GXOVNT_BLE_INCOMING_CHARACTERISTIC_UUID,
 			BLECharacteristic::PROPERTY_READ |
 					BLECharacteristic::PROPERTY_WRITE |
 					BLECharacteristic::PROPERTY_NOTIFY |
 					BLECharacteristic::PROPERTY_INDICATE);
 
-	m_protoWriteCharacteristic = m_bleService->createCharacteristic(
-			GXOVNT_BLE_PROTO_CHARACTERISTIC_WRITE_UUID,
+	m_outgoingMessagesCharacteristic = m_bleService->createCharacteristic(
+			GXOVNT_BLE_OUTGOING_CHARACTERISTIC_UUID,
 			BLECharacteristic::PROPERTY_READ |
 					BLECharacteristic::PROPERTY_WRITE |
 					BLECharacteristic::PROPERTY_NOTIFY |
 					BLECharacteristic::PROPERTY_INDICATE |
 					BLECharacteristic::PROPERTY_WRITE_NR);		 			
 
-	m_protoReadCharacteristic->setCallbacks(this);
-	m_protoReadCharacteristic->addDescriptor(new BLE2902());
+	m_incomingMessagesCharacteristic->setCallbacks(this);
+	m_incomingMessagesCharacteristic->addDescriptor(new BLE2902());
 
-	//m_protoWriteCharacteristic->setCallbacks(this);
-	m_protoWriteCharacteristic->addDescriptor(new BLE2902());
+	m_outgoingMessagesCharacteristic->addDescriptor(new BLE2902());
 
 	m_bleService->start();
 }
@@ -168,7 +167,7 @@ void BleCommService::onWrite(BLECharacteristic *bleCharacteristic)
 	size_t messageLength = bleCharacteristic->getLength();
 	if (messageLength > 2) {
 
-		CommMessage *commMessage = processReadCharacteristicMessage(messageBuffer, messageLength);
+		CommMessage *commMessage = processIncomingCharacteristicMessage(messageBuffer, messageLength);
 		if (commMessage != nullptr) {
 			m_messageHandler->onMessageReceived(commMessage);
 		}
@@ -196,8 +195,8 @@ void BleCommService::removeProcessedMessage(uint16_t messageId) {
 
 }
 
-bool BleCommService::processWriteCharacteristicMessage(CommMessage *commMessage) {
-	if (m_protoWriteCharacteristic == nullptr) {
+bool BleCommService::processOutgoingCharacteristicMessage(CommMessage *commMessage) {
+	if (m_outgoingMessagesCharacteristic == nullptr) {
 		ESP_LOGE(LOG_TAG, "Could not find the write characteristic");
 		return false;
 	}
@@ -206,14 +205,14 @@ bool BleCommService::processWriteCharacteristicMessage(CommMessage *commMessage)
 		CommMessagePacket *packet = commMessage->MessagePackets()->at(iPacket);
 		uint8_t *packetBuffer = packet->GetData();
 		size_t packetLength = packet->PacketBufferSize();
-		m_protoWriteCharacteristic->setValue(packetBuffer, packetLength);
-		m_protoWriteCharacteristic->notify(true);
+		m_outgoingMessagesCharacteristic->setValue(packetBuffer, packetLength);
+		m_outgoingMessagesCharacteristic->notify(true);
 		delay(BLE_SERVER_WRITE_DELAY);
 	}
 	return true;
 }
 
-CommMessage *BleCommService::processReadCharacteristicMessage(uint8_t *buffer, size_t messageLength) {
+CommMessage *BleCommService::processIncomingCharacteristicMessage(uint8_t *buffer, size_t messageLength) {
 	if (m_messageHandler == nullptr) { return nullptr; }
 	// Build the message package
 	CommMessagePacket *messagePacket = new CommMessagePacket();

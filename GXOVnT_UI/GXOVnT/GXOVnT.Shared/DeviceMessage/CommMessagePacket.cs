@@ -10,7 +10,7 @@ public sealed class CommMessagePacket
 
     #region Properties
 
-    public Int16 CommMessageId { get; set; } = 0;
+    public short CommMessageId { get; set; } = 0;
 
     public byte CommMessagePacketId { get; set; } = 0x0;
 
@@ -21,7 +21,7 @@ public sealed class CommMessagePacket
 
     #region ctor
 
-    internal CommMessagePacket(Int16 commMessageId, byte commMessagePacketId, CommMessageDetail commMessageDetail, byte[] buffer)
+    internal CommMessagePacket(short commMessageId, byte commMessagePacketId, CommMessageDetail commMessageDetail, byte[] buffer)
     {
         if (buffer.Length < 1)
             throw new ArgumentNullException(nameof(buffer), "CommMessagePacket buffer cannot be null or empty");

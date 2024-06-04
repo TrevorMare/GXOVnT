@@ -6,11 +6,8 @@
 #include "services/BLECommService.h"
 #include "messages/CommMessageReceiveHandler.h"
 #include "messages/CommMessage.h"
-
-
+#include "JsonMessageService.hpp"
 #include <ArduinoJson.h>
-
-
 
 using namespace GXOVnT::messages;
 
@@ -29,6 +26,7 @@ namespace GXOVnT
 			std::vector<CommMessage*> m_messagesToSend;
 			std::mutex m_messagesReceivedLock;
 			std::mutex m_messagesToSendLock;
+			JsonMessageService m_jsonMessageService;
 
 			TaskHandle_t m_ProcessMessagesTaskHandle;
 			/// @brief Callback handler for when a sub service received a comm message, this message will be handled in a separate task

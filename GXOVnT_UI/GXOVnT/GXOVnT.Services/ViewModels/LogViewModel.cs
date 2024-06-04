@@ -31,7 +31,10 @@ public class LogViewModel : NotifyChanged
 
     public void ClearLogMessages()
     {
-        _logMessages.Clear();
+        lock (_logMessages)
+        {
+            _logMessages.Clear();    
+        }
         OnPropertyChanged(nameof(LogMessages));
     }
 
@@ -43,11 +46,12 @@ public class LogViewModel : NotifyChanged
     public void Log(string message, LogMessageType? logMessageType = default,
         DateTime? timestamp = default)
     {
-        var logMessage = new LogMessage(message, timestamp, logMessageType ?? LogMessageType.Information);
+        lock (_logMessages)
+        {
+            var logMessage = new LogMessage(message, timestamp, logMessageType ?? LogMessageType.Information);
+            _logMessages.Add(logMessage);
+        }
         
-        System.Diagnostics.Debug.WriteLine(logMessage.ToString());
-        
-        _logMessages.Add(logMessage);
         OnPropertyChanged(nameof(LogMessages));
     }
     

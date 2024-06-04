@@ -2,9 +2,8 @@
 using GXOVnT.Services.Common;
 using GXOVnT.Services.Interfaces;
 using GXOVnT.Services.Models;
-using GXOVnT.Shared.Common;
 using GXOVnT.Shared.DeviceMessage;
-
+using GXOVnT.Shared.JsonModels;
 
 namespace GXOVnT.Services.ViewModels;
 
@@ -18,6 +17,7 @@ public class DeviceScannerViewModel : NotifyChanged
     #region Members
 
     private readonly IBluetoothService _bluetoothService;
+    private readonly IMessageOrchestrator _messageOrchestrator;
     private readonly LogViewModel _logViewModel;
     
     private CancellationTokenSource _scanGXOVnTCancellationToken = default!;
@@ -41,12 +41,19 @@ public class DeviceScannerViewModel : NotifyChanged
     #region ctor
 
     public DeviceScannerViewModel(IBluetoothService bluetoothService,
-        LogViewModel logViewModel)
+        LogViewModel logViewModel, IMessageOrchestrator messageOrchestrator)
     {
         _bluetoothService = bluetoothService;
+        _messageOrchestrator = messageOrchestrator;
         _bluetoothService.PropertyChanged += BluetoothServiceOnPropertyChanged;
+        _messageOrchestrator.PropertyChanged += MessageOrchestratorOnPropertyChanged;
+        _messageOrchestrator.MessageAggregateReceived += MessageOrchestratorOnMessageAggregateReceived;
+        
+        
         _logViewModel = logViewModel;
+        
     }
+
 
     #endregion
 
@@ -56,8 +63,6 @@ public class DeviceScannerViewModel : NotifyChanged
     {
         _bluetoothService.OnDeviceFound -= BluetoothServiceOnDeviceFound;
         _bluetoothService.OnDeviceFound += BluetoothServiceOnDeviceFound;
-        _bluetoothService.OnMessagePacketReceived -= BluetoothServiceOnMessagePacketReceived;
-        _bluetoothService.OnMessagePacketReceived += BluetoothServiceOnMessagePacketReceived;
     }
 
     public async Task StartScanGXOVnTDevicesAsync()
@@ -93,7 +98,21 @@ public class DeviceScannerViewModel : NotifyChanged
     public async Task SendProtoMessage(string message)
     {
         _logViewModel.LogInformation($"Sending message to device");
-        await _bluetoothService.SendProtoMessageToConnectedDevice(message);
+
+        var echoModel = new Shared.JsonModels.EchoModel()
+        {
+            EchoMessage = message
+        };
+
+        var response = await _messageOrchestrator.SendMessage<EchoModel, EchoModel>(echoModel);
+
+        if (response != null)
+        {
+            _logViewModel.LogDebug($"Response received from send message: {response.EchoMessage}");
+        }
+        
+        
+       
     }
     #endregion
 
@@ -103,6 +122,17 @@ public class DeviceScannerViewModel : NotifyChanged
     {
         OnPropertyChanged(nameof(_bluetoothService));
     }
+    
+    private void MessageOrchestratorOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        OnPropertyChanged(nameof(_messageOrchestrator));
+    }
+
+    private void MessageOrchestratorOnMessageAggregateReceived(object sender, MessageAggregate messageAggregate)
+    {
+        _logViewModel.LogDebug($"Received a message from device with Id {messageAggregate.MessageId} and message type {messageAggregate.BaseModel?.MessageTypeId}");
+    }
+
 
     private async void BluetoothServiceOnDeviceFound(object sender, BluetoothService.GXOVnTDeviceFoundArgs e)
     {
@@ -134,45 +164,9 @@ public class DeviceScannerViewModel : NotifyChanged
         OnPropertyChanged(nameof(ScannedDevices));
     }
 
-    private readonly List<CommMessage> _receivedMessages = new List<CommMessage>();
     
-    private void BluetoothServiceOnMessagePacketReceived(object sender, byte[]? buffer)
-    {
-        
-        if (buffer == null) return;
-        _logViewModel.LogInformation($"Message received from device. Inspecting packet");
-        
-        var commMessagePacket = new CommMessagePacket();
-        commMessagePacket.DeSerializePacket(buffer);
-
-        _logViewModel.LogInformation($"Comm Message packet with Id {commMessagePacket.CommMessagePacketId} for message Id {commMessagePacket.CommMessageId}");
-        _logViewModel.LogInformation($"Packet start: {commMessagePacket.CommMessageDetail.HasFlag(CommMessageDetail.IsStartPacket)}, Packet end: {commMessagePacket.CommMessageDetail.HasFlag(CommMessageDetail.IsEndPacket)}");
-
-        var bufferDataList = buffer.Select(b => b.ToString());
-        _logViewModel.LogInformation($"BufferData: {string.Join(" ", bufferDataList)}");
-        
-        
-        
-        var commMessage = _receivedMessages.Find(x => commMessagePacket.CommMessageId == x.MessageId);
-        if (commMessage == null)
-        {
-            _logViewModel.LogInformation($"Message does not exist, creating it");
-            
-            commMessage = new CommMessage(commMessagePacket);
-            _receivedMessages.Add(commMessage);
-            return;
-        }
-
-        commMessage.AddCommMessagePacket(commMessagePacket);
-
-        if (commMessage.MessageComplete)
-        {
-            _logViewModel.LogInformation($"Message is now complete, processing message");
-            OnCommMessageReceived?.Invoke(this, commMessage);
-            _receivedMessages.Remove(commMessage);
-        }
-        
-    }
+    
+   
 
 
     #endregion

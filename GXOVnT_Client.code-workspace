@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"name": "GXOVnT_Client",
+			"path": "GXOVnT_Client"
+		},
+		{
+			"path": "GXOVnT_Shared"
+		},
+		{
+			"path": "GXOVnT_ProtoMessage"
+		},
+		{
+			"path": "GXOVnT_BLEWeb"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"simple.pb.h": "c",
+			"gxovnt.messaging.command.pb.h": "c",
+			"gxovnt.messaging.container.pb.h": "c"
+		}
+	}
+}
