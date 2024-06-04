@@ -1,6 +1,7 @@
 ﻿using GXOVnT.Services.Common;
 using GXOVnT.Services.Interfaces;
 using GXOVnT.Services.ViewModels;
+using GXOVnT.Shared.Common;
 using GXOVnT.Shared.Helpers;
 using Plugin.BLE;
 using Plugin.BLE.Abstractions;

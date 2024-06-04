@@ -1,4 +1,4 @@
-﻿namespace GXOVnT.Services.Common;
+﻿namespace GXOVnT.Shared.Common;
 
 public class GXOVnTSystemType : Enumeration
 {

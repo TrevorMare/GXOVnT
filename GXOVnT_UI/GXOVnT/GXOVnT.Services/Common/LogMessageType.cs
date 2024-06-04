@@ -1,4 +1,6 @@
-﻿namespace GXOVnT.Services.Common;
+﻿using GXOVnT.Shared.Common;
+
+namespace GXOVnT.Services.Common;
 
 public class LogMessageType : Enumeration
 {

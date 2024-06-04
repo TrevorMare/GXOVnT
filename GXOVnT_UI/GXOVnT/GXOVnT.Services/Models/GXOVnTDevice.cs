@@ -1,4 +1,5 @@
 ﻿using GXOVnT.Services.Common;
+using GXOVnT.Shared.Common;
 using Plugin.BLE.Abstractions;
 
 namespace GXOVnT.Services.Models;

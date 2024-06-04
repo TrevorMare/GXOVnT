@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace GXOVnT.Services.Common;
+namespace GXOVnT.Shared.Common;
 
 /// <summary>
 /// Base enumeration class taken from https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/enumeration-classes-over-enum-types

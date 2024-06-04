@@ -21,10 +21,9 @@ namespace GXOVnT
 
                 switch (messageTypeId)
                 {
-                case JSON_MSG_TYPE_REQUEST_PROGRESS: {
-                   
-                    /* code */
-                    break;
+                case JSON_MSG_TYPE_REQUEST_KEEP_ALIVE: {
+                   StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 200, "OK");
+                   return responseModel->Json();
                 }
                 case JSON_MSG_TYPE_REQUEST_ECHO: {
                     EchoModel requestModel(inputDocument);
@@ -33,9 +32,35 @@ namespace GXOVnT
                     responseModel->EchoMessage("Echo - " + requestModelEchoMessage);
                     return responseModel->Json();
                 }
-               
-               
-                
+                case JSON_MSG_TYPE_REQUEST_GET_SYSTEM_SETTINGS: {
+                   
+                    GetSystemSettingsResponseModel *responseModel = new GetSystemSettingsResponseModel(requestCommMessageId);
+                    responseModel->FirmwareVersion(GXOVnTConfig.Settings.SystemSettings.FirmwareVersion());
+                    responseModel->SystemConfigured(GXOVnTConfig.Settings.SystemSettings.SystemConfigured());
+                    responseModel->SystemId(GXOVnTConfig.Settings.SystemSettings.SystemId());
+                    responseModel->SystemName(GXOVnTConfig.Settings.SystemSettings.SystemName());
+                    responseModel->SystemType(static_cast<int>(GXOVnTConfig.Settings.SystemSettings.SystemType()));
+
+                    return responseModel->Json();
+                }
+                case JSON_MSG_TYPE_REQUEST_SET_SYSTEM_SETTINGS: {
+                   
+                    SetSystemSettingsRequestModel requestModel(inputDocument);
+
+                    GXOVnTConfig.Settings.SystemSettings.SystemName(requestModel.SystemName());
+                    GXOVnTConfig.Settings.SystemSettings.SystemConfigured(requestModel.SystemConfigured());
+
+                   StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 200, "OK");
+                   return responseModel->Json();
+                }
+                case JSON_MSG_TYPE_REQUEST_SAVE_CONFIGURATION: {
+                    GXOVnTConfig.saveConfiguration();
+                    StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 200, "OK");
+                    return responseModel->Json();
+                }
+                case JSON_MSG_TYPE_REQUEST_REBOOT: {
+                   ESP.restart();
+                }
                 default:
                     break;
                 }
