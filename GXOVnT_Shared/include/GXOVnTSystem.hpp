@@ -6,17 +6,19 @@
 #define _GXOVNT_H_
 
 #include "shared/Definitions.h"
-#include "settings/Config.h"
-#include "services/CommService.h"
-using namespace GXOVnT::services;
-using namespace GXOVnT::settings;
+#include "services/ServiceLocator.hpp"
+//using namespace GXOVnT::services;
 
+class GXOVnTSystem {
+    public:
+        static void Initialize() {
+            //ServiceLocator::Initialize();
+        }
+};
 
-
-extern Config GXOVnTConfig;
-extern CommService GXOVnTCommService;
 
 
 #endif
 
 
+// TODO: Figure out linking

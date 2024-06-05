@@ -6,8 +6,9 @@
 // Include deps
 /////////////////////////////////////////////////////////////////
 #include <SPIFFS.h>
-#include "shared/Shared.h"
+#include "shared/Definitions.h"
 #include "settings/ConfigSettings.h"
+
 
 namespace GXOVnT {
 	namespace settings {

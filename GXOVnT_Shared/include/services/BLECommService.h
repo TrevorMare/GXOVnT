@@ -8,13 +8,14 @@
 #include <BLEDevice.h>
 #include <BLE2902.h>
 #include <memory>
-#include "shared/Shared.h"
 #include <mutex>
+#include "shared/Definitions.h"
 #include "messages/CommMessage.h"
 #include "messages/CommMessagePacket.h"
 #include "messages/CommMessageReceiveHandler.h"
 #include "messages/CommMessageSendHandler.h"
 #include "messages/CommMessageReceivedCompleteHandler.h"
+
 
 using namespace GXOVnT::messages;
 
@@ -28,7 +29,7 @@ namespace GXOVnT
 		class BleCommService : public BLEServerCallbacks, public BLECharacteristicCallbacks, public CommMessageSendHandler, public CommMessageReceivedCompleteHandler
 		{
 		private:
-			/* data */
+			
 			BLEServer *m_bleServer = nullptr;
 			BLEService *m_bleService = nullptr;
 			/// @brief Characteristic for incoming messages relative to this device

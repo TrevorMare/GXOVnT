@@ -4,6 +4,7 @@
 #define _GXOVNT_COMMMESSAGERECEIVEHANDLER_H_
 
 #include "CommMessage.h"
+#include "shared/Definitions.h"
 
 namespace GXOVnT
 {

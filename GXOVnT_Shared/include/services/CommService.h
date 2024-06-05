@@ -3,6 +3,7 @@
 #ifndef _GXOVNT_COMMSERVICE_H_
 #define _GXOVNT_COMMSERVICE_H_
 
+#include "shared/Definitions.h"
 #include "services/BLECommService.h"
 #include "messages/CommMessageReceiveHandler.h"
 #include "messages/CommMessage.h"

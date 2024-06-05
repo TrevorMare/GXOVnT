@@ -5,7 +5,7 @@
 #ifndef _GXOVNT_TPMS_BLE_H
 #define _GXOVNT_TPMS_BLE_H
 
-#include "shared/Shared.h"
+#include "shared/Definitions.h"
 #include <BLEAdvertisedDevice.h>
 
 // Used for converting hex to uint_8

@@ -2,7 +2,7 @@
 #ifndef _GXOVNT_TPMS_BLE_MANAGER_H
 #define _GXOVNT_TPMS_BLE_MANAGER_H
 
-#include "shared/Shared.h"
+#include "shared/Definitions.h"
 #include "GXOVnT_TPMS_BLE.h"
 #include "GXOVnT_TPMS_BLE_JohnDow.h"
 

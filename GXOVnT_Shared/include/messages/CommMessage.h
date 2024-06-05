@@ -3,7 +3,7 @@
 #ifndef _GXOVNT_COMMMESSAGE_H_
 #define _GXOVNT_COMMMESSAGE_H_
 
-#include "shared/Shared.h"
+#include "shared/Definitions.h"
 #include "CommMessagePacket.h"
 
 using namespace GXOVnT::shared;

@@ -25,7 +25,7 @@
 #pragma once
 #ifndef _GXOVNT_TPMS_BLE_JohnDow_H
 #define _GXOVNT_TPMS_BLE_JohnDow_H
-
+#include "shared/Definitions.h"
 #include "GXOVnT_TPMS_BLE.h"
 
 class GXOVnT_TPMS_BLE_JohnDow : public GXOVnT_TPMS_BLE

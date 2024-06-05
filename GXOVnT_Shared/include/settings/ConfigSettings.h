@@ -4,6 +4,7 @@
 #define _GXOVNT_SETTINGS_H_
 
 #include "SettingsSection.h"
+#include "shared/Definitions.h"
 #include <ArduinoJson.h>
 
 /////////////////////////////////////////////////////////////////

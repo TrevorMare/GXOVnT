@@ -3,6 +3,7 @@
 #ifndef _GXOVNT_MODELS_JSONMODELS_H_
 #define _GXOVNT_MODELS_JSONMODELS_H_
 #include <ArduinoJson.h>
+#include "shared/Definitions.h"
 
 namespace GXOVnT
 {

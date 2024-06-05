@@ -3,6 +3,8 @@
 #ifndef _GXOVNT_COMMMESSAGERECEIVEDCOMPLETEHANDLER_H_
 #define _GXOVNT_COMMMESSAGERECEIVEDCOMPLETEHANDLER_H_
 
+#include "shared/Definitions.h"
+
 namespace GXOVnT
 {
     namespace messages

@@ -1,6 +1,5 @@
 /////////////////////////////////////////////////////////////////
 #include "messages/CommMessagePacket.h"
-#include "shared/Shared.h"
 
 using namespace GXOVnT::shared;
 using namespace GXOVnT::messages;

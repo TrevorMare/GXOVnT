@@ -2,11 +2,11 @@
 #pragma once
 #ifndef _GXOVNT_SETTINGS_SECTION_H_
 #define _GXOVNT_SETTINGS_SECTION_H_
+#include "shared/Definitions.h"
 
 // Includes
 /////////////////////////////////////////////////////////////////
 #include <ArduinoJson.h>
-#include "shared/Shared.h"
 using namespace GXOVnT::shared;
 
 namespace GXOVnT {

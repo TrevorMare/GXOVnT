@@ -8,7 +8,7 @@
 
 
 // GXOVnT Libraries
-#include "shared/Shared.h"
+#include "shared/Definitions.h"
 #include "security/Certificates.h"
 
 // Json libraries
