@@ -1,6 +1,0 @@
-#ifndef _GXOVNT_WIFI_PROVISION_H
-#define _GXOVNT_WIFI_PROVISION_H
-
-
-
-#endif

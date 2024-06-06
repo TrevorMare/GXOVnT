@@ -29,8 +29,8 @@
 #define GXOVNT_BUILD_FIRMWARE_TYPE 0
 
 
-namespace GXOVnT {
-  namespace shared {
+namespace GXOVnTLib::shared {
+
 
     // System firmware version
     /////////////////////////////////////////////////////////////////
@@ -196,7 +196,6 @@ namespace GXOVnT {
       return result;
     }    
   }
-}
 
 #endif
 

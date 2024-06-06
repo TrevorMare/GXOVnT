@@ -5,16 +5,13 @@
 
 #include "shared/Definitions.h"
 
-namespace GXOVnT
+namespace GXOVnTLib::messages
 {
-    namespace messages
-    {
-		// Callback handler definition when either a LORA message or bluetooth message has been received
-		class CommMessageReceivedCompleteHandler
-		{
-			public:
-				virtual void receivedMessageHandled(uint16_t commMessageId) {};
-		};
-    }
+	/// @brief Callback handler definition when either a LORA message or bluetooth message has been received
+	class CommMessageReceivedCompleteHandler
+	{
+		public:
+			virtual void receivedMessageHandled(uint16_t commMessageId) {};
+	};
 }
 #endif

@@ -1,5 +1,5 @@
 #include "GXOVnT_TPMS_BLE.h"
-using namespace GXOVnT::shared;
+using namespace GXOVnTLib::shared;
 
 GXOVnT_TPMS_BLE::GXOVnT_TPMS_BLE() {}
 

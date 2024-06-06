@@ -4,9 +4,7 @@
 
 #include <GXOVnT_WebUpdate.h>
 #include <heltec.h>
-#include <GXOVnT.h>
-// TODO: Figure out linking
-// This is required to get the nanopb library into the dependency graph
+#include <GXOVnTRoot.h>
 
 
 //https://medium.com/@adityabangde/esp32-firmware-updates-from-github-a-simple-ota-solution-173a95f4a97b
@@ -28,7 +26,7 @@ void setup() {
 
   String systemVer = "Version " + String(GXOVnT_FIRMWARE_VERSION);
 
-  Heltec.display->printf("Version %s \n", SoftwareVersion);
+  Heltec.display->printf("Version %s \n", GXOVnT_FIRMWARE_VERSION);
   Heltec.display->clear();
   Heltec.display->drawString(0, 0, systemVer);
   Heltec.display->display();
@@ -36,13 +34,17 @@ void setup() {
   
   delay(1500);
 
-  // GXOVnT_System.Config->readConfiguration();
+  GXOVnT.config->readConfiguration();
 
-  // Serial.printf("System name: %s \n", GXOVnT_System.Config->Settings.SystemSettings.SystemName().c_str());
-  // Serial.printf("Firmware version %s \n", GXOVnT_System.Config->.Settings.SystemSettings.FirmwareVersion().c_str());
-  // Serial.printf("System Id: %s \n", GXOVnT_System.Config->.Settings.SystemSettings.SystemId().c_str());
-  // Serial.printf("System Type: %d \n", GXOVnT_System.Config->.Settings.SystemSettings.SystemType());
-  // Serial.printf("WiFi name: %s", GXOVnT_System.Config->.Settings.WiFiSettings.SSID().c_str());
+  Serial.printf("System name: %s \n",  GXOVnT.config->Settings.SystemSettings.SystemName().c_str());
+  Serial.printf("Firmware version %s \n",  GXOVnT.config->Settings.SystemSettings.FirmwareVersion().c_str());
+  Serial.printf("System Id: %s \n",  GXOVnT.config->Settings.SystemSettings.SystemId().c_str());
+  Serial.printf("System Type: %d \n",  GXOVnT.config->Settings.SystemSettings.SystemType());
+  Serial.printf("WiFi name: %s",  GXOVnT.config->Settings.WiFiSettings.SSID().c_str());
+  
+ 
+  
+  //GXOVnT.commService->start();
 
 }
 

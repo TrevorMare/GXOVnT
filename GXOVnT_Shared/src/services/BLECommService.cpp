@@ -1,8 +1,8 @@
 #include "services/BLECommService.h"
 
 
-using namespace GXOVnT::services;
-using namespace GXOVnT::messages;
+using namespace GXOVnTLib::services;
+using namespace GXOVnTLib::messages;
 
 
 /////////////////////////////////////////////////////////////////
@@ -22,16 +22,13 @@ void BleCommService::start(CommMessageReceiveHandler *messageHandler)
 	}
 
 	m_messageHandler = messageHandler;
-// TODO: Figure out linking
-// TODO: 
-	// GXOVnT::settings::Config config = *ServiceLocator::Config();
+	// Read the device name from the configuration
+	//TODO
+	std::string deviceName = "";// GXOVnTConfig.Settings.SystemSettings.SystemName() + "_" + GXOVnT::shared::DeviceMACAddress();
+	ESP_LOGI(LOG_TAG, "Starting BLE server with device name %s", deviceName.c_str());
 
-	// // Read the device name from the configuration
-	// std::string deviceName = config.Settings.SystemSettings.SystemName() + "_" + GXOVnT::shared::DeviceMACAddress();
-	// ESP_LOGI(LOG_TAG, "Starting BLE server with device name %s", deviceName.c_str());
-
-	// // Initialize the device
-	// BLEDevice::init(deviceName);
+	// Initialize the device
+	BLEDevice::init(deviceName);
 
 	initBleServer();
 	initBleService();
@@ -124,24 +121,19 @@ void BleCommService::startAdvertising()
 	// Set the manufacturer data so that the scanning devices can filter
 	BLEAdvertisementData advertismentData;
 	// TODO
-	// GXOVnT::settings::Config config = *ServiceLocator::Config();
+	int systemType = 1; // static_cast<int>(GXOVnTConfig.Settings.SystemSettings.SystemType());
+	int systemConfigured = 1; // GXOVnTConfig.Settings.SystemSettings.SystemConfigured() ? 1 : 0;
 
-	// int systemType = static_cast<int>(config.Settings.SystemSettings.SystemType());
-	// int systemConfigured = config.Settings.SystemSettings.SystemConfigured() ? 1 : 0;
+	std::string manufacturerData = CharToString(GXOVNT_BLE_MANUFACTURER) + 
+		CharToString(GXOVNT_BLE_MANUFACTURER_DELIMITER) + 
+		std::to_string(systemType) + 
+		CharToString(GXOVNT_BLE_MANUFACTURER_DELIMITER) + 
+		std::to_string(systemConfigured) + 
+		CharToString(GXOVNT_BLE_MANUFACTURER_DELIMITER);
 
-	// // Now build the manufacturer data for the scanning devices
-	// // It's in the format GXOVnT|X|Y where X and Y are 1 or 0. X represents the system type
-	// // and Y represents if the system has been configured
-	// std::string manufacturerData = CharToString(GXOVNT_BLE_MANUFACTURER) + 
-	// 	CharToString(GXOVNT_BLE_MANUFACTURER_DELIMITER) + 
-	// 	std::to_string(systemType) + 
-	// 	CharToString(GXOVNT_BLE_MANUFACTURER_DELIMITER) + 
-	// 	std::to_string(systemConfigured) + 
-	// 	CharToString(GXOVNT_BLE_MANUFACTURER_DELIMITER);
+	advertismentData.setManufacturerData(manufacturerData);
 
-	// advertismentData.setManufacturerData(manufacturerData);
-
-	// m_bleAdvertising->setAdvertisementData(advertismentData);
+	m_bleAdvertising->setAdvertisementData(advertismentData);
 
 	m_bleAdvertising->addServiceUUID(GXOVNT_BLE_SERVICE_UUID);
 

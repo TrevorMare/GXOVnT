@@ -16,12 +16,12 @@
 #include "messages/CommMessageSendHandler.h"
 #include "messages/CommMessageReceivedCompleteHandler.h"
 
-
-using namespace GXOVnT::messages;
+using namespace GXOVnTLib::messages;
 
 /////////////////////////////////////////////////////////////////
-namespace GXOVnT
+namespace GXOVnTLib
 {
+
 	namespace services
 	{
 		

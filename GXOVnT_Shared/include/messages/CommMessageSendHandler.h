@@ -6,16 +6,14 @@
 #include "CommMessage.h"
 #include "shared/Definitions.h"
 
-namespace GXOVnT
+namespace GXOVnTLib::messages
 {
-    namespace messages
-    {
-		// Callback handler definition when either a LORA message or bluetooth message has been received
+		/// @brief Callback handler definition when either a LORA message or bluetooth message has been received
 		class CommMessageSendHandler
 		{
 			public:
 				virtual bool sendMessage(CommMessage *commMessage) { return true; };
 		};
-    }
+
 }
 #endif

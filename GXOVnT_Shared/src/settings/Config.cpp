@@ -1,5 +1,5 @@
 #include "settings/Config.h"
-using namespace GXOVnT::settings;
+using namespace GXOVnTLib::settings;
 
 /////////////////////////////////////////////////////////////////
 // Public Methods

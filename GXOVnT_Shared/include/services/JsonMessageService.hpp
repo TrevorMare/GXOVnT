@@ -6,100 +6,97 @@
 #include "shared/Definitions.h"
 #include "messages/CommMessage.h"
 #include "models/JsonModels.hpp"
+#include "GXOVnTRoot.h"
+
+using namespace GXOVnTLib::messages;
+using namespace GXOVnTLib::models;
 
 
-using namespace GXOVnT::messages;
-using namespace GXOVnT::models;
-
-
-namespace GXOVnT 
+namespace GXOVnTLib::services
 {
-    namespace services
-    {
-        class JsonMessageService {
-        private:
-            
-            
-            JsonDocument *processJsonMessage(JsonDocument &inputDocument, uint16_t requestCommMessageId = 0) {
-                BaseModel baseModel(inputDocument);
-                uint8_t messageTypeId = baseModel.MessageTypeId();
-// TODO: Figure out linking
-                // switch (messageTypeId)
-                // {
-                // case JSON_MSG_TYPE_REQUEST_KEEP_ALIVE: {
-                //    StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 200, "OK");
-                //    return responseModel->Json();
-                // }
-                // case JSON_MSG_TYPE_REQUEST_ECHO: {
-                //     EchoModel requestModel(inputDocument);
-                //     std::string requestModelEchoMessage = requestModel.EchoMessage();
-                //     EchoModel *responseModel = new EchoModel(requestCommMessageId);
-                //     responseModel->EchoMessage("Echo - " + requestModelEchoMessage);
-                //     return responseModel->Json();
-                // }
-                // case JSON_MSG_TYPE_REQUEST_GET_SYSTEM_SETTINGS: {
+	class JsonMessageService
+	{
+	private:
+		JsonDocument *processJsonMessage(JsonDocument &inputDocument, uint16_t requestCommMessageId = 0)
+		{
+			BaseModel baseModel(inputDocument);
+			uint8_t messageTypeId = baseModel.MessageTypeId();
 
-                //     GXOVnT::settings::Config config = *(GXOVnT::services::ServiceLocator::Config());
+			switch (messageTypeId)
+			{
+			case JSON_MSG_TYPE_REQUEST_KEEP_ALIVE:
+			{
+				StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 200, "OK");
+				return responseModel->Json();
+			}
+			case JSON_MSG_TYPE_REQUEST_ECHO:
+			{
+				EchoModel requestModel(inputDocument);
+				std::string requestModelEchoMessage = requestModel.EchoMessage();
+				EchoModel *responseModel = new EchoModel(requestCommMessageId);
+				responseModel->EchoMessage("Echo - " + requestModelEchoMessage);
+				return responseModel->Json();
+			}
+			case JSON_MSG_TYPE_REQUEST_GET_SYSTEM_SETTINGS:
+			{
+				
 
+				GetSystemSettingsResponseModel *responseModel = new GetSystemSettingsResponseModel(requestCommMessageId);
+				// TODO
+				// responseModel->FirmwareVersion(GXOVnT.Config().Settings.SystemSettings.FirmwareVersion());
+				// responseModel->SystemConfigured(GXOVnT.Config().Settings.SystemSettings.SystemConfigured());
+				// responseModel->SystemId(GXOVnT.Config().Settings.SystemSettings.SystemId());
+				// responseModel->SystemName(GXOVnT.Config().Settings.SystemSettings.SystemName());
+				// responseModel->SystemType(static_cast<int>(GXOVnT.Config().Settings.SystemSettings.SystemType()));
 
-                //     GetSystemSettingsResponseModel *responseModel = new GetSystemSettingsResponseModel(requestCommMessageId);
-                //     responseModel->FirmwareVersion(config.Settings.SystemSettings.FirmwareVersion());
-                //     responseModel->SystemConfigured(config.Settings.SystemSettings.SystemConfigured());
-                //     responseModel->SystemId(config.Settings.SystemSettings.SystemId());
-                //     responseModel->SystemName(config.Settings.SystemSettings.SystemName());
-                //     responseModel->SystemType(static_cast<int>(config.Settings.SystemSettings.SystemType()));
+				return responseModel->Json();
+			}
+			case JSON_MSG_TYPE_REQUEST_SET_SYSTEM_SETTINGS:
+			{
 
-                //     return responseModel->Json();
-                // }
-                // case JSON_MSG_TYPE_REQUEST_SET_SYSTEM_SETTINGS: {
-                   
-                //     SetSystemSettingsRequestModel requestModel(inputDocument);
+				SetSystemSettingsRequestModel requestModel(inputDocument);
+				// TODO
+				// GXOVnTConfig.Settings.SystemSettings.SystemName(requestModel.SystemName());
+				// GXOVnTConfig.Settings.SystemSettings.SystemConfigured(requestModel.SystemConfigured());
 
-                //     GXOVnT::settings::Config config = *(GXOVnT::services::ServiceLocator::Config());
+				StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 200, "OK");
+				return responseModel->Json();
+			}
+			case JSON_MSG_TYPE_REQUEST_SAVE_CONFIGURATION:
+			{
+				// TODO
+				// GXOVnTConfig.saveConfiguration();
+				StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 200, "OK");
+				return responseModel->Json();
+			}
+			case JSON_MSG_TYPE_REQUEST_REBOOT:
+			{
+				ESP.restart();
+			}
+			default:
+				break;
+			}
+			// Return no reply default
+			return nullptr;
+		}
 
-                //     config.Settings.SystemSettings.SystemName(requestModel.SystemName());
-                //     config.Settings.SystemSettings.SystemConfigured(requestModel.SystemConfigured());
+	public:
+		JsonMessageService(){};
+		~JsonMessageService(){};
 
-                //    StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 200, "OK");
-                //    return responseModel->Json();
-                // }
-                // case JSON_MSG_TYPE_REQUEST_SAVE_CONFIGURATION: {
+		JsonDocument *handleJsonMessage(CommMessage *commMessage)
+		{
+			const uint8_t *messageBuffer = commMessage->Read();
+			JsonDocument doc;
+			deserializeJson(doc, messageBuffer);
+			return processJsonMessage(doc, commMessage->MessageId());
+		};
 
-                //     GXOVnT::settings::Config config = *(GXOVnT::services::ServiceLocator::Config());
-
-                //     config.saveConfiguration();
-                //     StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 200, "OK");
-                //     return responseModel->Json();
-                // }
-                // case JSON_MSG_TYPE_REQUEST_REBOOT: {
-                //    ESP.restart();
-                // }
-                // default:
-                //     break;
-                // }
-                // Return no reply default
-                return nullptr;    
-            }
-            
-        public:
-            JsonMessageService() {};
-            ~JsonMessageService() {};
-
-            JsonDocument *handleJsonMessage(CommMessage *commMessage) {
-                const uint8_t *messageBuffer = commMessage->Read();
-                JsonDocument doc;
-                deserializeJson(doc, messageBuffer);
-                return processJsonMessage(doc, commMessage->MessageId());
-            };
-
-            JsonDocument *handleJsonMessage(JsonDocument &inputDocument, uint16_t requestCommMessageId = 0) {
-                return processJsonMessage(inputDocument, requestCommMessageId);
-            };
-
-        };
-
-    }
+		JsonDocument *handleJsonMessage(JsonDocument &inputDocument, uint16_t requestCommMessageId = 0)
+		{
+			return processJsonMessage(inputDocument, requestCommMessageId);
+		};
+	};
 }
-
 
 #endif

@@ -1,7 +1,8 @@
 #include "services/CommService.h"
 
-using namespace GXOVnT::services;
-using namespace GXOVnT::messages;
+using namespace GXOVnTLib::services;
+using namespace GXOVnTLib::messages;
+
 
 // Constructors
 /////////////////////////////////////////////////////////////////

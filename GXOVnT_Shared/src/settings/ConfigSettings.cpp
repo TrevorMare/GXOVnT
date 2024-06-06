@@ -1,5 +1,5 @@
 #include "settings/ConfigSettings.h"
-using namespace GXOVnT::settings;
+using namespace GXOVnTLib::settings;
 
 
 void ConfigSettings::readSettingsFromJson(JsonDocument &document) {

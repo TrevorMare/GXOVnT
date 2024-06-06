@@ -1,8 +1,8 @@
 /////////////////////////////////////////////////////////////////
 #include "messages/CommMessagePacket.h"
 
-using namespace GXOVnT::shared;
-using namespace GXOVnT::messages;
+using namespace GXOVnTLib::shared;
+using namespace GXOVnTLib::messages;
 
 // Constructors
 /////////////////////////////////////////////////////////////////
