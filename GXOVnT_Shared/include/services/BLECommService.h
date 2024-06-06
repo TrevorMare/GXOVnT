@@ -15,8 +15,12 @@
 #include "messages/CommMessageReceiveHandler.h"
 #include "messages/CommMessageSendHandler.h"
 #include "messages/CommMessageReceivedCompleteHandler.h"
+#include "GXOVnTRoot.h"
 
 using namespace GXOVnTLib::messages;
+
+// 
+// class GXOVnTRoot;
 
 /////////////////////////////////////////////////////////////////
 namespace GXOVnTLib

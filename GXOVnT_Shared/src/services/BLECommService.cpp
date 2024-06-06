@@ -23,8 +23,7 @@ void BleCommService::start(CommMessageReceiveHandler *messageHandler)
 
 	m_messageHandler = messageHandler;
 	// Read the device name from the configuration
-	//TODO
-	std::string deviceName = "";// GXOVnTConfig.Settings.SystemSettings.SystemName() + "_" + GXOVnT::shared::DeviceMACAddress();
+	std::string deviceName = GXOVnT.config->Settings.SystemSettings.SystemName() + "_" + GXOVnTLib::shared::DeviceMACAddress();
 	ESP_LOGI(LOG_TAG, "Starting BLE server with device name %s", deviceName.c_str());
 
 	// Initialize the device
@@ -120,9 +119,8 @@ void BleCommService::startAdvertising()
 
 	// Set the manufacturer data so that the scanning devices can filter
 	BLEAdvertisementData advertismentData;
-	// TODO
-	int systemType = 1; // static_cast<int>(GXOVnTConfig.Settings.SystemSettings.SystemType());
-	int systemConfigured = 1; // GXOVnTConfig.Settings.SystemSettings.SystemConfigured() ? 1 : 0;
+	int systemType = static_cast<int>(GXOVnT.config->Settings.SystemSettings.SystemType());
+	int systemConfigured = GXOVnT.config->Settings.SystemSettings.SystemConfigured() ? 1 : 0;
 
 	std::string manufacturerData = CharToString(GXOVNT_BLE_MANUFACTURER) + 
 		CharToString(GXOVNT_BLE_MANUFACTURER_DELIMITER) + 

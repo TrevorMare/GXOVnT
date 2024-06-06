@@ -5,9 +5,9 @@
 
 #include "shared/Definitions.h"
 #include "services/BLECommService.h"
+#include "services/JsonMessageService.h"
 #include "messages/CommMessageReceiveHandler.h"
 #include "messages/CommMessage.h"
-#include "JsonMessageService.hpp"
 #include <ArduinoJson.h>
 
 using namespace GXOVnTLib::messages;
@@ -15,17 +15,25 @@ using namespace GXOVnTLib::messages;
 namespace GXOVnTLib::services
 {
 
+	// Forward declaration of services
+	class BleCommService;
+	class JsonMessageService;
+	
+	
+
 	class CommService : public CommMessageReceiveHandler
 	{
 	private:
 		/* data */
-		BleCommService *m_BleCommService = nullptr;
+		GXOVnTLib::services::BleCommService *m_BleCommService = nullptr;
+		GXOVnTLib::services::JsonMessageService *m_jsonMessageService;
+
 		uint16_t m_sendMessageId = 1;
 		std::vector<CommMessage*> m_messagesReceived;
 		std::vector<CommMessage*> m_messagesToSend;
 		std::mutex m_messagesReceivedLock;
 		std::mutex m_messagesToSendLock;
-		JsonMessageService m_jsonMessageService;
+		
 
 		TaskHandle_t m_ProcessMessagesTaskHandle;
 		/// @brief Callback handler for when a sub service received a comm message, this message will be handled in a separate task

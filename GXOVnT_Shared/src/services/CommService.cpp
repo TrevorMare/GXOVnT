@@ -15,6 +15,8 @@ CommService::~CommService() {
         vTaskDelete(m_ProcessMessagesTaskHandle);
         m_ProcessMessagesTaskHandle = nullptr;
     }
+    delete m_BleCommService;
+    delete m_jsonMessageService;
 }
 
 // Tasks and management
@@ -82,7 +84,7 @@ void CommService::processReceivedMessages() {
             ESP_LOGI(LOG_TAG, "processReceivedMessages: Comm message Id - %d", commMessage->MessageId());
 
             // Handle the json document and get a response
-            JsonDocument *responseDocument = m_jsonMessageService.handleJsonMessage(commMessage);
+            JsonDocument *responseDocument = m_jsonMessageService->handleJsonMessage(commMessage);
             
             // If there is a response to be written to the comm service, add it to the outgoing messages
             if (responseDocument != nullptr) {
