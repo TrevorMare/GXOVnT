@@ -1,5 +1,7 @@
-﻿using GXOVnT.Services.Common;
+﻿using System.Collections.ObjectModel;
+using GXOVnT.Services.Common;
 using GXOVnT.Services.Interfaces;
+using GXOVnT.Services.Models;
 using GXOVnT.Services.ViewModels;
 using GXOVnT.Shared.Common;
 using GXOVnT.Shared.Helpers;
@@ -26,15 +28,25 @@ public class BluetoothService : NotifyChanged, IBluetoothService
     #region Members
 
     private const string GXOVnTManufacturerValue = "GXOVnT";
+    
+    /// <summary>
+    /// Unique id that the GXOVnT devices broadcast
+    /// </summary>
     private static readonly Guid GXOVnTBluetoothServiceId = new ("05c1fba8-cc8b-4534-8787-0e6a0775c3de");
+    
     /// <summary>
     /// This id is relative to the GXOVnT device and not the incoming for this service
     /// </summary>
     private static readonly Guid GXOVnTBluetoothIncomingCharacteristic = new ("4687b690-cd36-4a7c-9134-49ffe62d9e4f");
+    
     /// <summary>
     /// This id is relative to the GXOVnT device and not the outgoing for this service
     /// </summary>
     private static readonly Guid GXOVnTBluetoothOutgoingCharacteristic = new ("4687b690-cd36-4a7c-9134-49ffe62d954f");
+    
+    /// <summary>
+    /// Unique id for outgoing messages
+    /// </summary>
     private short _outgoingMessageId = 1;
     #endregion
     
@@ -55,23 +67,24 @@ public class BluetoothService : NotifyChanged, IBluetoothService
     private readonly IAlertService _alertService;
     private readonly IRequestPermissionService _requestPermissionService;
     private readonly LogViewModel _logViewModel;
-    private IBluetoothLE? _bluetoothManager;
-    private IAdapter? _bluetoothAdapter;
-
+    private readonly ObservableCollection<GXOVnTDevice> _scannedDevices = new();
+    
     private bool _applicationHasBluetoothPermissions;
     private bool _bluetoothIsReady;
     private BluetoothState _bluetoothState = BluetoothState.Unknown;
     private string _bluetoothStateText = "";
     private bool _isScanningDevices;
     private CancellationTokenSource _scanCancellationTokenSource = default!;
+    private bool _isConnectedToDevice;
 
-
+    private IBluetoothLE? _bluetoothManager;
+    private IAdapter? _bluetoothAdapter;
     private IDevice? _connectedDevice;
     private IService? _connectedDeviceService;
-    
     private ICharacteristic? _incomingMessageCharacteristic;
     private ICharacteristic? _outgoingMessageCharacteristic;
-    private bool _isConnectedToDevice;
+
+   
     #endregion
 
     #region Properties
@@ -128,6 +141,16 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         get => _isConnectedToDevice;
         private set => SetField(ref _isConnectedToDevice, value);
     }
+
+    /// <summary>
+    /// Gets the current connected device
+    /// </summary>
+    public IDevice? ConnectedDevice => _connectedDevice;
+
+    /// <summary>
+    /// Gets a list of scanned devices
+    /// </summary>
+    public IReadOnlyList<GXOVnTDevice> ScannedDevices => _scannedDevices.AsReadOnly();
     #endregion
     
     #region ctor
@@ -139,6 +162,11 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         _alertService = alertService;
         _requestPermissionService = requestPermissionService;
         _logViewModel = logViewModel;
+
+        _scannedDevices.CollectionChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(ScannedDevices));
+        };
     }
 
     #endregion
@@ -153,6 +181,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
             if (!await InitializeBluetooth())
                 return false;
             
+            _scannedDevices.Clear();
             _scanCancellationTokenSource = cancellationTokenSource ?? new CancellationTokenSource();
             
             await _bluetoothAdapter.StartScanningForDevicesAsync(_scanCancellationTokenSource.Token);
@@ -209,7 +238,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         }
     }
     
-    public async Task<bool> ConnectToDevice(Guid deviceId)
+    public async Task<bool> ConnectToDevice(Guid deviceId, bool keepConnectionAlive)
     {
         try
         {
@@ -429,7 +458,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         _bluetoothAdapter.DeviceDiscovered += BluetoothAdapterOnDeviceDiscovered;
     }
 
-    private void NotifyDeviceFoundIfMatch(DeviceEventArgs e)
+    private async Task NotifyDeviceFoundIfMatch(DeviceEventArgs e)
     {
         var allAdvertisementRecords = e.Device.AdvertisementRecords ?? new List<AdvertisementRecord>();
         if (!allAdvertisementRecords.Any())
@@ -445,31 +474,47 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
         if (!manufacturerDataValue.StartsWith(GXOVnTManufacturerValue, StringComparison.CurrentCultureIgnoreCase))
             return;
-
-        // It's in the format GXOVnT|X|Y where X and Y are 1 or 0. X represents the system type 
-        // and Y represents if the system has been configured
-        var manufacturerParts = manufacturerDataValue.Split("|");
-        var systemConfigured = false;
-        var systemType = GXOVnTSystemType.UnInitialized;
-
-        if (manufacturerParts.Length >= 2)
-            systemType = Enumeration.FromValue<GXOVnTSystemType>(int.Parse(manufacturerParts[1])) ?? GXOVnTSystemType.UnInitialized;
-        if (manufacturerParts.Length >= 3)
-            systemConfigured = manufacturerParts[2] == "1";
         
-        OnDeviceFound?.Invoke(this, new GXOVnTDeviceFoundArgs(e, systemConfigured, systemType));        
+        var scannedDevice = _scannedDevices.ToList().Find(d => d.Id.Equals(e.Device.Id.ToString()));
+
+        if (scannedDevice == null)
+        {
+            
+            var manufacturerParts = manufacturerDataValue.Split("|");
+            var systemConfigured = false;
+            var systemType = GXOVnTSystemType.UnInitialized;
+
+            if (manufacturerParts.Length >= 2)
+                systemType = Enumeration.FromValue<GXOVnTSystemType>(int.Parse(manufacturerParts[1])) ?? GXOVnTSystemType.UnInitialized;
+            if (manufacturerParts.Length >= 3)
+                systemConfigured = manufacturerParts[2] == "1";
+            
+            scannedDevice = new GXOVnTDevice(e.Device)
+            {
+                SystemConfigured = systemConfigured,
+                SystemType = systemType
+            };
+            _scannedDevices.Add(scannedDevice);
+
+            OnDeviceFound?.Invoke(this, new GXOVnTDeviceFoundArgs(e, systemConfigured, systemType));
+            
+            return;
+        }
+        
+        await e.Device.UpdateRssiAsync();
+        
     }
     
     #endregion
 
     #region Event Callbacks
 
-    private void BluetoothAdapterOnDeviceDiscovered(object? sender, DeviceEventArgs e)
+    private async void BluetoothAdapterOnDeviceDiscovered(object? sender, DeviceEventArgs e)
     {
-        NotifyDeviceFoundIfMatch(e);
+        await NotifyDeviceFoundIfMatch(e);
     }
 
-    private async void BluetoothAdapterOnDeviceAdvertised(object? sender, DeviceEventArgs e)
+    private void BluetoothAdapterOnDeviceAdvertised(object? sender, DeviceEventArgs e)
     {
         // Method intentionally left empty.
     }
@@ -505,6 +550,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         _incomingMessageCharacteristic = null;
         _connectedDeviceService = null;
         _connectedDevice = null;
+        _scannedDevices.Clear();
       
         
     }

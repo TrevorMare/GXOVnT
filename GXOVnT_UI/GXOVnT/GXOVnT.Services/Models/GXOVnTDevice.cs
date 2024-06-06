@@ -1,6 +1,7 @@
 ﻿using GXOVnT.Services.Common;
 using GXOVnT.Shared.Common;
 using Plugin.BLE.Abstractions;
+using Plugin.BLE.Abstractions.Contracts;
 
 namespace GXOVnT.Services.Models;
 
@@ -9,11 +10,6 @@ public class GXOVnTDevice : NotifyChanged
 
     #region Members
     private string _uuiid = Guid.NewGuid().ToString();
-    private string _id = Guid.NewGuid().ToString();
-    private string _deviceName = string.Empty;
-    private int _rssi;
-    private bool _isConnectable;
-    private DeviceState _deviceState = DeviceState.Disconnected;
     private bool _systemConfigured;
     private GXOVnTSystemType _systemType = GXOVnTSystemType.UnInitialized;
     #endregion
@@ -22,35 +18,17 @@ public class GXOVnTDevice : NotifyChanged
 
     public string UUID => $"scan_result_{_uuiid}";
     
-    public string Id
-    {
-        get => _id;
-        set => SetField(ref _id, value);
-    }
+    public IDevice? Device { get; private set; }
 
-    public string DeviceName
-    {
-        get => _deviceName;
-        set => SetField(ref _deviceName, value);
-    }
+    public string Id => Device?.Id.ToString() ?? string.Empty;
 
-    public int Rssi
-    {
-        get => _rssi;
-        set => SetField(ref _rssi, value);
-    }
+    public string DeviceName => Device?.Name ?? string.Empty;
 
-    public bool IsConnectable
-    {
-        get => _isConnectable;
-        set => SetField(ref _isConnectable, value);
-    }
+    public int Rssi => Device?.Rssi ?? 0;
 
-    public DeviceState DeviceState
-    {
-        get => _deviceState;
-        set => SetField(ref _deviceState, value);
-    }
+    public bool IsConnectable => Device?.IsConnectable ?? false;
+
+    public DeviceState DeviceState => Device?.State ?? DeviceState.Disconnected;
 
     public bool SystemConfigured
     {
@@ -65,4 +43,14 @@ public class GXOVnTDevice : NotifyChanged
     }
     #endregion
 
+    #region ctor
+
+    public GXOVnTDevice(IDevice bleDevice)
+    {
+        Device = bleDevice;
+    }
+    
+    #endregion
+
+    
 }

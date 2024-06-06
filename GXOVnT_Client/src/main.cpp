@@ -44,7 +44,7 @@ void setup() {
   
  
   
-  //GXOVnT.commService->start();
+  GXOVnT.commService->start();
 
 }
 
