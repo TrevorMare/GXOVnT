@@ -3,29 +3,23 @@
 <PageTitle>Enroll Device</PageTitle>
 
 <MudGrid>
-    <MudItem xs="12">
-        <MudText Typo="Typo.h3" GutterBottom="true">Device Enrollment</MudText>
-    </MudItem>
- 
-
-    
-    @if (_selectedDeviceToEnroll == null)
-    {
-        <MudItem xs="12" sm="12">
-            <DeviceScanner 
-                DeviceSelected="EnrollDeviceSelected"></DeviceScanner> 
-        </MudItem>
-    }
-    else
-    {
-        <DeviceConfigurator 
-            DeviceConfigurationCancelled="OnDeviceConfigurationCancelled"></DeviceConfigurator>
-    }
+    <WizardComponent WizardTitle="Device Enrollment Wizard"
+                     WizardCancelled="OnEnrollWizardCancelled"
+                     WizardCompleted="OnEnrollWizardCompleted"
+                     WizardStartStep="0">
+        
+        <WizardStep WizardStepTitle="Information" StepSequence="0" HasBackButton="false">
+            <DeviceEnrollmentStart></DeviceEnrollmentStart>
+        </WizardStep>
+        <WizardStep WizardStepTitle="Find device" StepSequence="1" NextButtonText="Complete">
+            <DeviceScanner></DeviceScanner>
+        </WizardStep>
+    </WizardComponent>
+  
     
     
 </MudGrid>
 
-<LogViewer></LogViewer>
 
 
 

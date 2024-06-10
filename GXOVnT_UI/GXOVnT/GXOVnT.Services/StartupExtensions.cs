@@ -18,6 +18,7 @@ public static class StartupExtensions
         
         
         services.AddTransient<ViewModels.DeviceScannerViewModel>();
+        services.AddTransient<ViewModels.EnrollDeviceViewModel>();
 
         return services;
     }

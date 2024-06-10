@@ -1,7 +1,9 @@
-﻿using GXOVnT.Services.Common;
+﻿using System.ComponentModel;
+using GXOVnT.Services.Common;
 using GXOVnT.Services.Interfaces;
 using Microsoft.AspNetCore.Components;
 using GXOVnT.Services.Models;
+using GXOVnT.Services.ViewModels;
 using MudBlazor;
 
 namespace GXOVnT.Components.Pages;
@@ -12,28 +14,51 @@ public partial class EnrollDevice : ComponentBase
     #region Members
 
     private GXOVnTDevice? _selectedDeviceToEnroll;
-    
+
+
 
     #endregion
 
     #region Properties
 
-    [Inject]private IDialogService DialogService { get; set; } = default!;
+    [Inject]
+    private IDialogService DialogService { get; set; } = default!;
+    
+    [Inject]
+    public EnrollDeviceViewModel EnrollDeviceViewModel { get; set; } = default!;
 
     #endregion
-    
-    
-   
-    #region ctor
 
-    public EnrollDevice()
+    #region Override Methods
+
+    protected override void OnInitialized()
     {
-       
+        EnrollDeviceViewModel.PropertyChanged -= EnrollDeviceViewModelOnPropertyChanged;
+        EnrollDeviceViewModel.PropertyChanged += EnrollDeviceViewModelOnPropertyChanged;
+        base.OnInitialized();
     }
 
     #endregion
 
+
+
     #region Event Callbacks
+
+    private async Task OnEnrollWizardCompleted()
+    {
+        
+    }
+
+    private async Task OnEnrollWizardCancelled()
+    {
+        
+    }
+    
+    
+    private void EnrollDeviceViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
 
     private void OnDeviceConfigurationCancelled()
     {

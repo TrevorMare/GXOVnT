@@ -1,0 +1,34 @@
+﻿@if (!string.IsNullOrWhiteSpace(WizardTitle))
+{
+    <MudText Typo="Typo.h5" Class="mb-4">@WizardTitle</MudText>
+}
+
+<CascadingValue Value="this">
+    
+    <MudPaper Class="pa-2" Elevation="3">
+        @ChildContent
+    </MudPaper>
+
+    <MudContainer Class="d-flex justify-end flex-grow-1 mt-4"  Fixed="true"> 
+        @if (CurrentStepModel != null)
+        {
+            if (CurrentStepModel.HasCancelButton)
+            {
+                <MudButton Size="Size.Small" Class="mr-4" Variant="Variant.Filled" Disabled="@(!CurrentStepModel.CanCancelButton)" StartIcon="@Icons.Material.Filled.Cancel" 
+                           Color="Color.Warning" @onclick="CancelButtonClicked">@CurrentStepModel.CancelButtonText</MudButton>
+            }
+            if (CurrentStepModel.HasBackButton)
+            {
+                <MudButton Size="Size.Small" Class="mr-4" Variant="Variant.Filled" Disabled="@(!CurrentStepModel.CanBackButton)" 
+                           StartIcon="@Icons.Material.Filled.NavigateBefore" Color="Color.Default"
+                           @onclick="BackButtonClicked">@CurrentStepModel.BackButtonText</MudButton>
+            }
+            if (CurrentStepModel.HasForwardButton)
+            {
+                <MudButton Size="Size.Small" Variant="Variant.Filled" Disabled="@(!CurrentStepModel.CanForwardButton)" EndIcon="@Icons.Material.Filled.NavigateNext" 
+                           Color="Color.Success" @onclick="NextButtonClicked">@CurrentStepModel.NextButtonText</MudButton>
+            }
+        }
+    </MudContainer>
+
+</CascadingValue>

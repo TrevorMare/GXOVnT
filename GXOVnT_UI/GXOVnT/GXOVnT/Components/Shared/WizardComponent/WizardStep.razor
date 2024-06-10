@@ -1,0 +1,15 @@
+﻿@if (WizardStepModel.IsCurrentStep)
+{
+    if (!string.IsNullOrWhiteSpace(WizardStepTitle))
+    {
+        <MudText Typo="Typo.h6" Class="mb-4">@WizardStepTitle</MudText>
+    }
+
+    if (ChildContent != null)
+    {
+        <CascadingValue Value="WizardStepModel">
+            @ChildContent    
+        </CascadingValue>
+    }  
+}
+
