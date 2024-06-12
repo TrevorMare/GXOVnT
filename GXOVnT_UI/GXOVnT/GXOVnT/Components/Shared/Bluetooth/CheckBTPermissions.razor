@@ -1,0 +1,23 @@
+﻿<MudStack Spacing="3">
+    
+    <MudText Typo="Typo.body2">
+        Checking if the application has access to the Bluetooth services.
+    </MudText>
+    
+    @if (HasBlueToothPermission)
+    {
+        <MudAlert Severity="Severity.Info">
+            The application already has access to the Bluetooth services, please click next to continue.
+        </MudAlert>
+    }
+    else
+    {
+        <MudAlert Severity="Severity.Warning">
+            The application does not have access to the Bluetooth services. Click the `Request Access` button
+            to allow the application to request access. <br/>
+            
+            <MudButton @onclick="RequestAccessClick" Color="Color.Primary" Size="Size.Small">Request Access</MudButton>
+        </MudAlert>
+    }
+
+</MudStack>

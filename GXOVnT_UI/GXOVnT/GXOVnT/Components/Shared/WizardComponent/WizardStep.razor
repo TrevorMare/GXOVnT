@@ -1,4 +1,6 @@
-﻿@if (WizardStepModel.IsCurrentStep)
+﻿@typeparam TWizardModelType
+
+@if (WizardStepModel.IsCurrentStep)
 {
     if (!string.IsNullOrWhiteSpace(WizardStepTitle))
     {

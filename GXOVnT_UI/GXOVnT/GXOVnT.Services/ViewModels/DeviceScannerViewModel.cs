@@ -94,8 +94,6 @@ public class DeviceScannerViewModel : NotifyChanged, IAsyncDisposable
 
     private void BluetoothServiceOnDeviceFound(object sender, BluetoothService.GXOVnTDeviceFoundArgs e)
     {
-        
-       
         OnPropertyChanged(nameof(ScannedDevices));
     }
     #endregion

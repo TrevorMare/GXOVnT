@@ -7,19 +7,23 @@ public class WizardStepModel : NotifyChanged
 
     #region Members
     private readonly string _wizardStepUUId = Guid.NewGuid().ToString();
+    private string? _wizardStepName; 
+    
     private bool _isCurrentStep;
 
     private string? _stepTitle = string.Empty;
-    private int _stepSequence = 0;
+    private int _stepSequence;
     private bool _hasCancelButton = true;
-    private bool _canCancelButton = true;
+    private bool _cancelEnabled = true;
     private bool _hasBackButton = true;
-    private bool _canBackButton = true;
+    private bool _backEnabled = true;
     private bool _hasForwardButton = true;
-    private bool _canForwardButton = true;
+    private bool _forwardEnabled = true;
     private string _cancelButtonText = "Cancel";
     private string _backButtonText = "Previous";
     private string _nextButtonText = "Next";
+    private bool _isBusy;
+    private bool _isEnabled = true;
     
     #endregion
     
@@ -27,6 +31,24 @@ public class WizardStepModel : NotifyChanged
 
     public string WizardStepUUId => _wizardStepUUId;
 
+    public string? WizardStepName
+    {
+        get => _wizardStepName;
+        set => SetField(ref _wizardStepName, value);
+    }
+
+    public bool IsEnabled
+    {
+        get => _isEnabled;
+        set => SetField(ref _isEnabled, value);
+    }
+    
+    public bool IsBusy
+    {
+        get => _isBusy;
+        set => SetField(ref _isBusy, value);
+    }
+    
     public int StepSequence
     {
         get => _stepSequence;
@@ -45,10 +67,10 @@ public class WizardStepModel : NotifyChanged
         set => SetField(ref _hasCancelButton, value);
     }
     
-    public bool CanCancelButton 
+    public bool CancelEnabled 
     {
-        get => _canCancelButton;
-        set => SetField(ref _canCancelButton, value);
+        get => _cancelEnabled;
+        set => SetField(ref _cancelEnabled, value);
     }
     
     public bool HasBackButton 
@@ -57,10 +79,10 @@ public class WizardStepModel : NotifyChanged
         set => SetField(ref _hasBackButton, value);
     }
     
-    public bool CanBackButton
+    public bool BackEnabled
     {
-        get => _canBackButton;
-        set => SetField(ref _canBackButton, value);
+        get => _backEnabled;
+        set => SetField(ref _backEnabled, value);
     }
     
     public bool HasForwardButton
@@ -69,10 +91,10 @@ public class WizardStepModel : NotifyChanged
         set => SetField(ref _hasForwardButton, value);
     }
     
-    public bool CanForwardButton
+    public bool ForwardEnabled
     {
-        get => _canForwardButton;
-        set => SetField(ref _canForwardButton, value);
+        get => _forwardEnabled;
+        set => SetField(ref _forwardEnabled, value);
     }
 
     public string CancelButtonText

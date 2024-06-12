@@ -19,6 +19,8 @@ public partial class CommunicationStatusIndicator
     public string BluetoothConnectionStateIcon { get; set; } = Icons.Material.Outlined.Bluetooth;
 
     public Color BluetoothConnectionColor { get; set; } = Color.Warning;
+    
+
 
     #endregion
 

@@ -1,16 +1,5 @@
 ﻿<MudPaper Width="100%">
-
-    @if (IsScanningDevices)
-    {
-        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />    
-    }
-    
     <CommunicationStatusIndicator></CommunicationStatusIndicator>
-
-    <MudAlert Severity="Severity.Warning">
-        Ensure that the device is on before running the scan. Once a device has been detected, click on it to start the enrollment process.
-        Be careful and check the current state of the device before enrolling it again, this can wipe the current configuration.
-    </MudAlert>
     
     <MudList Clickable="@(HasItems && !IsScanningDevices)" Dense="true">
         @if (!HasItems)

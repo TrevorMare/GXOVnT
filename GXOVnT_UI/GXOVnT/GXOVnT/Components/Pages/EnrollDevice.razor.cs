@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using GXOVnT.Models;
 using GXOVnT.Services.Common;
 using GXOVnT.Services.Interfaces;
 using Microsoft.AspNetCore.Components;
@@ -20,6 +21,11 @@ public partial class EnrollDevice : ComponentBase
     #endregion
 
     #region Properties
+
+    private EnrollDeviceWizardModel _enrollDeviceWizardModel = new()
+    {
+        WizardStartStep = 0
+    }; 
 
     [Inject]
     private IDialogService DialogService { get; set; } = default!;

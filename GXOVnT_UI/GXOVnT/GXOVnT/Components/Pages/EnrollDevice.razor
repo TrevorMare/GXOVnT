@@ -1,4 +1,6 @@
 ﻿@page "/EnrollDevice"
+@using GXOVnT.Models
+@using GXOVnT.Services.ViewModels
 
 <PageTitle>Enroll Device</PageTitle>
 
@@ -6,12 +8,21 @@
     <WizardComponent WizardTitle="Device Enrollment Wizard"
                      WizardCancelled="OnEnrollWizardCancelled"
                      WizardCompleted="OnEnrollWizardCompleted"
-                     WizardStartStep="0">
+                     TWizardModelType="EnrollDeviceWizardModel"
+                     WizardComponentModel="_enrollDeviceWizardModel">
         
-        <WizardStep WizardStepTitle="Information" StepSequence="0" HasBackButton="false">
+        <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Information" 
+                    StepSequence="0" HasBackButton="false" WizardStepName="step_information">
             <DeviceEnrollmentStart></DeviceEnrollmentStart>
         </WizardStep>
-        <WizardStep WizardStepTitle="Find device" StepSequence="1" NextButtonText="Complete">
+
+        <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Checking Permissions" 
+                    StepSequence="1" WizardStepName="step_permissions">
+            <CheckBTPermissions></CheckBTPermissions>
+        </WizardStep>
+
+        <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Find device" 
+                    StepSequence="2" WizardStepName="step_find_device">
             <DeviceScanner></DeviceScanner>
         </WizardStep>
     </WizardComponent>

@@ -3,12 +3,34 @@ using Microsoft.AspNetCore.Components;
 
 namespace GXOVnT.Components.Shared.WizardComponent;
 
-public partial class WizardStep : ComponentBase
+public partial class WizardStep<TWizardModelType> : ComponentBase  where TWizardModelType: WizardComponentModel, new()
 {
 
     #region Properties
 
     public WizardStepModel WizardStepModel { get; private set; } = new();
+    
+    
+    [Parameter]
+    public string? WizardStepName 
+    {
+        get => WizardStepModel.WizardStepName;
+        set => WizardStepModel.WizardStepName = value;
+    }
+    
+    [Parameter]
+    public bool IsBusy 
+    {
+        get => WizardStepModel.IsBusy;
+        set => WizardStepModel.IsBusy = value;
+    }
+    
+    [Parameter]
+    public bool IsEnabled 
+    {
+        get => WizardStepModel.IsEnabled;
+        set => WizardStepModel.IsEnabled = value;
+    } 
     
     [Parameter]
     public string? WizardStepTitle 
@@ -32,10 +54,10 @@ public partial class WizardStep : ComponentBase
     } 
     
     [Parameter]
-    public bool CanCancelButton
+    public bool CancelEnabled
     {
-        get => WizardStepModel.CanCancelButton;
-        set => WizardStepModel.CanCancelButton = value;
+        get => WizardStepModel.CancelEnabled;
+        set => WizardStepModel.CancelEnabled = value;
     } 
     
     [Parameter]
@@ -46,10 +68,10 @@ public partial class WizardStep : ComponentBase
     } 
     
     [Parameter]
-    public bool CanBackButton
+    public bool BackEnabled
     {
-        get => WizardStepModel.CanBackButton;
-        set => WizardStepModel.CanBackButton = value;
+        get => WizardStepModel.BackEnabled;
+        set => WizardStepModel.BackEnabled = value;
     }
     
     [Parameter]
@@ -60,10 +82,10 @@ public partial class WizardStep : ComponentBase
     }
     
     [Parameter]
-    public bool CanForwardButton
+    public bool ForwardEnabled
     {
-        get => WizardStepModel.CanForwardButton;
-        set => WizardStepModel.CanForwardButton = value;
+        get => WizardStepModel.ForwardEnabled;
+        set => WizardStepModel.ForwardEnabled = value;
     }
     
     [Parameter]
@@ -91,7 +113,7 @@ public partial class WizardStep : ComponentBase
     public RenderFragment? ChildContent { get; set; }
     
     [CascadingParameter] 
-    private WizardComponent? WizardComponent { get; set; } 
+    private WizardComponent<TWizardModelType>? WizardComponent { get; set; } 
     
     #endregion
 

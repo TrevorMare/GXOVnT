@@ -1,23 +1,43 @@
 ﻿using System.ComponentModel;
+using GXOVnT.Models;
 using GXOVnT.Services.Models;
 using GXOVnT.Services.ViewModels;
 using Microsoft.AspNetCore.Components;
 
-namespace GXOVnT.Components.Shared;
+namespace GXOVnT.Components.Shared.Bluetooth;
 
 public partial class DeviceScanner : ComponentBase
 {
 
-    #region Properties
+    #region Members
 
+    private bool _isBusy;
+
+    #endregion
+    
+    #region Properties
+    [CascadingParameter]
+    private WizardStepModel? WizardStepModel { get; set; }
+    
+    private bool IsBusy
+    {
+        get => WizardStepModel?.IsBusy ?? _isBusy;
+        set
+        {
+            if (WizardStepModel != null)
+                WizardStepModel.IsBusy = value;
+            _isBusy = value;
+        } 
+    }
+    
     [Parameter] 
     public bool Enabled { get; set; } = true;
     
     [Parameter] 
     public EventCallback<GXOVnTDevice> DeviceSelected { get; set; }
 
-    [Inject] 
-    private DeviceScannerViewModel DeviceScannerViewModel { get; set; } = default!;
+    [Inject]
+    public DeviceScannerViewModel DeviceScannerViewModel { get; set; } = default!;
 
     private bool IsScanningDevices => DeviceScannerViewModel.IsScanningDevices;
 
@@ -32,6 +52,11 @@ public partial class DeviceScanner : ComponentBase
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        
+        
+        if (WizardStepModel != null)
+            WizardStepModel.ForwardEnabled = false;
+        
         DeviceScannerViewModel.PropertyChanged -= DeviceScannerViewModelOnPropertyChanged;
         DeviceScannerViewModel.PropertyChanged += DeviceScannerViewModelOnPropertyChanged;
     }
@@ -57,10 +82,26 @@ public partial class DeviceScanner : ComponentBase
     
     public async Task ToggleScanDevices()
     {
-        if (DeviceScannerViewModel.IsScanningDevices)
-            await DeviceScannerViewModel.StopScanGXOVnTDevicesAsync();
-        else
-            await DeviceScannerViewModel.StartScanGXOVnTDevicesAsync();
+        try
+        {
+            IsBusy = true;
+
+            if (DeviceScannerViewModel.IsScanningDevices)
+                await DeviceScannerViewModel.StopScanGXOVnTDevicesAsync();
+            else
+                await DeviceScannerViewModel.StartScanGXOVnTDevicesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+        
+      
     }
 
     private void DeviceScannerViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)

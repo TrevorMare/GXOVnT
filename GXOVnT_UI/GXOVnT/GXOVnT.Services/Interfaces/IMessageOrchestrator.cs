@@ -5,6 +5,12 @@ namespace GXOVnT.Services.Interfaces;
 public interface IMessageOrchestrator : INotifyPropertyChanged
 {
 
+    bool IsBusy { get; }
+    
+    string ProgressText { get; }
+    
+    int Progress { get; }
+    
     event MessageAggregateReceivedHandler? MessageAggregateReceived;
     
     /// <summary>

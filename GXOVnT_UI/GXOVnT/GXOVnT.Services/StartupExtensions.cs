@@ -14,6 +14,9 @@ public static class StartupExtensions
         services.AddSingleton<IBluetoothService, BluetoothService>();
         services.AddSingleton<IMessageOrchestrator, MessageOrchestrator>();
         services.AddSingleton<IAlertService, AlertService>();
+        services.AddSingleton<ILogService, LogService>();
+        
+        
         services.AddSingleton<ViewModels.LogViewModel>();
         
         
