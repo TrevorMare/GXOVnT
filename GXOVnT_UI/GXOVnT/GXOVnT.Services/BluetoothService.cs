@@ -66,7 +66,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
     private readonly IAlertService _alertService;
     private readonly IRequestPermissionService _requestPermissionService;
-    private readonly LogViewModel _logViewModel;
+    private readonly ILogService _logService;
     private readonly ObservableCollection<GXOVnTDevice> _scannedDevices = new();
     
     private bool _applicationHasBluetoothPermissions;
@@ -157,11 +157,11 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
     public BluetoothService(IAlertService alertService,
         IRequestPermissionService requestPermissionService, 
-        LogViewModel logViewModel)
+        ILogService logService)
     {
         _alertService = alertService;
         _requestPermissionService = requestPermissionService;
-        _logViewModel = logViewModel;
+        _logService = logService;
 
         _scannedDevices.CollectionChanged += (_, _) =>
         {
@@ -193,7 +193,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         }
         catch (Exception ex)
         {
-            _logViewModel.LogError($"StartScanForDevicesAsync: An error occured scanning for devices. {ex.Message}");
+            _logService.LogError($"StartScanForDevicesAsync: An error occured scanning for devices. {ex.Message}");
             return false;
         }
         finally
@@ -233,7 +233,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         }
         catch (Exception ex)
         {
-            _logViewModel.LogError($"DisConnectFromDevice: An error occured disconnecting from the device. {ex.Message}");
+            _logService.LogError($"DisConnectFromDevice: An error occured disconnecting from the device. {ex.Message}");
             return false;
         }
     }
@@ -293,7 +293,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         catch (Exception ex)
         {
             await DisConnectFromDevice();
-            _logViewModel.LogError($"StartScanForDevicesAsync: An error occured scanning for devices. {ex.Message}");
+            _logService.LogError($"StartScanForDevicesAsync: An error occured scanning for devices. {ex.Message}");
             return false;
         }
         
@@ -333,7 +333,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         }
         catch (Exception ex)
         {
-            _logViewModel.LogError($"An error occured writing the value to the device: {ex.Message}");
+            _logService.LogError($"An error occured writing the value to the device: {ex.Message}");
             return -1;
         }
         finally
@@ -349,10 +349,21 @@ public class BluetoothService : NotifyChanged, IBluetoothService
     #region Private Methods
     private async void IncomingMessageCharacteristicOnValueUpdated(object? sender, CharacteristicUpdatedEventArgs e)
     {
-        var (data, _) = await _incomingMessageCharacteristic!.ReadAsync();
+        try
+        {
+            if (_incomingMessageCharacteristic == null)
+                throw new Exception("The incoming message characteristic has been reset.");
+            
+            var (data, _) = await _incomingMessageCharacteristic!.ReadAsync();
 
-        if (data != null && data.Length != 0)
-            OnMessagePacketReceived?.Invoke(this, data);
+            if (data != null && data.Length != 0)
+                OnMessagePacketReceived?.Invoke(this, data);
+
+        }
+        catch (Exception ex)
+        {
+            _logService.LogError($"There was an error reading the incoming message characteristic. {ex.Message}");
+        }
     }
     
     private async Task<bool> InitializeBluetooth()
@@ -376,7 +387,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
             
             if (_bluetoothManager == null || _bluetoothAdapter == null)
             {
-                _logViewModel.LogWarning("InitializeBluetooth: Could not get a reference to the Bluetooth adapter");
+                _logService.LogWarning("InitializeBluetooth: Could not get a reference to the Bluetooth adapter");
                 return false;
             }
             
@@ -395,7 +406,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         }
         catch (Exception ex)
         {
-            _logViewModel.LogError($"InitializeBluetooth: An error occured initializing the Bluetooth adapter. {ex.Message}");
+            _logService.LogError($"InitializeBluetooth: An error occured initializing the Bluetooth adapter. {ex.Message}");
             BluetoothIsReady = false;
             return false;
         }
@@ -526,7 +537,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
     private void BluetoothManagerOnStateChanged(object? sender, BluetoothStateChangedArgs e)
     {
-        _logViewModel.LogInformation($"BluetoothManagerOnStateChanged: Current Bluetooth state changed to {e.NewState.ToString()}");
+        _logService.LogInformation($"BluetoothManagerOnStateChanged: Current Bluetooth state changed to {e.NewState.ToString()}");
         BluetoothState = e.NewState;
         SetBluetoothStateText();
     }

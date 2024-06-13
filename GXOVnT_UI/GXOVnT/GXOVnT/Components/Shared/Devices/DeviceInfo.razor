@@ -1,0 +1,58 @@
+﻿@using GXOVnT.Shared.Common
+@inherits GXOVnTComponent
+
+
+@if (ComponentInitialized)
+{
+    if (!ConnectedToDevice)
+    {
+        <MudAlert Severity="Severity.Info">
+            Connecting to device
+        </MudAlert>
+    }
+    else if (FailedToConnect)
+    {
+        <MudAlert Severity="Severity.Error">
+            Could not connect to the device.
+        </MudAlert>
+    }
+    else if (FailedToGetInformation)
+    {
+        <MudAlert Severity="Severity.Error">
+            Could not get the device information.
+        </MudAlert>
+    }  
+    else if (DataLoaded && DeviceSettingsResponse != null)
+    {
+        <MudCard Elevation="2" Outlined="true">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Device name: @GXOVnTDevice?.DeviceName</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+
+            <MudCardContent>
+                <MudStack>
+                    <MudField Variant="Variant.Text">Rssi: @GXOVnTDevice?.DeviceName</MudField>
+                    <MudField Variant="Variant.Text">Bluetooth State: @GXOVnTDevice?.DeviceState</MudField>
+                    <MudField Variant="Variant.Text">System Type: @DeviceSettingsResponse.GXOVnTSystemType?.Name</MudField>
+                    <MudField Variant="Variant.Text">System Configured: @DeviceSettingsResponse.SystemConfigured</MudField>
+                    <MudField Variant="Variant.Text">Firmware version: @DeviceSettingsResponse.FirmwareVersion</MudField>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+
+        if (NeedConfirmation)
+        {
+            <MudAlert Severity="Severity.Warning">
+                This system has been previously enrolled and provisioned. Are you sure you want to continue with the enrolment procedure, all
+                current configurations and settings will be overwritten.<br/>
+            
+                <MudCheckBox T="bool" ValueChanged="OnConfirmChanged" Label="Confirm" Value="ConfirmedContinue" ></MudCheckBox>
+            </MudAlert>
+        }
+    }
+    
+    
+}
+

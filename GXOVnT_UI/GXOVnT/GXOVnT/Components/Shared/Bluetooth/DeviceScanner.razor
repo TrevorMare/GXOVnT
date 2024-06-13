@@ -1,31 +1,36 @@
-﻿<MudPaper Width="100%">
-    <CommunicationStatusIndicator></CommunicationStatusIndicator>
-    
-    <MudList Clickable="@(HasItems && !IsScanningDevices)" Dense="true">
-        @if (!HasItems)
+﻿@inherits GXOVnTComponent
+<MudPaper Width="100%">
+    <div class="d-flex flex-grow-1 gap-4">
+        @foreach (var context in BluetoothService.ScannedDevices)
         {
-            <MudListItem Dense="true">
-                <MudText>No devices found, please start the scan</MudText>
-            </MudListItem>
-        }
-        else
-        {
-            foreach (var item in DeviceScannerViewModel.ScannedDevices)
-            {
-                var device = item;
-                <MudListItem @key="@item.UUID" Dense="true" @onclick="() => OnDeviceListItemClick(device)">
-                    <div class="d-flex flex-grow-1 gap-4">
-                        <MudText Class="flex-auto">@item.DeviceName</MudText>
-                        <SignalIndicator SignalStrength="@item.Rssi"></SignalIndicator>
-                        <MudText Class="flex-auto">@(item.SystemConfigured ? "Configured" : "Not Configured")</MudText>
-                        <MudText Class="flex-auto">@(item.SystemType.Name)</MudText>
-                    </div>
-                </MudListItem>       
-            }
-        }
-    </MudList>
+            var cardKey = context.UUID;
+            <MudCard @key="cardKey" Elevation="2" Outlined="true">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Device name: @context.DeviceName</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
 
-    <div class="d-flex m-1" style="align-items: center; justify-content: center">
+                <MudCardContent>
+                    <MudStack>
+                        <MudField Variant="Variant.Text">Rssi: @context.Rssi <SignalIndicator SignalStrength="@context.Rssi"></SignalIndicator></MudField>
+                        <MudField Variant="Variant.Text">Bluetooth State: @context.DeviceState</MudField>
+                        <MudField Variant="Variant.Text">System Type: @context.SystemType</MudField>
+                        <MudField Variant="Variant.Text">System Configured: @context.SystemConfigured</MudField>
+                    </MudStack>
+                </MudCardContent>
+                
+                <MudCardActions>
+                    <MudButton Disabled="IsScanningDevices" Variant="Variant.Text" Color="Color.Primary" @onclick="() => OnDeviceListItemClick(context)">Select</MudButton>
+                    @if (!string.IsNullOrWhiteSpace(_selectedUUId) && context.UUID.Equals(_selectedUUId))
+                    {
+                        <MudIcon Class="my-2" Color="Color.Success" Icon="@Icons.Material.Filled.Check" Size="Size.Small"></MudIcon>
+                    }
+                </MudCardActions>
+            </MudCard>
+        }
+    </div>
+    <div class="d-flex my-4" style="align-items: center; justify-content: center">
         <MudFab Class="m-1" Size="Size.Small" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Bluetooth" Label="@ScanButtonText" @onclick="ToggleScanDevices"/>    
     </div>
 </MudPaper>

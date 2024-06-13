@@ -7,36 +7,40 @@
 }
 
 <CascadingValue Value="this">
-    @if (CurrentStepModel is { IsBusy: true })
-    {
-        <MudProgressLinear  Color="Color.Primary" Indeterminate="true" Class="my-7" />
-    }
-    
-    <MudPaper Class="pa-2" Width="100%" Elevation="3">
-        @ChildContent
-    </MudPaper>
-
-    <MudContainer Class="d-flex justify-end flex-grow-1 mt-4" Fixed="true">
-        @if (CurrentStepModel != null)
+    <CascadingValue Name="WizardContext" Value="WizardComponentModel">
+        @if (CurrentStepModel is { IsBusy: true })
         {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7"/>
+        }
+
+        <MudPaper Class="pa-2" Width="100%" Elevation="3">
+            @ChildContent
+        </MudPaper>
+
+        <MudContainer Class="d-flex justify-end flex-grow-1 mt-4" Fixed="true">
+            @if (CurrentStepModel != null)
+            {
             if (CurrentStepModel.HasCancelButton)
             {
-                <MudButton Size="Size.Small" Class="mr-4" Variant="Variant.Filled" Disabled="@(!CurrentStepModel.CancelEnabled)" StartIcon="@Icons.Material.Filled.Cancel"
-                           Color="Color.Warning" @onclick="CancelButtonClicked">@CurrentStepModel.CancelButtonText</MudButton>
+            <MudButton Size="Size.Small" Class="mr-4" Variant="Variant.Filled" Disabled="@(!CurrentStepModel.CancelEnabled)" StartIcon="@Icons.Material.Filled.Cancel"
+                       Color="Color.Warning" @onclick="CancelButtonClicked">@CurrentStepModel.CancelButtonText</MudButton>
             }
 
             if (CurrentStepModel.HasBackButton)
             {
-                <MudButton Size="Size.Small" Class="mr-4" Variant="Variant.Filled" Disabled="@(!CurrentStepModel.BackEnabled)"
-                           StartIcon="@Icons.Material.Filled.NavigateBefore" Color="Color.Default"
-                           @onclick="BackButtonClicked">@CurrentStepModel.BackButtonText</MudButton>
+            <MudButton Size="Size.Small" Class="mr-4" Variant="Variant.Filled" Disabled="@(!CurrentStepModel.BackEnabled)"
+                       StartIcon="@Icons.Material.Filled.NavigateBefore" Color="Color.Default"
+                       @onclick="BackButtonClicked">@CurrentStepModel.BackButtonText</MudButton>
             }
 
             if (CurrentStepModel.HasForwardButton)
             {
-                <MudButton Size="Size.Small" Variant="Variant.Filled" Disabled="@(!CurrentStepModel.ForwardEnabled)" EndIcon="@Icons.Material.Filled.NavigateNext"
-                           Color="Color.Success" @onclick="NextButtonClicked">@CurrentStepModel.NextButtonText</MudButton>
+            <MudButton Size="Size.Small" Variant="Variant.Filled" Disabled="@(!CurrentStepModel.ForwardEnabled)" EndIcon="@Icons.Material.Filled.NavigateNext"
+                       Color="Color.Success" @onclick="NextButtonClicked">@CurrentStepModel.NextButtonText</MudButton>
             }
-        }
-    </MudContainer>
+            }
+        </MudContainer>
+    </CascadingValue>
+    
+    
 </CascadingValue>

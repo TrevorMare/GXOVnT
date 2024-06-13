@@ -1,6 +1,5 @@
 ﻿@page "/EnrollDevice"
 @using GXOVnT.Models
-@using GXOVnT.Services.ViewModels
 
 <PageTitle>Enroll Device</PageTitle>
 
@@ -23,7 +22,12 @@
 
         <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Find device" 
                     StepSequence="2" WizardStepName="step_find_device">
-            <DeviceScanner></DeviceScanner>
+            <DeviceScanner DeviceSelected="OnDeviceSelected"></DeviceScanner>
+        </WizardStep>
+
+        <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Device Information"
+                    StepSequence="3" WizardStepName="step_device_info">
+            <DeviceInfo GXOVnTDevice="@_selectedDeviceToEnroll"></DeviceInfo>
         </WizardStep>
     </WizardComponent>
   

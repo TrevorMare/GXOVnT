@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using GXOVnT.Services.Models;
 using Plugin.BLE.Abstractions.Contracts;
 
 namespace GXOVnT.Services.Interfaces;
@@ -17,6 +18,8 @@ public interface IBluetoothService : INotifyPropertyChanged, IAsyncDisposable
     IDevice? ConnectedDevice { get; }
     
     bool IsScanningDevices { get; }
+    
+    IReadOnlyList<GXOVnTDevice> ScannedDevices { get; }
 
     Task<bool> StartScanForDevicesAsync(CancellationTokenSource? cancellationTokenSource = default);
 

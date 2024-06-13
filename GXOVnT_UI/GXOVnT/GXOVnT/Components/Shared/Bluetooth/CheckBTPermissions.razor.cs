@@ -1,44 +1,15 @@
-﻿using GXOVnT.Models;
-using GXOVnT.Services.Interfaces;
+﻿using GXOVnT.Services.Interfaces;
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
 
 namespace GXOVnT.Components.Shared.Bluetooth;
 
-public partial class CheckBTPermissions : ComponentBase
+public partial class CheckBTPermissions : GXOVnTComponent
 {
-
-    #region Members
-
-    private bool _isBusy;
-
-    #endregion
     
     #region Properties
     
-    
-    [Inject]
-    private IDialogService DialogService { get; set; } = default!;
-    
     [Inject]
     private IRequestPermissionService RequestPermissionService { get; set; } = default!;
-
-    [Inject]
-    private ILogService LogService { get; set; } = default!;
-
-    [CascadingParameter]
-    private WizardStepModel? WizardStepModel { get; set; }
-
-    private bool IsBusy
-    {
-        get => WizardStepModel?.IsBusy ?? _isBusy;
-        set
-        {
-            if (WizardStepModel != null)
-                WizardStepModel.IsBusy = value;
-            _isBusy = value;
-        } 
-    }
     
     private bool HasBlueToothPermission { get; set; }
     
@@ -50,9 +21,7 @@ public partial class CheckBTPermissions : ComponentBase
     protected override void OnInitialized()
     {
         base.OnInitialized();
-
-        if (WizardStepModel != null)
-            WizardStepModel.ForwardEnabled = false;
+        SetWizardForwardEnabled(false);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -75,11 +44,9 @@ public partial class CheckBTPermissions : ComponentBase
 
             HasBlueToothPermission = await RequestPermissionService.ApplicationHasBluetoothPermission();
 
-            if (WizardStepModel != null)
-                WizardStepModel.ForwardEnabled = HasBlueToothPermission;
-            
-            await InvokeAsync(StateHasChanged);
+            SetWizardForwardEnabled(HasBlueToothPermission);
 
+            await InvokeAsync(StateHasChanged);
         }
         catch (Exception)
         {
@@ -101,10 +68,8 @@ public partial class CheckBTPermissions : ComponentBase
         try
         {
             IsBusy = true;
-            await InvokeAsync(StateHasChanged);
 
             var permissionGranted = await RequestPermissionService.RequestBluetoothPermission();
-
             if (!permissionGranted)
             {
                 await DialogService.ShowMessageBox("Permissions", "The request for Bluetooth permissions was not successful");

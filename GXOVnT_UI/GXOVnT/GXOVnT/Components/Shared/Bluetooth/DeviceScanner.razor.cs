@@ -1,47 +1,30 @@
 ﻿using System.ComponentModel;
-using GXOVnT.Models;
+using GXOVnT.Services.Interfaces;
 using GXOVnT.Services.Models;
-using GXOVnT.Services.ViewModels;
 using Microsoft.AspNetCore.Components;
 
 namespace GXOVnT.Components.Shared.Bluetooth;
 
-public partial class DeviceScanner : ComponentBase
+public partial class DeviceScanner : GXOVnTComponent
 {
 
     #region Members
 
-    private bool _isBusy;
+    private string _selectedUUId = string.Empty; 
 
     #endregion
     
     #region Properties
-    [CascadingParameter]
-    private WizardStepModel? WizardStepModel { get; set; }
-    
-    private bool IsBusy
-    {
-        get => WizardStepModel?.IsBusy ?? _isBusy;
-        set
-        {
-            if (WizardStepModel != null)
-                WizardStepModel.IsBusy = value;
-            _isBusy = value;
-        } 
-    }
-    
-    [Parameter] 
-    public bool Enabled { get; set; } = true;
-    
-    [Parameter] 
-    public EventCallback<GXOVnTDevice> DeviceSelected { get; set; }
 
     [Inject]
-    public DeviceScannerViewModel DeviceScannerViewModel { get; set; } = default!;
+    private IBluetoothService BluetoothService { get; set; } = default!;
+    
+    [Parameter] 
+    public EventCallback<GXOVnTDevice?> DeviceSelected { get; set; }
+    
+    private bool IsScanningDevices => BluetoothService.IsScanningDevices;
 
-    private bool IsScanningDevices => DeviceScannerViewModel.IsScanningDevices;
-
-    private bool HasItems => DeviceScannerViewModel.ScannedDevices.Count > 0;
+    private bool HasItems => BluetoothService.ScannedDevices.Count > 0;
 
     private string ScanButtonText => (IsScanningDevices ? "Stop" : "Start") + " scan devices";
    
@@ -53,21 +36,17 @@ public partial class DeviceScanner : ComponentBase
     {
         base.OnInitialized();
         
+        SetWizardForwardEnabled(false);
         
-        if (WizardStepModel != null)
-            WizardStepModel.ForwardEnabled = false;
-        
-        DeviceScannerViewModel.PropertyChanged -= DeviceScannerViewModelOnPropertyChanged;
-        DeviceScannerViewModel.PropertyChanged += DeviceScannerViewModelOnPropertyChanged;
+        BluetoothService.PropertyChanged -= DeviceScannerViewModelOnPropertyChanged;
+        BluetoothService.PropertyChanged += DeviceScannerViewModelOnPropertyChanged;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
-        await base.OnAfterRenderAsync(firstRender);
-
-        if (!firstRender) return;
-
-        DeviceScannerViewModel.InitializeViewModel();
+        base.OnAfterRender(firstRender);
+        if (firstRender) 
+            _selectedUUId = string.Empty;
     }
 
     #endregion
@@ -76,8 +55,10 @@ public partial class DeviceScanner : ComponentBase
     
     private async Task OnDeviceListItemClick(GXOVnTDevice item)
     {
+        _selectedUUId = item.UUID;
+        
         await DeviceSelected.InvokeAsync(item);
-        await DeviceScannerViewModel.ConnectToDevice(item, true);
+        SetWizardForwardEnabled(true);
     }
     
     public async Task ToggleScanDevices()
@@ -86,22 +67,25 @@ public partial class DeviceScanner : ComponentBase
         {
             IsBusy = true;
 
-            if (DeviceScannerViewModel.IsScanningDevices)
-                await DeviceScannerViewModel.StopScanGXOVnTDevicesAsync();
+            if (BluetoothService.IsScanningDevices)
+                await BluetoothService.StopScanForDevicesAsync();
             else
-                await DeviceScannerViewModel.StartScanGXOVnTDevicesAsync();
+            {
+                SetWizardForwardEnabled(false);
+                
+                await DeviceSelected.InvokeAsync(null);
+                await BluetoothService.StartScanForDevicesAsync();
+            }
+                
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Console.WriteLine(ex);
-            throw;
+            LogService.LogError("There was an internal error scanning for the devices");
         }
         finally
         {
             IsBusy = false;
         }
-        
-      
     }
 
     private void DeviceScannerViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)

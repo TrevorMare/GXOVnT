@@ -2,7 +2,12 @@
 
 public class EnrollDeviceWizardModel : WizardComponentModel
 {
+
+    #region Members
+
     
+
+    #endregion
     
     
 }

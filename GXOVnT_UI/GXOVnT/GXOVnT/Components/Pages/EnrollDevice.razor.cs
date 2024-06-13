@@ -29,27 +29,20 @@ public partial class EnrollDevice : ComponentBase
 
     [Inject]
     private IDialogService DialogService { get; set; } = default!;
-    
-    [Inject]
-    public EnrollDeviceViewModel EnrollDeviceViewModel { get; set; } = default!;
 
     #endregion
 
     #region Override Methods
 
-    protected override void OnInitialized()
-    {
-        EnrollDeviceViewModel.PropertyChanged -= EnrollDeviceViewModelOnPropertyChanged;
-        EnrollDeviceViewModel.PropertyChanged += EnrollDeviceViewModelOnPropertyChanged;
-        base.OnInitialized();
-    }
 
     #endregion
 
-
-
     #region Event Callbacks
-
+    private void OnDeviceSelected(GXOVnTDevice? device)
+    {
+        _selectedDeviceToEnroll = device;
+    }
+    
     private async Task OnEnrollWizardCompleted()
     {
         
@@ -59,12 +52,7 @@ public partial class EnrollDevice : ComponentBase
     {
         
     }
-    
-    
-    private void EnrollDeviceViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        InvokeAsync(StateHasChanged);
-    }
+
 
     private void OnDeviceConfigurationCancelled()
     {
