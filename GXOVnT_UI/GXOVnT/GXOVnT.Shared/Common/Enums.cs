@@ -15,7 +15,8 @@ public enum JsonModelType
     KeepAlive = 4,
     RequestGetSystemSettings = 5,
     RequestSetSystemSettings = 6,
-    
+    RequestTestWiFiSettings = 7,
+
     RequestReboot = 98,
     RequestSaveConfiguration = 99,
 

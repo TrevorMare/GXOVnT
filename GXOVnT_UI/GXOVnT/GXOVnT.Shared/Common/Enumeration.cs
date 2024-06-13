@@ -22,6 +22,13 @@ public abstract class Enumeration : IComparable
             .Select(f => f.GetValue(null))
             .Cast<T>();
 
+    public static IEnumerable<T> GetAll<T>(Func<T, bool> filter) where T : Enumeration =>
+        typeof(T).GetFields(BindingFlags.Public |
+                            BindingFlags.Static |
+                            BindingFlags.DeclaredOnly)
+            .Select(f => f.GetValue(null))
+            .Cast<T>()
+            .Where(filter);
     public static T? FromValue<T>(int value) where T: Enumeration
     {
         return GetAll<T>().FirstOrDefault(e => e.Id == value);
@@ -38,6 +45,11 @@ public abstract class Enumeration : IComparable
         var valueMatches = Id.Equals(otherValue.Id);
 
         return typeMatches && valueMatches;
+    }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
     }
 
     public int CompareTo(object other) => Id.CompareTo(((Enumeration)other).Id);

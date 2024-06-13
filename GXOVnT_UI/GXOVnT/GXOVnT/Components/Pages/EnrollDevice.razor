@@ -9,11 +9,16 @@
                      WizardCompleted="OnEnrollWizardCompleted"
                      TWizardModelType="EnrollDeviceWizardModel"
                      WizardComponentModel="_enrollDeviceWizardModel">
-        
-        <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Information" 
-                    StepSequence="0" HasBackButton="false" WizardStepName="step_information">
-            <DeviceEnrollmentStart></DeviceEnrollmentStart>
+
+        <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Device Settings"
+                    StepSequence="0" >
+            <DeviceEnrollSettings ></DeviceEnrollSettings>
         </WizardStep>
+        
+        @* <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Information"  *@
+        @*             StepSequence="0" HasBackButton="false" WizardStepName="step_information"> *@
+        @*     <DeviceEnrollmentStart></DeviceEnrollmentStart> *@
+        @* </WizardStep> *@
 
         <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Checking Permissions" 
                     StepSequence="1" WizardStepName="step_permissions">
@@ -28,6 +33,11 @@
         <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Device Information"
                     StepSequence="3" WizardStepName="step_device_info">
             <DeviceInfo GXOVnTDevice="@_selectedDeviceToEnroll"></DeviceInfo>
+        </WizardStep>
+
+        <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Device Settings"
+                    StepSequence="4" WizardStepName="step_device_settings">
+            <DeviceEnrollSettings GXOVnTDevice="@_selectedDeviceToEnroll"></DeviceEnrollSettings>
         </WizardStep>
     </WizardComponent>
   

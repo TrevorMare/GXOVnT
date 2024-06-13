@@ -26,9 +26,9 @@ void setup() {
 
   String systemVer = "Version " + String(GXOVnT_FIRMWARE_VERSION);
 
-  Heltec.display->printf("Version %s \n", GXOVnT_FIRMWARE_VERSION);
+  //Heltec.display->printf("Version %s \n", GXOVnT_FIRMWARE_VERSION);
   Heltec.display->clear();
-  Heltec.display->drawString(0, 0, systemVer);
+  Heltec.display->drawString(0, 0, "I Love You");
   Heltec.display->display();
   
   

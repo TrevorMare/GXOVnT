@@ -3,6 +3,9 @@
 using namespace GXOVnTLib::services;
 using namespace GXOVnTLib::models;
 
+#include <WiFi.h>
+#include <WiFiClient.h>
+
 JsonMessageService::JsonMessageService() { }
 JsonMessageService::~JsonMessageService() { }
 
@@ -46,6 +49,9 @@ JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument
         responseModel->SystemName(GXOVnT.config->Settings.SystemSettings.SystemName());
         responseModel->SystemType(static_cast<int>(GXOVnT.config->Settings.SystemSettings.SystemType()));
 
+        responseModel->WifiSSID(GXOVnT.config->Settings.WiFiSettings.SSID());
+        responseModel->WifiPassword(GXOVnT.config->Settings.WiFiSettings.Password());
+
         return responseModel->Json();
     }
     case JSON_MSG_TYPE_REQUEST_SET_SYSTEM_SETTINGS:
@@ -54,9 +60,30 @@ JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument
         SetSystemSettingsRequestModel requestModel(inputDocument);
         GXOVnT.config->Settings.SystemSettings.SystemName(requestModel.SystemName());
         GXOVnT.config->Settings.SystemSettings.SystemConfigured(requestModel.SystemConfigured());
+        GXOVnT.config->Settings.WiFiSettings.SSID(requestModel.WifiSSID());
+        GXOVnT.config->Settings.WiFiSettings.Password(requestModel.WifiPassword());
 
         StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 200, "OK");
         return responseModel->Json();
+    }
+    case JSON_MSG_TYPE_REQUEST_TEST_WIFI_SETTINGS:
+    {
+        TestWiFiSettingsRequestModel requestModel(inputDocument);
+        // Test the WiFi Settings
+
+        try
+        {
+            WiFi.begin(requestModel.WifiSSID().c_str(), requestModel.WifiPassword().c_str());    
+            WiFi.disconnect();
+            
+            StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 200, "OK");
+            return responseModel->Json();
+        }
+        catch(const std::exception& e)
+        {
+            StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 500, "Failed");
+            return responseModel->Json();
+        }
     }
     case JSON_MSG_TYPE_REQUEST_SAVE_CONFIGURATION:
     {

@@ -19,6 +19,9 @@ namespace GXOVnTLib::models
 	static const uint8_t JSON_MSG_TYPE_REQUEST_GET_SYSTEM_SETTINGS = 5;
 	/// @brief Binds to SetSystemSettingsRequestModel model and return status model
 	static const uint8_t JSON_MSG_TYPE_REQUEST_SET_SYSTEM_SETTINGS = 6;
+	/// @brief Binds to SetSystemSettingsRequestModel model and return status model
+	static const uint8_t JSON_MSG_TYPE_REQUEST_TEST_WIFI_SETTINGS = 7;
+
 	/// @brief Binds to base model and return status model
 	static const uint8_t JSON_MSG_TYPE_REQUEST_REBOOT = 98;
 	static const uint8_t JSON_MSG_TYPE_REQUEST_SAVE_CONFIGURATION = 99;
@@ -143,6 +146,8 @@ namespace GXOVnTLib::models
 			std::string m_systemName;
 			std::string m_firmwareVersion;
 			std::string m_systemId;
+			std::string m_wifiSSID;
+			std::string m_wifiPassword;
 			bool m_systemConfigured;
 			int m_systemType;
 
@@ -152,60 +157,110 @@ namespace GXOVnTLib::models
 			
 			std::string SystemName() { return m_systemName; }
 			void SystemName(std::string value) {
-					m_systemName = value;
-					m_jsonDocument["systemName"] = m_systemName;
+				m_systemName = value;
+				m_jsonDocument["systemName"] = m_systemName;
 			}
 
 			std::string SystemId() { return m_systemId; }
 			void SystemId(std::string value) {
-					m_systemId = value;
-					m_jsonDocument["systemId"] = m_systemId;
+				m_systemId = value;
+				m_jsonDocument["systemId"] = m_systemId;
 			}
 
 			bool SystemConfigured() { return m_systemConfigured; }
 			void SystemConfigured(bool value) {
-					m_systemConfigured = value;
-					m_jsonDocument["systemConfigured"] = m_systemConfigured;
+				m_systemConfigured = value;
+				m_jsonDocument["systemConfigured"] = m_systemConfigured;
 			}
 
 			int SystemType() { return m_systemType; }
 			void SystemType(int value) {
-					m_systemType = value;
-					m_jsonDocument["systemType"] = m_systemType;
+				m_systemType = value;
+				m_jsonDocument["systemType"] = m_systemType;
 			}
 
 			std::string FirmwareVersion() { return m_firmwareVersion; }
 			void FirmwareVersion(std::string value) {
-					m_firmwareVersion = value;
-					m_jsonDocument["firmwareVersion"] = m_firmwareVersion;
+				m_firmwareVersion = value;
+				m_jsonDocument["firmwareVersion"] = m_firmwareVersion;
+			}
+
+			std::string WifiSSID() { return m_wifiSSID; }
+			void WifiSSID(std::string value) {
+				m_wifiSSID = value;
+				m_jsonDocument["wifiSSID"] = m_wifiSSID;
+			}
+
+			std::string WifiPassword() { return m_wifiPassword; }
+			void WifiPassword(std::string value) {
+				m_wifiPassword = value;
+				m_jsonDocument["wifiPassword"] = m_wifiPassword;
 			}
 
 			
 	};
 #pragma endregion
 
-#pragma region Get Settings Model
-	/// @brief Keep-Alive model to keep the connection alive. Response is standard status response
+#pragma region Set Settings Model
+	/// @brief Set system settings model
 	class SetSystemSettingsRequestModel: public BaseModel
 	{
 	private: 
 			std::string m_systemName = "";
 			bool m_systemConfigured = false;
+			std::string m_wifiSSID;
+			std::string m_wifiPassword;
 	public:
 			SetSystemSettingsRequestModel(uint16_t requestCommMessageId = 0) : BaseModel(JSON_MSG_TYPE_REQUEST_SET_SYSTEM_SETTINGS, requestCommMessageId) {};
 			SetSystemSettingsRequestModel(JsonDocument &doc, uint16_t requestCommMessageId = 0) : BaseModel(doc, requestCommMessageId) {
-					if (m_jsonDocument.containsKey("systemName")) {
-							const char *systemName = m_jsonDocument["systemName"];
-							m_systemName = std::string(systemName);
-					} 
-					if (m_jsonDocument.containsKey("systemId")) {
-							m_systemConfigured = m_jsonDocument["systemConfigured"];
-					}
+				if (m_jsonDocument.containsKey("systemName")) {
+					const char *systemName = m_jsonDocument["systemName"];
+					m_systemName = std::string(systemName);
+				} 
+				if (m_jsonDocument.containsKey("systemId")) {
+					m_systemConfigured = m_jsonDocument["systemConfigured"];
+				}
+				if (m_jsonDocument.containsKey("wifiSSID")) {
+					const char *wifiSSID = m_jsonDocument["wifiSSID"];
+					m_wifiSSID = std::string(wifiSSID);
+				} 
+				if (m_jsonDocument.containsKey("wifiPassword")) {
+					const char *wifiPassword = m_jsonDocument["wifiPassword"];
+					m_wifiPassword = std::string(wifiPassword);
+				} 
 			};
 			std::string SystemName() { return m_systemName; }
 			bool SystemConfigured() { return m_systemConfigured; }
+			std::string WifiSSID() { return m_wifiSSID; }
+			std::string WifiPassword() { return m_wifiPassword; }
 			~SetSystemSettingsRequestModel() {};
 	};
 #pragma endregion
+
+#pragma region Test WiFi Settings Model
+	/// @brief Test WiFi Settings Model
+	class TestWiFiSettingsRequestModel: public BaseModel
+	{
+	private: 
+		std::string m_wifiSSID;
+		std::string m_wifiPassword;
+	public:
+		TestWiFiSettingsRequestModel(uint16_t requestCommMessageId = 0) : BaseModel(JSON_MSG_TYPE_REQUEST_TEST_WIFI_SETTINGS, requestCommMessageId) {};
+		TestWiFiSettingsRequestModel(JsonDocument &doc, uint16_t requestCommMessageId = 0) : BaseModel(doc, requestCommMessageId) {
+			if (m_jsonDocument.containsKey("wifiSSID")) {
+				const char *wifiSSID = m_jsonDocument["wifiSSID"];
+				m_wifiSSID = std::string(wifiSSID);
+			} 
+			if (m_jsonDocument.containsKey("wifiPassword")) {
+				const char *wifiPassword = m_jsonDocument["wifiPassword"];
+				m_wifiPassword = std::string(wifiPassword);
+			} 
+		};
+		std::string WifiSSID() { return m_wifiSSID; }
+		std::string WifiPassword() { return m_wifiPassword; }
+		~TestWiFiSettingsRequestModel() {};
+	};
+#pragma endregion
+
 }
 #endif

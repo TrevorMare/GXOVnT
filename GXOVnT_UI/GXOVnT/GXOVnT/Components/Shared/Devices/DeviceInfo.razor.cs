@@ -72,8 +72,7 @@ public partial class DeviceInfo : GXOVnTComponent
     {
         if (DeviceSettingsResponse == null)
             return false;
-
-        return true;
+        
         if (DeviceSettingsResponse.SystemConfigured)
             return true;
 

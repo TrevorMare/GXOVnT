@@ -24,6 +24,12 @@ public class ResponseGetSystemSettingsModel : BaseModel
     [JsonPropertyName("firmwareVersion")] 
     public string FirmwareVersion { get; set; } = string.Empty;
     
+    [JsonPropertyName("wifiSSID")] 
+    public string WiFiSSID { get; set; } = string.Empty;
+    
+    [JsonPropertyName("wifiPassword")] 
+    public string WiFiPassword { get; set; } = string.Empty;
+
     public ResponseGetSystemSettingsModel()
     {
         MessageTypeId = (int)JsonModelType.ResponseSystemSettings;
