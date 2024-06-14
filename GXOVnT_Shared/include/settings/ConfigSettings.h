@@ -39,6 +39,7 @@ namespace GXOVnTLib::settings {
 
     #if GXOVnT_Settings_HAS_WIFI_SETTINGS
       WiFiSettingsSection WiFiSettings;
+      TestWiFiSettingsSection TestWiFiSettings;
     #endif
     #if GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS
       BleTPMSSettingsSection BLETPMSSettings;

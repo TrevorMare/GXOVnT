@@ -67,9 +67,12 @@ void Config::saveConfiguration() {
     // Write all the settings to the document
     Settings.writeSettingsToJson(document);
     // Get the json content of the settings
-    String jsonContent;
+    String jsonContent = "";
 
-    serializeJsonPretty(document, jsonContent);
+    serializeJson(document, jsonContent);
+
+    ESP_LOGI(LOG_TAG, "Writing settings: \n %s ", jsonContent.c_str());
+
     // Write the file to the disk
     writeConfigurationToFileSystem(jsonContent);
     // Close file system object
@@ -107,6 +110,7 @@ bool Config::closeSPIFFS() {
     if (!m_SPIFFS_open) return true;
     // Close the SPIFFS
     SPIFFS.end();
+    delay(200);
     m_SPIFFS_open = false;
     return true;
 }
@@ -117,7 +121,7 @@ String Config::readConfigurationFromFileSystem() {
         ESP_LOGW(LOG_TAG, "Unable to read the configuration file from file system. The file does not exist");
         return "";
     } 
-     if (!openSPIFFS()) 
+    if (!openSPIFFS()) 
         return "";
     // Open the file
     File file = SPIFFS.open(config_file_name, FILE_READ);
@@ -141,7 +145,6 @@ String Config::readConfigurationFromFileSystem() {
 }
 
 void Config::writeConfigurationToFileSystem(String content) {
-    
     // Open the file
     File file = SPIFFS.open(config_file_name, FILE_WRITE);
 

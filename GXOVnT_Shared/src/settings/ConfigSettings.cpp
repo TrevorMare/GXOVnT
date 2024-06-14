@@ -11,6 +11,7 @@ void ConfigSettings::readSettingsFromJson(JsonDocument &document) {
     #endif
     #if GXOVnT_Settings_HAS_WIFI_SETTINGS
         WiFiSettings.readSettingsFromJson(document);
+        TestWiFiSettings.readSettingsFromJson(document);
     #endif
     #if GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS
         BLETPMSSettings.readSettingsFromJson(document);
@@ -22,6 +23,7 @@ void ConfigSettings::writeSettingsToJson(JsonDocument &document) {
 
     #if GXOVnT_Settings_HAS_SYSTEM_SETTINGS
         SystemSettings.writeSettingsToJson(document);
+        TestWiFiSettings.writeSettingsToJson(document);
     #endif
     #if GXOVnT_Settings_HAS_WIFI_SETTINGS
         WiFiSettings.writeSettingsToJson(document);
@@ -39,6 +41,7 @@ bool ConfigSettings::settingsHasChanges() {
     #endif
     #if GXOVnT_Settings_HAS_WIFI_SETTINGS
         result |= WiFiSettings.getSettingsChanged();
+        result |= TestWiFiSettings.getSettingsChanged();
     #endif
     #if GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS
         result |= BLETPMSSettings.getSettingsChanged();

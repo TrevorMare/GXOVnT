@@ -105,6 +105,55 @@ namespace GXOVnTLib::settings
 	};
 
 	/////////////////////////////////////////////////////////////////
+	// WiFi Settings section class
+	/////////////////////////////////////////////////////////////////
+	class TestWiFiSettingsSection : public BaseSettingsSection
+	{
+	private:
+		const char *m_sectionName = "TestWiFiSettings";
+		const char *m_valueName_SSID = "SSID";
+		const char *m_valueName_Password = "Password";
+		const char *m_valueName_Tested = "Tested";
+		const char *m_valueName_Success = "Success";
+		const char *m_valueName_StatusCode = "StatusCode";
+		const char *m_valueName_StatusMessage = "StatusMessage";
+		const char *m_valueName_TestOnNextBoot = "TestOnNextBoot";
+
+		std::string m_SSID = "";
+		std::string m_Password = "";
+		bool m_Tested = false;
+		bool m_Success = false;
+		bool m_TestOnNextBoot = false;
+		std::string m_TestResultMessage = "";
+		uint16_t m_TestResultCode = 0;
+
+	public:
+		TestWiFiSettingsSection(){};
+
+		// Method to write the section settings to a json document
+		void writeSettingsToJson(JsonDocument &document) override;
+
+		// Method to read the section from a json document
+		void readSettingsFromJson(JsonDocument &document) override;
+
+		// Getters and setters
+		void SSID(std::string input);
+		void Password(std::string input);
+		void Tested(bool input);
+		void Success(bool input);
+		void TestResultMessage(std::string input);
+		void TestResultCode(uint16_t input);
+		void TestOnNextBoot(bool input);
+		std::string SSID();
+		std::string Password();
+		bool Tested();
+		bool Success();
+		bool TestOnNextBoot();
+		std::string TestResultMessage();
+		uint16_t TestResultCode();
+	};
+
+	/////////////////////////////////////////////////////////////////
 	// BLE TPMS Settings section class
 	/////////////////////////////////////////////////////////////////
 

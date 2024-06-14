@@ -24,7 +24,7 @@ class Config
 		void writeConfigurationToFileSystem(String content);
 		
 		void deleteConfigurationFile();
-		
+
 		bool openSPIFFS();
 
 		bool closeSPIFFS();

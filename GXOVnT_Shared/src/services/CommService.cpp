@@ -8,7 +8,7 @@ using namespace GXOVnTLib::messages;
 /////////////////////////////////////////////////////////////////
 CommService::CommService() {
     // Create the tasks to read and write messages
-    xTaskCreate(this->startProcessMessagesTask, "ProcessMessagesTask", 3072, this, 5, &m_ProcessMessagesTaskHandle);
+    xTaskCreate(this->startProcessMessagesTask, "ProcessMessagesTask", 4096, this, 5, &m_ProcessMessagesTaskHandle);
 }
 CommService::~CommService() {
     if (m_ProcessMessagesTaskHandle != nullptr) {
@@ -80,8 +80,6 @@ void CommService::processReceivedMessages() {
 
        for (int iMessageToProcess = 0; iMessageToProcess < numberOfIncomingMessages; iMessageToProcess++) {
             CommMessage *commMessage = m_messagesReceived[iMessageToProcess];
-            
-            ESP_LOGI(LOG_TAG, "processReceivedMessages: Comm message Id - %d", commMessage->MessageId());
 
             // Handle the json document and get a response
             JsonDocument *responseDocument = m_jsonMessageService->handleJsonMessage(commMessage);
