@@ -100,6 +100,19 @@ JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument
             StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 200, "OK");
             return responseModel->Json();
         }
+        case JSON_MSG_TYPE_REQUEST_GET_TEST_WIFI_SETTINGS:
+        {
+
+            GetTestWiFiSettingsResponseModel *responseModel = new GetTestWiFiSettingsResponseModel(requestCommMessageId);
+
+            responseModel->StatusCode(GXOVnT.config->Settings.TestWiFiSettings.TestResultCode());
+            responseModel->StatusMessage(GXOVnT.config->Settings.TestWiFiSettings.TestResultMessage());
+            responseModel->WifiSSID(GXOVnT.config->Settings.TestWiFiSettings.SSID());
+            responseModel->WifiPassword(GXOVnT.config->Settings.TestWiFiSettings.Password());
+            responseModel->Success(GXOVnT.config->Settings.TestWiFiSettings.Success());
+
+            return responseModel->Json();
+        }
         case JSON_MSG_TYPE_REQUEST_SAVE_CONFIGURATION:
         {
             ESP_LOGI(LOG_TAG, "Creating response for save configuration");

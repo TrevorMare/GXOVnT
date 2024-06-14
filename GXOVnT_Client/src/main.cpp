@@ -68,10 +68,7 @@ void setup() {
 
       if (!attemptingConnect) {
         GXOVnT.config->Settings.TestWiFiSettings.TestOnNextBoot(false);
-        GXOVnT.config->Settings.TestWiFiSettings.SSID("");
-        GXOVnT.config->Settings.TestWiFiSettings.Password("");
         GXOVnT.config->Settings.TestWiFiSettings.Tested(true);
-
         GXOVnT.config->saveConfiguration();
       }
     }

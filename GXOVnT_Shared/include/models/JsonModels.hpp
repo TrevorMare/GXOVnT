@@ -7,24 +7,28 @@
 
 namespace GXOVnTLib::models
 {
-	static const uint8_t JSON_MSG_TYPE_RESPONSE_STATUS = 101;
-	static const uint8_t JSON_MSG_TYPE_RESPONSE_GET_SYSTEM_SETTINGS = 102;
+
 
 	/// @brief Binds to Echo Model and returns same model 
 	static const uint8_t JSON_MSG_TYPE_REQUEST_ECHO = 3;
 	/// @brief Binds to base model and return status model
 	static const uint8_t JSON_MSG_TYPE_REQUEST_KEEP_ALIVE = 4;
-
 	/// @brief Binds to base model and returns GetSystemSettingsResponseModel
 	static const uint8_t JSON_MSG_TYPE_REQUEST_GET_SYSTEM_SETTINGS = 5;
 	/// @brief Binds to SetSystemSettingsRequestModel model and return status model
 	static const uint8_t JSON_MSG_TYPE_REQUEST_SET_SYSTEM_SETTINGS = 6;
-	/// @brief Binds to SetSystemSettingsRequestModel model and return status model
+	/// @brief Binds to TestWiFiSettingsRequestModel model and return status model
 	static const uint8_t JSON_MSG_TYPE_REQUEST_TEST_WIFI_SETTINGS = 7;
+	/// @brief Binds to GetTestWiFiSettingsRequestModel model and return status model
+	static const uint8_t JSON_MSG_TYPE_REQUEST_GET_TEST_WIFI_SETTINGS = 8;
 
 	/// @brief Binds to base model and return status model
 	static const uint8_t JSON_MSG_TYPE_REQUEST_REBOOT = 98;
 	static const uint8_t JSON_MSG_TYPE_REQUEST_SAVE_CONFIGURATION = 99;
+
+	static const uint8_t JSON_MSG_TYPE_RESPONSE_STATUS = 101;
+	static const uint8_t JSON_MSG_TYPE_RESPONSE_GET_SYSTEM_SETTINGS = 102;
+	static const uint8_t JSON_MSG_TYPE_RESPONSE_GET_TEST_WIFI_SETTINGS = 103;
 
 #pragma region BaseModel 
 	/// @brief Base Json model with the root fields. All json models should inherit this class
@@ -80,25 +84,25 @@ namespace GXOVnTLib::models
 	class StatusResponseModel: public BaseModel
 	{
 	private:
-			uint8_t m_statusCode = 200;
-			std::string m_statusMessage = "OK";
+		uint8_t m_statusCode = 200;
+		std::string m_statusMessage = "OK";
 	public:
-			StatusResponseModel(uint16_t requestCommMessageId = 0, uint8_t statusCode = 200, std::string statusMessage = "OK") 
-					: BaseModel(JSON_MSG_TYPE_RESPONSE_STATUS, requestCommMessageId) {
-					StatusCode(statusCode);
-					StatusMessage(statusMessage);
-			};
-			~StatusResponseModel() {};
-			uint8_t StatusCode() { return m_statusCode; }
-			std::string StatusMessage() { return m_statusMessage; }
-			void StatusCode(uint8_t value) {  
-					m_statusCode = value;
-					m_jsonDocument["statusCode"] = m_statusCode;
-			}
-			void StatusMessage(std::string value) { 
-					m_statusMessage = value;
-					m_jsonDocument["statusMessage"] = m_statusMessage;
-			}
+		StatusResponseModel(uint16_t requestCommMessageId = 0, uint8_t statusCode = 200, std::string statusMessage = "OK") 
+				: BaseModel(JSON_MSG_TYPE_RESPONSE_STATUS, requestCommMessageId) {
+				StatusCode(statusCode);
+				StatusMessage(statusMessage);
+		};
+		~StatusResponseModel() {};
+		uint8_t StatusCode() { return m_statusCode; }
+		std::string StatusMessage() { return m_statusMessage; }
+		void StatusCode(uint8_t value) {  
+				m_statusCode = value;
+				m_jsonDocument["statusCode"] = m_statusCode;
+		}
+		void StatusMessage(std::string value) { 
+				m_statusMessage = value;
+				m_jsonDocument["statusMessage"] = m_statusMessage;
+		}
 	};
 
 #pragma endregion
@@ -108,23 +112,23 @@ namespace GXOVnTLib::models
 	class EchoModel: public BaseModel
 	{
 	private:    
-			std::string m_echoMessage;
+		std::string m_echoMessage;
 	public:
-			EchoModel(uint16_t requestCommMessageId = 0) : BaseModel(JSON_MSG_TYPE_REQUEST_ECHO, requestCommMessageId) {};
-			EchoModel(JsonDocument &doc, uint16_t requestCommMessageId = 0) : BaseModel(doc, requestCommMessageId) {
-					if (m_jsonDocument.containsKey("echoMessage")) {
-							const char *echoMessage = m_jsonDocument["echoMessage"];
-							m_echoMessage = std::string(echoMessage);
-					} 
-			};
-			~EchoModel() {};
-			std::string EchoMessage() {
-					return m_echoMessage;
-			}
-			void EchoMessage(std::string value) {
-					m_echoMessage = value;
-					m_jsonDocument["echoMessage"] = m_echoMessage;
-			}
+		EchoModel(uint16_t requestCommMessageId = 0) : BaseModel(JSON_MSG_TYPE_REQUEST_ECHO, requestCommMessageId) {};
+		EchoModel(JsonDocument &doc, uint16_t requestCommMessageId = 0) : BaseModel(doc, requestCommMessageId) {
+			if (m_jsonDocument.containsKey("echoMessage")) {
+					const char *echoMessage = m_jsonDocument["echoMessage"];
+					m_echoMessage = std::string(echoMessage);
+			} 
+		};
+		~EchoModel() {};
+		std::string EchoMessage() {
+			return m_echoMessage;
+		}
+		void EchoMessage(std::string value) {
+			m_echoMessage = value;
+			m_jsonDocument["echoMessage"] = m_echoMessage;
+		}
 	};
 #pragma endregion
 
@@ -143,60 +147,59 @@ namespace GXOVnTLib::models
 	class GetSystemSettingsResponseModel: public BaseModel
 	{
 	private:
-			std::string m_systemName;
-			std::string m_firmwareVersion;
-			std::string m_systemId;
-			std::string m_wifiSSID;
-			std::string m_wifiPassword;
-			bool m_systemConfigured;
-			int m_systemType;
+		std::string m_systemName;
+		std::string m_firmwareVersion;
+		std::string m_systemId;
+		std::string m_wifiSSID;
+		std::string m_wifiPassword;
+		bool m_systemConfigured;
+		int m_systemType;
 
 	public:
-			GetSystemSettingsResponseModel(uint16_t requestCommMessageId = 0) : BaseModel(JSON_MSG_TYPE_RESPONSE_GET_SYSTEM_SETTINGS, requestCommMessageId) {};
-			~GetSystemSettingsResponseModel() {};
-			
-			std::string SystemName() { return m_systemName; }
-			void SystemName(std::string value) {
-				m_systemName = value;
-				m_jsonDocument["systemName"] = m_systemName;
-			}
+		GetSystemSettingsResponseModel(uint16_t requestCommMessageId = 0) : BaseModel(JSON_MSG_TYPE_RESPONSE_GET_SYSTEM_SETTINGS, requestCommMessageId) {};
+		~GetSystemSettingsResponseModel() {};
+		
+		std::string SystemName() { return m_systemName; }
+		void SystemName(std::string value) {
+			m_systemName = value;
+			m_jsonDocument["systemName"] = m_systemName;
+		}
 
-			std::string SystemId() { return m_systemId; }
-			void SystemId(std::string value) {
-				m_systemId = value;
-				m_jsonDocument["systemId"] = m_systemId;
-			}
+		std::string SystemId() { return m_systemId; }
+		void SystemId(std::string value) {
+			m_systemId = value;
+			m_jsonDocument["systemId"] = m_systemId;
+		}
 
-			bool SystemConfigured() { return m_systemConfigured; }
-			void SystemConfigured(bool value) {
-				m_systemConfigured = value;
-				m_jsonDocument["systemConfigured"] = m_systemConfigured;
-			}
+		bool SystemConfigured() { return m_systemConfigured; }
+		void SystemConfigured(bool value) {
+			m_systemConfigured = value;
+			m_jsonDocument["systemConfigured"] = m_systemConfigured;
+		}
 
-			int SystemType() { return m_systemType; }
-			void SystemType(int value) {
-				m_systemType = value;
-				m_jsonDocument["systemType"] = m_systemType;
-			}
+		int SystemType() { return m_systemType; }
+		void SystemType(int value) {
+			m_systemType = value;
+			m_jsonDocument["systemType"] = m_systemType;
+		}
 
-			std::string FirmwareVersion() { return m_firmwareVersion; }
-			void FirmwareVersion(std::string value) {
-				m_firmwareVersion = value;
-				m_jsonDocument["firmwareVersion"] = m_firmwareVersion;
-			}
+		std::string FirmwareVersion() { return m_firmwareVersion; }
+		void FirmwareVersion(std::string value) {
+			m_firmwareVersion = value;
+			m_jsonDocument["firmwareVersion"] = m_firmwareVersion;
+		}
 
-			std::string WifiSSID() { return m_wifiSSID; }
-			void WifiSSID(std::string value) {
-				m_wifiSSID = value;
-				m_jsonDocument["wifiSSID"] = m_wifiSSID;
-			}
+		std::string WifiSSID() { return m_wifiSSID; }
+		void WifiSSID(std::string value) {
+			m_wifiSSID = value;
+			m_jsonDocument["wifiSSID"] = m_wifiSSID;
+		}
 
-			std::string WifiPassword() { return m_wifiPassword; }
-			void WifiPassword(std::string value) {
-				m_wifiPassword = value;
-				m_jsonDocument["wifiPassword"] = m_wifiPassword;
-			}
-
+		std::string WifiPassword() { return m_wifiPassword; }
+		void WifiPassword(std::string value) {
+			m_wifiPassword = value;
+			m_jsonDocument["wifiPassword"] = m_wifiPassword;
+		}
 			
 	};
 #pragma endregion
@@ -259,6 +262,69 @@ namespace GXOVnTLib::models
 		std::string WifiSSID() { return m_wifiSSID; }
 		std::string WifiPassword() { return m_wifiPassword; }
 		~TestWiFiSettingsRequestModel() {};
+	};
+#pragma endregion
+
+#pragma region Get Test WiFi Settings Request Model
+	/// @brief Get Last Test WiFi Settings Response Model
+	class GetTestWiFiSettingsRequestModel: public BaseModel
+	{
+	private: 
+	public:
+		GetTestWiFiSettingsRequestModel(uint16_t requestCommMessageId = 0) : BaseModel(JSON_MSG_TYPE_REQUEST_GET_TEST_WIFI_SETTINGS, requestCommMessageId) {};
+		GetTestWiFiSettingsRequestModel(JsonDocument &doc, uint16_t requestCommMessageId = 0) : BaseModel(doc, requestCommMessageId) {};
+		~GetTestWiFiSettingsRequestModel() {};
+	};
+#pragma endregion
+
+#pragma region Get Test WiFi Settings Response Model
+	/// @brief Get Last Test WiFi Settings Response Model
+	class GetTestWiFiSettingsResponseModel: public BaseModel
+	{
+	private: 
+		std::string m_wifiSSID = "";
+		std::string m_wifiPassword = "";
+		bool m_tested = false;
+		bool m_success = false;
+		uint8_t m_statusCode = 200;
+		std::string m_statusMessage = "OK";
+	public:
+		GetTestWiFiSettingsResponseModel(uint16_t requestCommMessageId = 0) : BaseModel(JSON_MSG_TYPE_RESPONSE_GET_TEST_WIFI_SETTINGS, requestCommMessageId) {};
+		GetTestWiFiSettingsResponseModel(JsonDocument &doc, uint16_t requestCommMessageId = 0) : BaseModel(doc, requestCommMessageId) {};
+		
+		std::string WifiSSID() { return m_wifiSSID; }
+		void WifiSSID(std::string value) {
+			m_wifiSSID = value;
+			m_jsonDocument["wifiSSID"] = m_wifiSSID;
+		}
+		
+		std::string WifiPassword() { return m_wifiPassword; }
+		void WifiPassword(std::string value) {
+			m_wifiPassword = value;
+			m_jsonDocument["wifiPassword"] = m_wifiPassword;
+		}
+
+		bool Tested() { return m_tested; }
+		void Tested(bool value) {
+			m_tested = value;
+			m_jsonDocument["tested"] = m_tested;
+		}
+
+		bool Success() { return m_success; }
+		void Success(bool value) {
+			m_success = value;
+			m_jsonDocument["success"] = m_success;
+		}
+
+		void StatusCode(uint8_t value) {  
+			m_statusCode = value;
+			m_jsonDocument["statusCode"] = m_statusCode;
+		}
+		void StatusMessage(std::string value) { 
+			m_statusMessage = value;
+			m_jsonDocument["statusMessage"] = m_statusMessage;
+		}
+		~GetTestWiFiSettingsResponseModel() {};
 	};
 #pragma endregion
 
