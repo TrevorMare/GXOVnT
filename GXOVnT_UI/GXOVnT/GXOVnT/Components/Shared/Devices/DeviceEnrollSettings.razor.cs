@@ -14,9 +14,6 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
     private MudForm _form;
     private bool success;
     private string[] errors = { };
-
-    //MudTextField<string> pwField1;
-
     #endregion
     
     #region Properties
@@ -76,6 +73,52 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
     
     #region Methods
 
+    private async Task TestDeviceWiFiSettings()
+    {
+
+        try
+        {
+            IsBusy = true;
+
+            if (GXOVnTDevice == null)
+                return;
+
+            var requestTestWifiModel = new RequestTestWiFiSettingsModel()
+            {
+                WiFiPassword = "X@Kbi-Rh3$",
+                WiFiSSID = "HouseMare"
+            };
+            var responseTestWifiModel =
+                await MessageOrchestrator.SendMessage<RequestTestWiFiSettingsModel, StatusResponseModel>(
+                    requestTestWifiModel);
+
+            if (responseTestWifiModel.StatusCode != 200)
+                return;
+
+            // Send the reboot command
+
+            await MessageOrchestrator.SendMessage(new RequestRebootModel());
+
+            await BluetoothService.DisConnectFromDevice();
+
+            using var reConnectCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(1));
+
+            await BluetoothService.ReConnectToDeviceWhenAvailable(GXOVnTDevice.Id,
+                reConnectCancellationTokenSource.Token);
+
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+
+        }
+        finally
+        {
+            IsBusy = true;
+        }
+    }
+    
     private async Task GetDeviceInfo()
     {
         try
@@ -114,7 +157,7 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
             DeviceSettingsResponse = responseModel;
            
        
-                SetWizardForwardEnabled(true);
+            SetWizardForwardEnabled(true);
         }
         catch (Exception)
         {
@@ -131,10 +174,7 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
     
     
     #region Event Callbacks
-    private void OnConfirmChanged(bool value)
-    {
-    }
-    
+
     private async void MessageOrchestratorOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         await InvokeAsync(StateHasChanged);

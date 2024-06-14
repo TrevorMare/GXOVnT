@@ -58,6 +58,11 @@ public partial class DeviceInfo : GXOVnTComponent
             return;
         
         ComponentInitialized = true;
+        ConnectedToDevice = false;
+        FailedToGetInformation = false;
+        DataLoaded = false;
+        DeviceSettingsResponse = null;
+        ConfirmedContinue = false;
 
         await InvokeAsync(StateHasChanged);
         

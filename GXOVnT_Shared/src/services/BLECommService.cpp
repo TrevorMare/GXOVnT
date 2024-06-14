@@ -187,8 +187,6 @@ void BleCommService::removeProcessedMessage(uint16_t messageId) {
 	}
 	if (commMessageIndex == -1) return;
 
-	ESP_LOGI(LOG_TAG, "Message processed, deleting message at index %d", commMessageIndex);
-
 	delete m_commMessages[commMessageIndex];
 	m_commMessages.erase(m_commMessages.begin() + commMessageIndex);
 

@@ -29,6 +29,9 @@ public interface IBluetoothService : INotifyPropertyChanged, IAsyncDisposable
 
     Task<bool> ConnectToDevice(Guid deviceId, bool keepConnectionAlive);
 
+    Task<bool> ReConnectToDeviceWhenAvailable(string id, CancellationToken token);
+
     Task<short> SendJsonModelToDevice<T>(T jsonModel, Action<int>? progressChangedCallback = default) where T : Shared.JsonModels.BaseModel;
+
     
 }

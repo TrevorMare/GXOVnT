@@ -2,7 +2,6 @@
 using GXOVnT.Services.Common;
 using GXOVnT.Services.Interfaces;
 using GXOVnT.Services.Models;
-using GXOVnT.Services.ViewModels;
 using GXOVnT.Shared.Common;
 using GXOVnT.Shared.Helpers;
 using Plugin.BLE;
@@ -297,6 +296,11 @@ public class BluetoothService : NotifyChanged, IBluetoothService
             return false;
         }
         
+    }
+
+    public Task<bool> ReConnectToDeviceWhenAvailable(string id, CancellationToken token)
+    {
+        return Task.FromResult(true);
     }
 
     public async Task<short> SendJsonModelToDevice<T>(T jsonModel, Action<int>? progressChangedCallback = default) where T : Shared.JsonModels.BaseModel
