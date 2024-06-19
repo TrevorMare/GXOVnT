@@ -124,6 +124,61 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
     {
         OnPropertyChanged(nameof(DeviceState));
     }
+
+    public async Task<bool> ReconnectWhenAvailable(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            IsBusy = true;
+            
+            // Check if this device is already connected
+            if (_deviceIsConnected)
+            {
+                _logService.LogInformation($"The device with Id {Id} is already connected");
+                return true;
+            }
+
+            if (_bluetoothAdapter == null)
+                throw new GXOVnTException(
+                    "The Bluetooth connection cannot be made at this stage. The Adapter reference was lost");
+
+            if (Device == null)
+                throw new GXOVnTException(
+                    "The Bluetooth connection cannot be made at this stage. The Device reference was lost");
+
+            using var localCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+
+            if (cancellationToken == default)
+                cancellationToken = localCancellationTokenSource.Token;
+
+            while (!cancellationToken.IsCancellationRequested && !DeviceIsConnected)
+            {
+                if (Device.IsConnectable)
+                {
+                    // Connect to the device
+                    await _bluetoothAdapter.ConnectToDeviceAsync(Device, new ConnectParameters(), cancellationToken);
+
+                    DeviceIsConnected = true;
+                    
+                    // Load the services and the characteristics
+                    await BindToDeviceServicesAndCharacteristics();
+                }
+                await Task.Delay(2000);
+            }
+           
+            return DeviceIsConnected;
+        }
+        catch (Exception ex)
+        {
+            _logService.LogError($"An error occured trying to connect to the device with Id {Id}: {ex.Message}");
+            DeviceIsConnected = false;
+            return false;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
     
     public async Task<bool> ConnectToDeviceAsync(CancellationToken cancellationToken = default)
     {
@@ -376,10 +431,7 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
     #endregion
 
     #region Event Callbacks
-    private void OutgoingMessageCharacteristicOnValueUpdated(object? sender, CharacteristicUpdatedEventArgs e)
-    {
-        var x = 0;
-    }
+
     private async void IncomingMessageCharacteristicOnValueUpdated(object? sender, CharacteristicUpdatedEventArgs e)
     {
         try

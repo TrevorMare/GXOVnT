@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using GXOVnT.Services.Interfaces;
 using GXOVnT.Services.Models;
+using GXOVnT.Shared.Common;
 using GXOVnT.Shared.JsonModels;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -92,7 +93,7 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
                 await MessageOrchestrator.SendMessage<RequestTestWiFiSettingsModel, StatusResponseModel>(
                     requestTestWifiModel, GXOVnTDevice);
 
-            if (responseTestWifiModel.StatusCode != 200)
+            if (responseTestWifiModel is not { StatusCode: 200 })
                 return;
 
             // Send the reboot command
@@ -101,12 +102,24 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
 
             await GXOVnTDevice.DisconnectFromDeviceAsync();
 
+            // Now wait until the device is online again
             using var reConnectCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(1));
 
-            // await BluetoothService.ReConnectToDeviceWhenAvailable(GXOVnTDevice.Id,
-            //     reConnectCancellationTokenSource.Token);
+            var isReconnected = await GXOVnTDevice.ReconnectWhenAvailable(reConnectCancellationTokenSource.Token);
 
+            if (!isReconnected)
+                throw new GXOVnTException("Could not reconnect to device");
+            
+            var responseTestWifiModelResults =
+                await MessageOrchestrator.SendMessage<RequestLastWiFiTestResultModel, ResponseLastTestWiFiSettingsResult>(
+                    new RequestLastWiFiTestResultModel() , GXOVnTDevice);
 
+            if (responseTestWifiModelResults == null)
+                throw new GXOVnTException("Could not retrieve the wifi connection test results");
+            
+            
+                
+            
         }
         catch (Exception ex)
         {

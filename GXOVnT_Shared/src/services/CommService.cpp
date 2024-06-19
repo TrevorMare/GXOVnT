@@ -125,5 +125,7 @@ void CommService::processSendMessages() {
             delete obj;
 
         m_messagesToSend.clear();
+
+        ESP_LOGI(LOG_TAG, "Message sent");
     }
 }
