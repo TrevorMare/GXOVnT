@@ -19,7 +19,7 @@ public partial class DeviceInfo : GXOVnTComponent
     private IMessageOrchestrator MessageOrchestrator { get; set; } = default!;
    
     [Parameter]
-    public GXOVnTDevice? GXOVnTDevice { get; set; } 
+    public GXOVnTBleDevice? GXOVnTDevice { get; set; } 
     
     private bool ComponentInitialized { get; set; }
     
@@ -105,7 +105,7 @@ public partial class DeviceInfo : GXOVnTComponent
             if (GXOVnTDevice?.Device == null)
                 return;
 
-            ConnectedToDevice = await BluetoothService.ConnectToDevice(GXOVnTDevice.Device.Id, true);
+            ConnectedToDevice = await GXOVnTDevice.ConnectToDeviceAsync();
             if (!ConnectedToDevice)
             {
                 FailedToConnect = true;
@@ -114,11 +114,12 @@ public partial class DeviceInfo : GXOVnTComponent
 
             var requestModel = new RequestGetSystemSettingsModel();
             var responseModel = await MessageOrchestrator.SendMessage<RequestGetSystemSettingsModel, ResponseGetSystemSettingsModel>(
-                requestModel);
+                requestModel, GXOVnTDevice);
 
             if (responseModel == null)
             {
                 FailedToGetInformation = true;
+                
                 return;
             }
                 

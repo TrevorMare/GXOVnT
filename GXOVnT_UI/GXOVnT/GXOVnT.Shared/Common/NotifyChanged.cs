@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace GXOVnT.Services.Common;
+namespace GXOVnT.Shared.Common;
 
 public abstract class NotifyChanged : INotifyPropertyChanged
 {

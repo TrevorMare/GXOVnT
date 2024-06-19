@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using GXOVnT.Services.Common;
+using GXOVnT.Shared.Common;
 
 namespace GXOVnT.Models;
 

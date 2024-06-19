@@ -20,11 +20,11 @@ public partial class DeviceScanner : GXOVnTComponent
     private IBluetoothService BluetoothService { get; set; } = default!;
     
     [Parameter] 
-    public EventCallback<GXOVnTDevice?> DeviceSelected { get; set; }
+    public EventCallback<GXOVnTBleDevice?> DeviceSelected { get; set; }
     
     private bool IsScanningDevices => BluetoothService.IsScanningDevices;
 
-    private bool HasItems => BluetoothService.ScannedDevices.Count > 0;
+    private bool HasItems => BluetoothService.DiscoveredDevices.Count > 0;
 
     private string ScanButtonText => (IsScanningDevices ? "Stop" : "Start") + " scan devices";
    
@@ -53,7 +53,7 @@ public partial class DeviceScanner : GXOVnTComponent
 
     #region Event Callbacks
     
-    private async Task OnDeviceListItemClick(GXOVnTDevice item)
+    private async Task OnDeviceListItemClick(GXOVnTBleDevice item)
     {
         _selectedUUId = item.UUID;
         

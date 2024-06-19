@@ -1,6 +1,6 @@
-﻿using GXOVnT.Services.Common;
-using GXOVnT.Services.Interfaces;
+﻿using GXOVnT.Services.Interfaces;
 using GXOVnT.Services.Models;
+using GXOVnT.Shared.Common;
 
 namespace GXOVnT.Services;
 

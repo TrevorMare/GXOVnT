@@ -25,7 +25,7 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
     private IMessageOrchestrator MessageOrchestrator { get; set; } = default!;
    
     [Parameter]
-    public GXOVnTDevice? GXOVnTDevice { get; set; }
+    public GXOVnTBleDevice? GXOVnTDevice { get; set; }
     
     private bool ComponentInitialized { get; set; }
     
@@ -90,21 +90,21 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
             };
             var responseTestWifiModel =
                 await MessageOrchestrator.SendMessage<RequestTestWiFiSettingsModel, StatusResponseModel>(
-                    requestTestWifiModel);
+                    requestTestWifiModel, GXOVnTDevice);
 
             if (responseTestWifiModel.StatusCode != 200)
                 return;
 
             // Send the reboot command
 
-            await MessageOrchestrator.SendMessage(new RequestRebootModel());
+            await GXOVnTDevice.SendJsonModelToDevice(new RequestRebootModel());
 
-            await BluetoothService.DisConnectFromDevice();
+            await GXOVnTDevice.DisconnectFromDeviceAsync();
 
             using var reConnectCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(1));
 
-            await BluetoothService.ReConnectToDeviceWhenAvailable(GXOVnTDevice.Id,
-                reConnectCancellationTokenSource.Token);
+            // await BluetoothService.ReConnectToDeviceWhenAvailable(GXOVnTDevice.Id,
+            //     reConnectCancellationTokenSource.Token);
 
 
         }
@@ -136,7 +136,7 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
             if (GXOVnTDevice?.Device == null)
                 return;
 
-            ConnectedToDevice = await BluetoothService.ConnectToDevice(GXOVnTDevice.Device.Id, true);
+            ConnectedToDevice = await GXOVnTDevice.ConnectToDeviceAsync();
             if (!ConnectedToDevice)
             {
                 FailedToConnect = true;
@@ -145,7 +145,7 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
 
             var requestModel = new RequestGetSystemSettingsModel();
             var responseModel = await MessageOrchestrator.SendMessage<RequestGetSystemSettingsModel, ResponseGetSystemSettingsModel>(
-                requestModel);
+                requestModel, GXOVnTDevice);
 
             if (responseModel == null)
             {

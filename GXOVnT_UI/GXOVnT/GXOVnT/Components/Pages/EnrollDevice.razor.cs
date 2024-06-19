@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using GXOVnT.Models;
-using GXOVnT.Services.Common;
 using GXOVnT.Services.Interfaces;
 using Microsoft.AspNetCore.Components;
 using GXOVnT.Services.Models;
@@ -14,7 +13,7 @@ public partial class EnrollDevice : ComponentBase
 
     #region Members
 
-    private GXOVnTDevice? _selectedDeviceToEnroll;
+    private GXOVnTBleDevice? _selectedDeviceToEnroll;
 
 
 
@@ -38,7 +37,7 @@ public partial class EnrollDevice : ComponentBase
     #endregion
 
     #region Event Callbacks
-    private void OnDeviceSelected(GXOVnTDevice? device)
+    private void OnDeviceSelected(GXOVnTBleDevice? device)
     {
         _selectedDeviceToEnroll = device;
     }
@@ -59,7 +58,7 @@ public partial class EnrollDevice : ComponentBase
         _selectedDeviceToEnroll = null;
     }
     
-    private async void EnrollDeviceSelected(GXOVnTDevice obj)
+    private async void EnrollDeviceSelected(GXOVnTBleDevice obj)
     {
         _selectedDeviceToEnroll = obj;
         

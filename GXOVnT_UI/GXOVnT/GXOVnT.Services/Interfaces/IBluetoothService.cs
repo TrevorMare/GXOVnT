@@ -6,32 +6,21 @@ namespace GXOVnT.Services.Interfaces;
 
 public interface IBluetoothService : INotifyPropertyChanged, IAsyncDisposable
 {
-    event BluetoothService.OnDeviceFoundHandler? OnDeviceFound;
-    event BluetoothService.OnMessagePacketReceivedHandler? OnMessagePacketReceived; 
-
-    bool IsConnectedToDevice { get; }
+    
     
     BluetoothState BluetoothState { get; }
     
     bool BluetoothIsReady { get; }
     
-    IDevice? ConnectedDevice { get; }
-    
     bool IsScanningDevices { get; }
     
-    IReadOnlyList<GXOVnTDevice> ScannedDevices { get; }
+    IReadOnlyList<GXOVnTBleDevice> DiscoveredDevices { get; }
 
     Task<bool> StartScanForDevicesAsync(CancellationTokenSource? cancellationTokenSource = default);
 
     Task StopScanForDevicesAsync();
 
-    Task<bool> DisConnectFromDevice();
+    GXOVnTBleDevice? FindDevice(Guid deviceId);
 
-    Task<bool> ConnectToDevice(Guid deviceId, bool keepConnectionAlive);
 
-    Task<bool> ReConnectToDeviceWhenAvailable(string id, CancellationToken token);
-
-    Task<short> SendJsonModelToDevice<T>(T jsonModel, Action<int>? progressChangedCallback = default) where T : Shared.JsonModels.BaseModel;
-
-    
 }

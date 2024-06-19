@@ -1,5 +1,4 @@
-﻿using GXOVnT.Services.Common;
-using GXOVnT.Shared.Common;
+﻿using GXOVnT.Shared.Common;
 using Plugin.BLE.Abstractions;
 using Plugin.BLE.Abstractions.Contracts;
 
@@ -16,7 +15,7 @@ public class GXOVnTDevice : NotifyChanged
     
     #region Properties
 
-    public string UUID => $"scan_result_{_uuiid}";
+    public string UUID => $"{_uuiid}";
     
     public IDevice? Device { get; private set; }
 

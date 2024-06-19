@@ -1,7 +1,7 @@
 ﻿@inherits GXOVnTComponent
 <MudPaper Width="100%">
     <div class="d-flex flex-grow-1 gap-4">
-        @foreach (var context in BluetoothService.ScannedDevices)
+        @foreach (var context in BluetoothService.DiscoveredDevices)
         {
             var cardKey = context.UUID;
             <MudCard @key="cardKey" Elevation="2" Outlined="true">
