@@ -8,7 +8,7 @@ using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE.Abstractions.EventArgs;
 using Plugin.BLE.Abstractions.Extensions;
 
-namespace GXOVnT.Services;
+namespace GXOVnT.Services.Services;
 
 /// <summary>
 /// Bluetooth service wrapper class. This class is responsible for performing the scans of devices

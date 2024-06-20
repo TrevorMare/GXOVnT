@@ -13,21 +13,21 @@ public partial class DeviceInfo : GXOVnTComponent
     #region Properties
 
     [Inject]
-    private IBluetoothService BluetoothService { get; set; } = default;
+    private IBluetoothService BluetoothService { get; set; } = default!;
     
     [Inject]
     private IMessageOrchestrator MessageOrchestrator { get; set; } = default!;
    
     [Parameter]
-    public GXOVnTBleDevice? GXOVnTDevice { get; set; } 
+    public GXOVnTBleDevice? Device { get; set; } 
+    
+    private bool DeviceInformationGetExecuted { get; set; }
     
     private bool ComponentInitialized { get; set; }
     
     private bool ConnectedToDevice { get; set; }
     
     private bool FailedToGetInformation { get; set; }
-    
-    private bool FailedToConnect { get; set; }
     
     private bool DataLoaded { get; set; }
     
@@ -56,70 +56,44 @@ public partial class DeviceInfo : GXOVnTComponent
 
         if (!firstRender) 
             return;
-        
-        ComponentInitialized = true;
-        ConnectedToDevice = false;
-        FailedToGetInformation = false;
-        DataLoaded = false;
-        DeviceSettingsResponse = null;
-        ConfirmedContinue = false;
 
+        ComponentInitialized = true;
+        DeviceInformationGetExecuted = false;
+        SetWizardForwardEnabled(false);
         await InvokeAsync(StateHasChanged);
-        
         await GetDeviceInfo();
     }
 
     #endregion
 
     #region Methods
-
-    private bool StepRequiresConfirmation()
-    {
-        if (DeviceSettingsResponse == null)
-            return false;
-        
-        if (DeviceSettingsResponse.SystemConfigured)
-            return true;
-
-        if ((DeviceSettingsResponse.GXOVnTSystemType?.Id ?? GXOVnTSystemType.UnInitialized.Id) !=
-            GXOVnTSystemType.UnInitialized.Id)
-            return true;
-
-        return false;
-    }
-
     private async Task GetDeviceInfo()
     {
         try
         {
-            IsBusy = true;
-            ConnectedToDevice = false;
-            FailedToGetInformation = false;
-            FailedToConnect = false;
+            DeviceInformationGetExecuted = true;
             DataLoaded = false;
-            
+            ConfirmedContinue = false;
             SetWizardForwardEnabled(false);
-
-            await InvokeAsync(StateHasChanged);
-
-            if (GXOVnTDevice?.Device == null)
+            
+            if (Device == null)
                 return;
+            
+            SetBusyValues(true, "Connecting to device");
+            ConnectedToDevice = await Device.ConnectToDeviceAsync();
 
-            ConnectedToDevice = await GXOVnTDevice.ConnectToDeviceAsync();
             if (!ConnectedToDevice)
-            {
-                FailedToConnect = true;
                 return;
-            }
+
+            SetBusyValues(true, "Querying device info");
 
             var requestModel = new RequestGetSystemSettingsModel();
             var responseModel = await MessageOrchestrator.SendMessage<RequestGetSystemSettingsModel, ResponseGetSystemSettingsModel>(
-                requestModel, GXOVnTDevice);
+                requestModel, Device);
 
             if (responseModel == null)
             {
                 FailedToGetInformation = true;
-                
                 return;
             }
                 
@@ -135,9 +109,21 @@ public partial class DeviceInfo : GXOVnTComponent
         }
         finally
         {
-            IsBusy = false;
-            await InvokeAsync(StateHasChanged);
+            SetBusyValues(false);
         }
+    }
+    
+    
+    private bool StepRequiresConfirmation()
+    {
+        if (DeviceSettingsResponse == null)
+            return false;
+        
+        if (DeviceSettingsResponse.SystemConfigured)
+            return true;
+
+        return (DeviceSettingsResponse.GXOVnTSystemType?.Id ?? GXOVnTSystemType.UnInitialized.Id) !=
+               GXOVnTSystemType.UnInitialized.Id;
     }
 
     #endregion

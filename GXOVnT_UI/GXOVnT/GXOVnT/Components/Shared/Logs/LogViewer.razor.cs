@@ -1,17 +1,18 @@
 ﻿using System.ComponentModel;
-using GXOVnT.Services.ViewModels;
+using GXOVnT.Services.Interfaces;
 using Microsoft.AspNetCore.Components;
 
-namespace GXOVnT.Components.Shared;
+namespace GXOVnT.Components.Shared.Logs;
 
 public partial class LogViewer
 {
 
     #region Properties
 
-    [Inject] private LogViewModel LogViewModel { get; set; }
+    [Inject] 
+    private ILogService LogService { get; set; }
 
-    private bool HasItems => LogViewModel.LogMessages.Any();
+    private bool HasItems => LogService.LogMessages.Any();
 
     #endregion
 
@@ -20,12 +21,9 @@ public partial class LogViewer
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        LogViewModel.PropertyChanged -= LogViewModelOnPropertyChanged;
-        LogViewModel.PropertyChanged += LogViewModelOnPropertyChanged;
+        LogService.PropertyChanged -= LogViewModelOnPropertyChanged;
+        LogService.PropertyChanged += LogViewModelOnPropertyChanged;
     }
-
-
-
     #endregion
 
     #region Event Callbacks

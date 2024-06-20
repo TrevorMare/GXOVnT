@@ -1,0 +1,19 @@
+﻿
+<MudButton @onclick="LogService.ClearLogMessages">Clear Logs</MudButton>
+
+<MudTable Dense="true" Items="@LogService.LogMessages" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info" >
+    <HeaderContent>
+        <MudTh>Time</MudTh>
+        <MudTh>Type</MudTh>
+        <MudTh>Message</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Time">@context.TimeStamp</MudTd>
+        <MudTd DataLabel="Type">@context.LogMessageType</MudTd>
+        <MudTd DataLabel="Message">@context.Message</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager  />
+    </PagerContent>
+</MudTable>
+

@@ -58,6 +58,7 @@ public partial class DeviceScanner : GXOVnTComponent
         _selectedUUId = item.UUID;
         
         await DeviceSelected.InvokeAsync(item);
+        
         SetWizardForwardEnabled(true);
     }
     
@@ -65,18 +66,18 @@ public partial class DeviceScanner : GXOVnTComponent
     {
         try
         {
-            IsBusy = true;
-
             if (BluetoothService.IsScanningDevices)
                 await BluetoothService.StopScanForDevicesAsync();
             else
             {
+                SetBusyValues(true, "Scanning for devices...");
+                // We should not be able to continue
                 SetWizardForwardEnabled(false);
-                
+                // Clear the selected device when we start scanning
                 await DeviceSelected.InvokeAsync(null);
+                // Now perform the scan
                 await BluetoothService.StartScanForDevicesAsync();
             }
-                
         }
         catch (Exception)
         {
@@ -84,7 +85,7 @@ public partial class DeviceScanner : GXOVnTComponent
         }
         finally
         {
-            IsBusy = false;
+            SetBusyValues(false);
         }
     }
 

@@ -26,7 +26,9 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
     private IMessageOrchestrator MessageOrchestrator { get; set; } = default!;
    
     [Parameter]
-    public GXOVnTBleDevice? GXOVnTDevice { get; set; }
+    public GXOVnTBleDevice? Device { get; set; }
+    
+    private bool DeviceInformationGetExecuted { get; set; }
     
     private bool ComponentInitialized { get; set; }
     
@@ -34,15 +36,10 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
     
     private bool FailedToGetInformation { get; set; }
     
-    private bool FailedToConnect { get; set; }
-    
     private bool DataLoaded { get; set; }
-    
-    private ResponseGetSystemSettingsModel? DeviceSettingsResponse { get; set; }
-    
-    
-    #endregion
 
+    private RequestSetSystemSettingsModel SetSettingsModel { get; set; } = new();
+    #endregion
 
     #region Override
 
@@ -73,104 +70,45 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
     #endregion
     
     #region Methods
-
-    private async Task TestDeviceWiFiSettings()
-    {
-
-        try
-        {
-            IsBusy = true;
-
-            if (GXOVnTDevice == null)
-                return;
-
-            var requestTestWifiModel = new RequestTestWiFiSettingsModel()
-            {
-                WiFiPassword = "X@Kbi-Rh3$",
-                WiFiSSID = "HouseMare"
-            };
-            var responseTestWifiModel =
-                await MessageOrchestrator.SendMessage<RequestTestWiFiSettingsModel, StatusResponseModel>(
-                    requestTestWifiModel, GXOVnTDevice);
-
-            if (responseTestWifiModel is not { StatusCode: 200 })
-                return;
-
-            // Send the reboot command
-
-            await GXOVnTDevice.SendJsonModelToDevice(new RequestRebootModel());
-
-            await GXOVnTDevice.DisconnectFromDeviceAsync();
-
-            // Now wait until the device is online again
-            using var reConnectCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(1));
-
-            var isReconnected = await GXOVnTDevice.ReconnectWhenAvailable(reConnectCancellationTokenSource.Token);
-
-            if (!isReconnected)
-                throw new GXOVnTException("Could not reconnect to device");
-            
-            var responseTestWifiModelResults =
-                await MessageOrchestrator.SendMessage<RequestLastWiFiTestResultModel, ResponseLastTestWiFiSettingsResult>(
-                    new RequestLastWiFiTestResultModel() , GXOVnTDevice);
-
-            if (responseTestWifiModelResults == null)
-                throw new GXOVnTException("Could not retrieve the wifi connection test results");
-            
-            
-                
-            
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-
-        }
-        finally
-        {
-            IsBusy = true;
-        }
-    }
     
     private async Task GetDeviceInfo()
     {
         try
         {
-            IsBusy = true;
-            ConnectedToDevice = false;
-            FailedToGetInformation = false;
-            FailedToConnect = false;
+            DeviceInformationGetExecuted = true;
             DataLoaded = false;
+            SetSettingsModel = new RequestSetSystemSettingsModel();
             
             SetWizardForwardEnabled(false);
-
-            await InvokeAsync(StateHasChanged);
-
-            if (GXOVnTDevice?.Device == null)
+            
+            if (Device == null)
                 return;
+            
+            SetBusyValues(true, "Connecting to device");
+            ConnectedToDevice = await Device.ConnectToDeviceAsync();
 
-            ConnectedToDevice = await GXOVnTDevice.ConnectToDeviceAsync();
             if (!ConnectedToDevice)
-            {
-                FailedToConnect = true;
                 return;
-            }
+
+            SetBusyValues(true, "Querying device info");
 
             var requestModel = new RequestGetSystemSettingsModel();
             var responseModel = await MessageOrchestrator.SendMessage<RequestGetSystemSettingsModel, ResponseGetSystemSettingsModel>(
-                requestModel, GXOVnTDevice);
+                requestModel, Device);
 
             if (responseModel == null)
             {
                 FailedToGetInformation = true;
                 return;
             }
-                
+
+            SetSettingsModel.SystemConfigured = responseModel.SystemConfigured;
+            SetSettingsModel.SystemType = responseModel.SystemType;
+            SetSettingsModel.SystemName = responseModel.SystemName;
+            SetSettingsModel.WiFiPassword = responseModel.WiFiPassword;
+            SetSettingsModel.WiFiSSID = responseModel.WiFiSSID;
             DataLoaded = true;
-            DeviceSettingsResponse = responseModel;
-           
-       
-            SetWizardForwardEnabled(true);
+  
         }
         catch (Exception)
         {
@@ -178,11 +116,99 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
         }
         finally
         {
-            IsBusy = false;
-            await InvokeAsync(StateHasChanged);
+            SetBusyValues(false);
         }
     }
 
+    private async Task TestDeviceWiFiSettings()
+    {
+
+        try
+        {
+            var wifiSsid = SetSettingsModel.WiFiSSID;
+            var wifiPassword = SetSettingsModel.WiFiPassword;
+            
+            SetWizardForwardEnabled(false);
+            
+            if (Device == null)
+                return;
+            
+            SetBusyValues(true, "Connecting to device");
+            ConnectedToDevice = await Device.ConnectToDeviceAsync();
+
+            if (!ConnectedToDevice)
+                return;
+            
+            SetBusyValues(true, "Sending WiFi Settings to test");
+            var requestTestWifiModel = new RequestTestWiFiSettingsModel()
+            {
+                WiFiPassword = wifiPassword,
+                WiFiSSID = wifiSsid
+            };
+            var responseTestWifiModel =
+                await MessageOrchestrator.SendMessage<RequestTestWiFiSettingsModel, StatusResponseModel>(
+                    requestTestWifiModel, Device);
+
+            if (responseTestWifiModel is not { StatusCode: 200 })
+            {
+                await DialogService.ShowMessageBox("Error",
+                    "Could not communicate with device or get a valid response while setting the WiFi settings to test");
+                return;
+            }
+            
+            // Send the reboot command
+            SetBusyValues(true, "Sending device reboot request");
+
+            await Device.SendJsonModelToDevice(new RequestRebootModel());
+            await Task.Delay(2000);
+
+            // Now wait until the device is online again
+            SetBusyValues(true, "Waiting for the device to get back online again");
+
+            using var reConnectCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(1));
+            var isReconnected = await Device.ReconnectWhenAvailable(reConnectCancellationTokenSource.Token);
+
+            if (!isReconnected)
+            {
+                await DialogService.ShowMessageBox("Error",
+                    "Could not reconnect to the device within the allocated time");
+                return;
+            }
+            
+            SetBusyValues(true, "Querying the WiFi Test results ");
+            var responseTestWifiModelResults =
+                await MessageOrchestrator.SendMessage<RequestLastWiFiTestResultModel, ResponseLastTestWiFiSettingsResult>(
+                    new RequestLastWiFiTestResultModel() , Device);
+
+            if (responseTestWifiModelResults == null)
+            {
+                await DialogService.ShowMessageBox("Error",
+                    "Could not load the test results from the device. Unknown response");
+                return;
+            }
+
+            if (!responseTestWifiModelResults.Success)
+            {
+                await DialogService.ShowMessageBox("Error",
+                    "The device could not connect to the WiFi with the specified settings");
+                return;
+            }
+            
+            await DialogService.ShowMessageBox("Success",
+                "The device successfully connected to the WiFi with the specified settings");
+            
+            SetWizardForwardEnabled(true);
+        }
+        catch (Exception)
+        {
+            LogService.LogError("There was an internal error testing the WiFi settings on the device");
+        }
+        finally
+        {
+            SetBusyValues(false);
+        }
+    }
+    
     #endregion
     
     

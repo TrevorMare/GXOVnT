@@ -12,6 +12,7 @@ public class GXOVnTComponent : ComponentBase
     #region Members
 
     private bool _isBusy;
+    private string? _busyText;
 
     #endregion
     
@@ -37,6 +38,17 @@ public class GXOVnTComponent : ComponentBase
             _isBusy = value;
         } 
     }
+    
+    protected string? BusyText
+    {
+        get => WizardStepModel?.BusyText ?? _busyText;
+        set
+        {
+            if (WizardStepModel != null)
+                WizardStepModel.BusyText = value;
+            _busyText = value;
+        } 
+    }
     #endregion
 
     #region Override
@@ -54,6 +66,12 @@ public class GXOVnTComponent : ComponentBase
     #endregion
 
     #region Protected Methods
+
+    protected void SetBusyValues(bool isBusy, string? busyText = default)
+    {
+        IsBusy = isBusy;
+        BusyText = isBusy ? busyText : "";
+    }
 
     protected void SetWizardForwardEnabled(bool value)
     {

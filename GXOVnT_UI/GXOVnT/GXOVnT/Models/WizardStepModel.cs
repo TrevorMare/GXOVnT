@@ -8,9 +8,7 @@ public class WizardStepModel : NotifyChanged
     #region Members
     private readonly string _wizardStepUUId = Guid.NewGuid().ToString();
     private string? _wizardStepName; 
-    
     private bool _isCurrentStep;
-
     private string? _stepTitle = string.Empty;
     private int _stepSequence;
     private bool _hasCancelButton = true;
@@ -23,6 +21,7 @@ public class WizardStepModel : NotifyChanged
     private string _backButtonText = "Previous";
     private string _nextButtonText = "Next";
     private bool _isBusy;
+    private string? _busyText;
     private bool _isEnabled = true;
     
     #endregion
@@ -47,6 +46,12 @@ public class WizardStepModel : NotifyChanged
     {
         get => _isBusy;
         set => SetField(ref _isBusy, value);
+    }
+    
+    public string? BusyText
+    {
+        get => _busyText;
+        set => SetField(ref _busyText, value);
     }
     
     public int StepSequence

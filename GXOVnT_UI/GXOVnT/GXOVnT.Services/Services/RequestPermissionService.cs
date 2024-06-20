@@ -1,23 +1,23 @@
 ﻿using GXOVnT.Services.Interfaces;
 
-namespace GXOVnT.Services;
+namespace GXOVnT.Services.Services;
 
 public class RequestPermissionService : IRequestPermissionService
 {
 
     #region Members
 
-    private readonly ViewModels.LogViewModel _logViewModel;
+    private readonly ILogService _logService;
     private readonly IAlertService _alertService;
 
     #endregion
 
     #region ctor
 
-    public RequestPermissionService(ViewModels.LogViewModel logViewModel,
+    public RequestPermissionService(ILogService logService,
         IAlertService alertService)
     {
-        _logViewModel = logViewModel;
+        _logService = logService;
         _alertService = alertService;
     }
 
@@ -29,16 +29,16 @@ public class RequestPermissionService : IRequestPermissionService
     
     public async Task<bool> ApplicationHasPermission<TPermission>() where TPermission : Permissions.BasePermission, new()
     {
-        _logViewModel.LogDebug($"RequestPermissionService: Checking if access granted on type {typeof(TPermission)} ");
+        _logService.LogDebug($"RequestPermissionService: Checking if access granted on type {typeof(TPermission)} ");
         var currentStatus = await Permissions.CheckStatusAsync<TPermission>();
         
         if (currentStatus == PermissionStatus.Granted)
         {
-            _logViewModel.LogDebug($"RequestPermissionService.ApplicationHasPermission: Permission {typeof(TPermission)} granted");
+            _logService.LogDebug($"RequestPermissionService.ApplicationHasPermission: Permission {typeof(TPermission)} granted");
             return true;
         }
 
-        _logViewModel.LogDebug($"RequestPermissionService.ApplicationHasPermission: Permission {typeof(TPermission)} not granted");
+        _logService.LogDebug($"RequestPermissionService.ApplicationHasPermission: Permission {typeof(TPermission)} not granted");
         
         return false;
     }
@@ -53,14 +53,14 @@ public class RequestPermissionService : IRequestPermissionService
         {
             if (await ApplicationHasPermission<TPermission>())
             {
-                _logViewModel.LogDebug($"RequestPermissionService.RequestApplicationPermission: Permission {typeof(TPermission)} already granted");
+                _logService.LogDebug($"RequestPermissionService.RequestApplicationPermission: Permission {typeof(TPermission)} already granted");
                 return true;
             }
             
         
             if (Permissions.ShouldShowRationale<TPermission>())
             {
-                _logViewModel.LogDebug($"RequestPermissionService.RequestApplicationPermission: Showing rationale requesting permission type {typeof(TPermission)}");
+                _logService.LogDebug($"RequestPermissionService.RequestApplicationPermission: Showing rationale requesting permission type {typeof(TPermission)}");
                 
                 var confirmResult = await _alertService.ShowConfirmationAsync("Permission requirements",
                     "The application requires this permission to connect to the devices. You will now be prompted to accept.", "OK",
@@ -68,22 +68,22 @@ public class RequestPermissionService : IRequestPermissionService
 
                 if (!confirmResult)
                 {
-                    _logViewModel.LogDebug($"RequestPermissionService.RequestApplicationPermission: User did not accept the permission");
+                    _logService.LogDebug($"RequestPermissionService.RequestApplicationPermission: User did not accept the permission");
                     return false;
                 }
             }
             
             
-            _logViewModel.LogDebug($"RequestPermissionService.RequestApplicationPermission: Starting the request permission task");
+            _logService.LogDebug($"RequestPermissionService.RequestApplicationPermission: Starting the request permission task");
             var requestStatus = await Permissions.RequestAsync<Permissions.Bluetooth>();
             
             var result = (requestStatus == PermissionStatus.Granted);
             
             if (result)
-                _logViewModel.LogDebug($"RequestPermissionService.RequestApplicationPermission: User granted the permissions");
+                _logService.LogDebug($"RequestPermissionService.RequestApplicationPermission: User granted the permissions");
             else
             {
-                _logViewModel.LogDebug($"RequestPermissionService.RequestApplicationPermission: User did not grant the permissions");
+                _logService.LogDebug($"RequestPermissionService.RequestApplicationPermission: User did not grant the permissions");
                 AppInfo.ShowSettingsUI();
             }
 
@@ -92,7 +92,7 @@ public class RequestPermissionService : IRequestPermissionService
         }
         catch (Exception ex)
         {
-            _logViewModel.LogError($"RequestPermissionService.RequestApplicationPermission: An error occured checking permissions. {ex.Message}");
+            _logService.LogError($"RequestPermissionService.RequestApplicationPermission: An error occured checking permissions. {ex.Message}");
             return false;
         }
     }

@@ -1,17 +1,21 @@
 ﻿@inherits GXOVnTComponent
-
-@if (ComponentInitialized)
+@if (!ComponentInitialized)
 {
-    if (!ConnectedToDevice)
-    {
-        <MudAlert Severity="Severity.Info">
-            Connecting to device
-        </MudAlert>
-    }
-    else if (FailedToConnect)
+    <MudText Typo="Typo.body1">Initializing component</MudText>
+}
+else
+{
+
+    if (Device == null)
     {
         <MudAlert Severity="Severity.Error">
-            Could not connect to the device.
+            No device selected, unable to continue
+        </MudAlert>
+    }
+    else if (!ConnectedToDevice)
+    {
+        <MudAlert Severity="Severity.Error">
+            Unable to connect to the device
         </MudAlert>
     }
     else if (FailedToGetInformation)
@@ -25,15 +29,15 @@
         <MudCard Elevation="2" Outlined="true">
             <MudCardHeader>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Device name: @GXOVnTDevice?.DeviceName</MudText>
+                    <MudText Typo="Typo.h6">Device name: @Device?.DeviceName</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
 
             <MudCardContent>
                 <MudStack>
-                    <MudField Variant="Variant.Text">Id: @GXOVnTDevice?.Id</MudField>
-                    <MudField Variant="Variant.Text">Rssi: @GXOVnTDevice?.DeviceName</MudField>
-                    <MudField Variant="Variant.Text">Bluetooth State: @GXOVnTDevice?.DeviceState</MudField>
+                    <MudField Variant="Variant.Text">Id: @Device?.Id</MudField>
+                    <MudField Variant="Variant.Text">Rssi: @Device?.DeviceName</MudField>
+                    <MudField Variant="Variant.Text">Bluetooth State: @Device?.DeviceState</MudField>
                     <MudField Variant="Variant.Text">System Type: @DeviceSettingsResponse.GXOVnTSystemType?.Name</MudField>
                     <MudField Variant="Variant.Text">System Configured: @DeviceSettingsResponse.SystemConfigured</MudField>
                     <MudField Variant="Variant.Text">Firmware version: @DeviceSettingsResponse.FirmwareVersion</MudField>

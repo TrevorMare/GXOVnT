@@ -41,7 +41,6 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
     private ICharacteristic? _incomingMessageCharacteristic;
     private ICharacteristic? _outgoingMessageCharacteristic;
     private bool _deviceServicesBound;
-    private bool _deviceIsConnected;
     private readonly string _uuid = Guid.NewGuid().ToString();
 
     private readonly List<CommMessage> _partialCommMessages = new();
@@ -74,13 +73,9 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
         get => _deviceServicesBound;
         private set => SetField(ref _deviceServicesBound, value);
     }
-    
-    public bool DeviceIsConnected
-    {
-        get => _deviceIsConnected;
-        private set => SetField(ref _deviceIsConnected, value);
-    }
 
+    public bool DeviceIsConnected => Device.State == DeviceState.Connected;
+    
     public IReadOnlyList<MessageAggregate> HistoricCommMessages => _historicCommMessages.AsReadOnly();
 
     public MessageAggregate? LastReceivedMessage
@@ -132,7 +127,7 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
             IsBusy = true;
             
             // Check if this device is already connected
-            if (_deviceIsConnected)
+            if (DeviceIsConnected)
             {
                 _logService.LogInformation($"The device with Id {Id} is already connected");
                 return true;
@@ -158,7 +153,7 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
                     // Connect to the device
                     await _bluetoothAdapter.ConnectToDeviceAsync(Device, new ConnectParameters(), cancellationToken);
 
-                    DeviceIsConnected = true;
+                    OnPropertyChanged(nameof(DeviceIsConnected));
                     
                     // Load the services and the characteristics
                     await BindToDeviceServicesAndCharacteristics();
@@ -171,7 +166,7 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
         catch (Exception ex)
         {
             _logService.LogError($"An error occured trying to connect to the device with Id {Id}: {ex.Message}");
-            DeviceIsConnected = false;
+            OnPropertyChanged(nameof(DeviceIsConnected));
             return false;
         }
         finally
@@ -188,7 +183,7 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
             IsBusy = true;
             
             // Check if this device is already connected
-            if (_deviceIsConnected)
+            if (DeviceIsConnected)
             {
                 _logService.LogInformation($"The device with Id {Id} is already connected");
                 return true;
@@ -210,7 +205,7 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
             // Connect to the device
             await _bluetoothAdapter.ConnectToDeviceAsync(Device, new ConnectParameters(), cancellationToken);
 
-            DeviceIsConnected = true;
+            OnPropertyChanged(nameof(DeviceIsConnected));
             
             // Load the services and the characteristics
             await BindToDeviceServicesAndCharacteristics();
@@ -220,7 +215,7 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
         catch (Exception ex)
         {
             _logService.LogError($"An error occured trying to connect to the device with Id {Id}: {ex.Message}");
-            DeviceIsConnected = false;
+            OnPropertyChanged(nameof(DeviceIsConnected));
             return false;
         }
         finally
@@ -234,7 +229,7 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
         try
         {
             IsBusy = true;
-            if (!_deviceIsConnected)
+            if (!DeviceIsConnected)
             {
                 _logService.LogInformation($"The device with Id {Id} is already disconnected");
                 return true;
@@ -262,7 +257,6 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
         finally
         {
             IsBusy = false;
-            DeviceIsConnected = false;
         }
     }
 
@@ -359,7 +353,7 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
         {
             IsBusy = true;
             
-            if (!_deviceIsConnected)
+            if (!DeviceIsConnected)
                 throw new GXOVnTException($"Unable to bind to device services, the device with Id  {Id} is not connected");
             
             var connectedDeviceService = await Device.GetServiceAsync(GXOVnTBluetoothServiceId);

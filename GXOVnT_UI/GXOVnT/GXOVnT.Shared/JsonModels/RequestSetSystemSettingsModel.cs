@@ -12,6 +12,9 @@ public class RequestSetSystemSettingsModel : BaseModel
     [JsonPropertyName("systemConfigured")]
     public bool SystemConfigured { get; set; }
     
+    [JsonPropertyName("systemType")]
+    public int SystemType { get; set; }
+    
     [JsonPropertyName("wifiSSID")] 
     public string WiFiSSID { get; set; } = string.Empty;
     

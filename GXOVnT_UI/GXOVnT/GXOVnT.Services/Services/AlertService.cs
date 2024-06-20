@@ -1,6 +1,6 @@
 ﻿using GXOVnT.Services.Interfaces;
 
-namespace GXOVnT.Services;
+namespace GXOVnT.Services.Services;
 
 public class AlertService : IAlertService
 {

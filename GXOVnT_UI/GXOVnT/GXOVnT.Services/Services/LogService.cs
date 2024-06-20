@@ -2,7 +2,7 @@
 using GXOVnT.Services.Models;
 using GXOVnT.Shared.Common;
 
-namespace GXOVnT.Services;
+namespace GXOVnT.Services.Services;
 
 public class LogService : NotifyChanged, ILogService
 {

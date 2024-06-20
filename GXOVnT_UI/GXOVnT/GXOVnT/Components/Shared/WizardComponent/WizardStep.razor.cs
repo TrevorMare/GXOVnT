@@ -26,6 +26,13 @@ public partial class WizardStep<TWizardModelType> : ComponentBase  where TWizard
     }
     
     [Parameter]
+    public string? BusyText 
+    {
+        get => WizardStepModel.BusyText;
+        set => WizardStepModel.BusyText = value;
+    }
+    
+    [Parameter]
     public bool IsEnabled 
     {
         get => WizardStepModel.IsEnabled;

@@ -1,9 +1,6 @@
-﻿using System.ComponentModel;
-using GXOVnT.Models;
-using GXOVnT.Services.Interfaces;
+﻿using GXOVnT.Models;
 using Microsoft.AspNetCore.Components;
 using GXOVnT.Services.Models;
-using GXOVnT.Services.ViewModels;
 using MudBlazor;
 
 namespace GXOVnT.Components.Pages;
@@ -14,8 +11,6 @@ public partial class EnrollDevice : ComponentBase
     #region Members
 
     private GXOVnTBleDevice? _selectedDeviceToEnroll;
-
-
 
     #endregion
 

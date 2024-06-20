@@ -15,7 +15,6 @@ public partial class CheckBTPermissions : GXOVnTComponent
     
     #endregion
 
-
     #region Overrides
 
     protected override void OnInitialized()
@@ -40,7 +39,7 @@ public partial class CheckBTPermissions : GXOVnTComponent
     {
         try
         {
-            IsBusy = true;
+            SetBusyValues(true, "Checking the permissions on the device");
 
             HasBlueToothPermission = await RequestPermissionService.ApplicationHasBluetoothPermission();
 
@@ -54,7 +53,7 @@ public partial class CheckBTPermissions : GXOVnTComponent
         }
         finally
         {
-            IsBusy = false;
+            SetBusyValues(false);
             await InvokeAsync(StateHasChanged);
         }
     }
@@ -67,7 +66,7 @@ public partial class CheckBTPermissions : GXOVnTComponent
     {
         try
         {
-            IsBusy = true;
+            SetBusyValues(true, "Requesting Bluetooth permissions on the device");
 
             var permissionGranted = await RequestPermissionService.RequestBluetoothPermission();
             if (!permissionGranted)
@@ -85,7 +84,7 @@ public partial class CheckBTPermissions : GXOVnTComponent
         }
         finally
         {
-            IsBusy = false;
+            SetBusyValues(false);
             await InvokeAsync(StateHasChanged);
         }
     }

@@ -5,33 +5,33 @@
     <MudItem xs="12" sm="7">
         <MudPaper Class="pa-4">
 
-            <MudAlert Severity="Severity.Warning">
+            <MudAlert Severity="Severity.Warning" Class="my-2">
                 Please choose the system type carefully. The primary type is used for the primary device and
                 there can be only one of these running at any time. The extension type is used to run multiple devices 
                 that connects to the primary.
             </MudAlert>
-            
+
             <MudForm @ref="_form" @bind-IsValid="@success" @bind-Errors="@errors">
-                <MudTextField T="string" Label="System Name" Required="true" RequiredError="System name is required!"/>
-                
-                <MudSelect Label="System Type" T="GXOVnTSystemType" Dense="true" RequiredError="System type is required" Required="true">
+
+                <MudTextField T="string" Label="System Name" Required="true" RequiredError="System name is required!" @bind-Value="@SetSettingsModel.SystemName"/>
+
+                <MudSelect Label="System Type" T="int" Dense="true" RequiredError="System type is required" Required="true" Value="@SetSettingsModel.SystemType" ValueChanged="id => SetSettingsModel.SystemType = id">
                     @foreach (var item in Enumeration.GetAll<GXOVnTSystemType>(f => f.Id != GXOVnTSystemType.UnInitialized.Id))
                     {
-                        <MudSelectItem Value="@item">@item.ToString()</MudSelectItem>
+                        <MudSelectItem Value="@item.Id">@item.ToString()</MudSelectItem>
                     }
                 </MudSelect>
 
-                <MudTextField T="string" Label="WiFi SSID" Required="true" RequiredError="WiFi SSID is required"/>
-                <MudTextField InputType="InputType.Password" T="string" Label="WiFi Password" Required="false"/>
+                <MudTextField T="string" Label="WiFi SSID" Required="true" RequiredError="WiFi SSID is required" @bind-Value="@SetSettingsModel.WiFiSSID"/>
+                <MudTextField InputType="InputType.Password" T="string" Label="WiFi Password" Required="false" @bind-Value="@SetSettingsModel.WiFiPassword"/>
 
             </MudForm>
 
-            <MudAlert Severity="Severity.Info">
-                The WiFi settings should be provided to enable the device to download the latest firmware. 
+            <MudAlert Severity="Severity.Info" Class="my-2">
+                The WiFi settings should be provided to enable the device to download the latest firmware.
             </MudAlert>
-            
+
             <MudButton @onclick="TestDeviceWiFiSettings" StartIcon="@Icons.Material.Filled.Wifi" >Test WiFi</MudButton>
-            
         </MudPaper>
     </MudItem>
     
