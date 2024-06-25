@@ -1,19 +1,20 @@
 ﻿using System.Text.Json.Serialization;
 using GXOVnT.Shared.Common;
-using GXOVnT.Shared.DeviceMessage;
+using GXOVnT.Shared.DeviceMessage.Common;
 
-namespace GXOVnT.Shared.JsonModels;
+namespace GXOVnT.Shared.DeviceMessage.Request;
 
-public class RequestTestWiFiSettingsMessageModel : BaseMessageModel
+public class TestWiFiSettingsRequest() : BaseMessageModel(JsonModelType.TestWiFiSettingsRequest)
 {
-    [JsonPropertyName("wifiSSID")] 
-    public string WiFiSSID { get; set; } = string.Empty;
     
-    [JsonPropertyName("wifiPassword")] 
+    #region Properties
+    
+    [JsonPropertyName(JsonFieldNames.JsonFieldWiFiSsid)] 
+    public string WiFiSsid { get; set; } = string.Empty;
+    
+    [JsonPropertyName(JsonFieldNames.JsonFieldWiFiPassword)] 
     public string WiFiPassword { get; set; } = string.Empty;
+
+    #endregion
     
-    public RequestTestWiFiSettingsMessageModel()
-    {
-        MessageTypeId = (int)JsonModelType.RequestTestWiFiSettings;
-    }
 }

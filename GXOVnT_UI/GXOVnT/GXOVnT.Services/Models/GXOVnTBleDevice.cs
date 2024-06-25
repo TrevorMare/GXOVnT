@@ -1,7 +1,8 @@
 ﻿using GXOVnT.Services.Interfaces;
 using GXOVnT.Shared.Common;
 using GXOVnT.Shared.DeviceMessage;
-using GXOVnT.Shared.Helpers;
+using GXOVnT.Shared.DeviceMessage.Common;
+using GXOVnT.Shared.DeviceMessage.Extensions;
 using Plugin.BLE.Abstractions;
 using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE.Abstractions.EventArgs;
@@ -260,7 +261,7 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
         }
     }
 
-    public async Task<short> SendJsonModelToDevice<T>(T jsonModel, Action<int>? progressChangedCallback = default) where T : Shared.JsonModels.BaseModel
+    public async Task<short> SendJsonModelToDevice<T>(T jsonModel, Action<int>? progressChangedCallback = default) where T : BaseMessageModel
     {
         try
         {

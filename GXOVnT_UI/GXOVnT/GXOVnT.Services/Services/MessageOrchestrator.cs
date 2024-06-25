@@ -1,7 +1,8 @@
 ﻿using GXOVnT.Services.Interfaces;
 using GXOVnT.Services.Models;
 using GXOVnT.Shared.Common;
-using GXOVnT.Shared.JsonModels;
+using GXOVnT.Shared.DeviceMessage;
+using GXOVnT.Shared.DeviceMessage.Common;
 using Plugin.BLE.Abstractions;
 
 namespace GXOVnT.Services.Services;
@@ -55,7 +56,7 @@ internal class MessageOrchestrator : NotifyChanged, IMessageOrchestrator
     #endregion
 
     #region Methods
-    public async Task SendMessage<T>(T message, Guid deviceId) where T : BaseModel
+    public async Task SendMessage<T>(T message, Guid deviceId) where T : BaseMessageModel
     {
         try
         {
@@ -76,7 +77,7 @@ internal class MessageOrchestrator : NotifyChanged, IMessageOrchestrator
         }
     }
 
-    public async Task SendMessage<T>(T message, GXOVnTBleDevice bleDevice) where T : BaseModel
+    public async Task SendMessage<T>(T message, GXOVnTBleDevice bleDevice) where T : BaseMessageModel
     {
         try
         {
@@ -95,7 +96,7 @@ internal class MessageOrchestrator : NotifyChanged, IMessageOrchestrator
     }
 
     public async Task<TOut?> SendMessage<TIn, TOut>(TIn message, Guid deviceId, CancellationToken cancellationToken = default) 
-        where TOut : BaseModel where TIn : BaseModel
+        where TOut : BaseMessageModel where TIn : BaseMessageModel
     {
         
         try
@@ -119,7 +120,7 @@ internal class MessageOrchestrator : NotifyChanged, IMessageOrchestrator
         }
     }
 
-    public async Task<TOut?> SendMessage<TIn, TOut>(TIn message, GXOVnTBleDevice bleDevice, CancellationToken cancellationToken = default) where TIn : BaseModel where TOut : BaseModel
+    public async Task<TOut?> SendMessage<TIn, TOut>(TIn message, GXOVnTBleDevice bleDevice, CancellationToken cancellationToken = default) where TIn : BaseMessageModel where TOut : BaseMessageModel
     {
         short outgoingMessageId;
         var messagesReceivedDuringWait = new List<MessageAggregate>();

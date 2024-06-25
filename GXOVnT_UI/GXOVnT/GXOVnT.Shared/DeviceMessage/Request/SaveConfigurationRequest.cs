@@ -1,13 +1,9 @@
 ﻿using GXOVnT.Shared.Common;
-using GXOVnT.Shared.DeviceMessage;
+using GXOVnT.Shared.DeviceMessage.Common;
 
-namespace GXOVnT.Shared.JsonModels;
+namespace GXOVnT.Shared.DeviceMessage.Request;
 
-public class RequestSaveConfigurationMessageModel : BaseMessageModel
+public class SaveConfigurationRequest() : BaseMessageModel(JsonModelType.SaveConfigurationRequest)
 {
     
-    public RequestSaveConfigurationMessageModel()
-    {
-        MessageTypeId = (int)JsonModelType.RequestSaveConfiguration;
-    }
 }

@@ -1,18 +1,18 @@
 ﻿using System.Text.Json.Serialization;
 using GXOVnT.Shared.Common;
-using GXOVnT.Shared.DeviceMessage;
+using GXOVnT.Shared.DeviceMessage.Common;
 
-namespace GXOVnT.Shared.JsonModels;
+namespace GXOVnT.Shared.DeviceMessage.Response;
 
-public class ResponseStatusMessageModel() : BaseMessageModel(JsonModelType.ResponseStatus)
+public class StatusResponse() : BaseMessageModel(JsonModelType.StatusResponse)
 {
 
     #region Properties
 
-    [JsonPropertyName("statusCode")]
+    [JsonPropertyName(JsonFieldNames.JsonFieldStatusCode)]
     public int StatusCode { get; set; } = 0;
     
-    [JsonPropertyName("statusMessage")]
+    [JsonPropertyName(JsonFieldNames.JsonFieldStatusMessage)]
     public string StatusMessage { get; set; } = string.Empty;
 
     #endregion

@@ -1,6 +1,6 @@
 ﻿using GXOVnT.Shared.Common;
 using GXOVnT.Shared.DeviceMessage;
-using GXOVnT.Shared.JsonModels;
+using GXOVnT.Shared.DeviceMessage.Common;
 
 namespace GXOVnT.Services.Models;
 
@@ -12,7 +12,7 @@ public class MessageAggregate
 {
     public CommMessage CommMessage { get; set; }
     
-    public BaseModel? BaseModel { get; set; }
+    public BaseMessageModel? BaseModel { get; set; }
     
     public short MessageId { get; set; } = 0;
     
@@ -24,7 +24,7 @@ public class MessageAggregate
     {
         CommMessage = commMessage;
         MessageId = commMessage.MessageId;
-        BaseModel = System.Text.Json.JsonSerializer.Deserialize<BaseModel>(commMessage.ToString());
+        BaseModel = System.Text.Json.JsonSerializer.Deserialize<BaseMessageModel>(commMessage.ToString());
         ReplyToMessageId = BaseModel?.ReplyMessageId ?? 0;
         if (BaseModel != null)
             ModelType = (JsonModelType)BaseModel.MessageTypeId;

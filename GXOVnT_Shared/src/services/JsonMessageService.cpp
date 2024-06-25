@@ -22,38 +22,34 @@ JsonDocument *JsonMessageService::handleJsonMessage(JsonDocument &inputDocument,
 
 JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument, uint16_t requestCommMessageId) {
 
-    BaseModel baseModel(inputDocument);
+    BaseMessageModel baseModel(inputDocument);
     uint8_t messageTypeId = baseModel.MessageTypeId();
 
     ESP_LOGI(LOG_TAG, "Processing Json for message Id %d and message type %d", requestCommMessageId, messageTypeId);
 
     switch (messageTypeId)
     {
-        case JSON_MSG_TYPE_REQUEST_KEEP_ALIVE:
+        case MsgType_KeepAliveRequest:
         {
-
             ESP_LOGI(LOG_TAG, "Creating response for Keep Alive");
-
-            StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 200, "OK");
+            StatusResponse *responseModel = new StatusResponse(requestCommMessageId, 200, "OK");
             return responseModel->Json();
         }
-        case JSON_MSG_TYPE_REQUEST_ECHO:
+        case MsgType_EchoRequest:
         {
-
             ESP_LOGI(LOG_TAG, "Creating response for Echo");
-
-            EchoModel requestModel(inputDocument);
+            EchoRequest requestModel(inputDocument);
             std::string requestModelEchoMessage = requestModel.EchoMessage();
-            EchoModel *responseModel = new EchoModel(requestCommMessageId);
+            EchoResponse *responseModel = new EchoResponse(requestCommMessageId);
             responseModel->EchoMessage("Echo - " + requestModelEchoMessage);
             return responseModel->Json();
         }
-        case JSON_MSG_TYPE_REQUEST_GET_SYSTEM_SETTINGS:
+        case MsgType_GetSystemSettingsRequest:
         {
 
             ESP_LOGI(LOG_TAG, "Creating response for get system settings");
 
-            GetSystemSettingsResponseModel *responseModel = new GetSystemSettingsResponseModel(requestCommMessageId);
+            GetSystemSettingsResponse *responseModel = new GetSystemSettingsResponse(requestCommMessageId);
             
             responseModel->FirmwareVersion(GXOVnT.config->Settings.SystemSettings.FirmwareVersion());
             responseModel->SystemConfigured(GXOVnT.config->Settings.SystemSettings.SystemConfigured());
@@ -61,33 +57,33 @@ JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument
             responseModel->SystemName(GXOVnT.config->Settings.SystemSettings.SystemName());
             responseModel->SystemType(static_cast<int>(GXOVnT.config->Settings.SystemSettings.SystemType()));
 
-            responseModel->WifiSSID(GXOVnT.config->Settings.WiFiSettings.SSID());
+            responseModel->WifiSsid(GXOVnT.config->Settings.WiFiSettings.SSID());
             responseModel->WifiPassword(GXOVnT.config->Settings.WiFiSettings.Password());
 
             return responseModel->Json();
         }
-        case JSON_MSG_TYPE_REQUEST_SET_SYSTEM_SETTINGS:
+        case MsgType_SetSystemSettingsRequest:
         {
 
             ESP_LOGI(LOG_TAG, "Creating response for set system settings");
 
-            SetSystemSettingsRequestModel requestModel(inputDocument);
+            SetSystemSettingsRequest requestModel(inputDocument);
             GXOVnT.config->Settings.SystemSettings.SystemName(requestModel.SystemName());
             GXOVnT.config->Settings.SystemSettings.SystemConfigured(requestModel.SystemConfigured());
-            GXOVnT.config->Settings.WiFiSettings.SSID(requestModel.WifiSSID());
+            GXOVnT.config->Settings.WiFiSettings.SSID(requestModel.WifiSsid());
             GXOVnT.config->Settings.WiFiSettings.Password(requestModel.WifiPassword());
 
-            StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 200, "OK");
+            StatusResponse *responseModel = new StatusResponse(requestCommMessageId, 200, "OK");
             return responseModel->Json();
         }
-        case JSON_MSG_TYPE_REQUEST_TEST_WIFI_SETTINGS:
+        case MsgType_TestWiFiSettingsRequest:
         {
-            TestWiFiSettingsRequestModel requestModel(inputDocument);
+            TestWiFiSettingsRequest requestModel(inputDocument);
             // Test the WiFi Settings
             
-            ESP_LOGI(LOG_TAG, "Set the test WiFi configuration to test settings on next boot for SSID %s", requestModel.WifiSSID().c_str());
+            ESP_LOGI(LOG_TAG, "Set the test WiFi configuration to test settings on next boot for SSID %s", requestModel.WifiSsid().c_str());
 
-            GXOVnT.config->Settings.TestWiFiSettings.SSID(requestModel.WifiSSID());
+            GXOVnT.config->Settings.TestWiFiSettings.SSID(requestModel.WifiSsid());
             GXOVnT.config->Settings.TestWiFiSettings.Password(requestModel.WifiPassword());
             GXOVnT.config->Settings.TestWiFiSettings.Tested(false);
             GXOVnT.config->Settings.TestWiFiSettings.Success(false);
@@ -97,31 +93,31 @@ JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument
 
             GXOVnT.config->saveConfiguration();
 
-            StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 200, "OK");
+            StatusResponse *responseModel = new StatusResponse(requestCommMessageId, 200, "OK");
             return responseModel->Json();
         }
-        case JSON_MSG_TYPE_REQUEST_GET_TEST_WIFI_SETTINGS:
+        case MsgType_GetTestWiFiSettingsResultRequest:
         {
 
-            GetTestWiFiSettingsResponseModel *responseModel = new GetTestWiFiSettingsResponseModel(requestCommMessageId);
+            GetTestWiFiSettingsResponse *responseModel = new GetTestWiFiSettingsResponse(requestCommMessageId);
 
             responseModel->StatusCode(GXOVnT.config->Settings.TestWiFiSettings.TestResultCode());
             responseModel->StatusMessage(GXOVnT.config->Settings.TestWiFiSettings.TestResultMessage());
-            responseModel->WifiSSID(GXOVnT.config->Settings.TestWiFiSettings.SSID());
+            responseModel->WifiSsid(GXOVnT.config->Settings.TestWiFiSettings.SSID());
             responseModel->WifiPassword(GXOVnT.config->Settings.TestWiFiSettings.Password());
             responseModel->Success(GXOVnT.config->Settings.TestWiFiSettings.Success());
 
             return responseModel->Json();
         }
-        case JSON_MSG_TYPE_REQUEST_SAVE_CONFIGURATION:
+        case MsgType_SaveConfigurationRequest:
         {
             ESP_LOGI(LOG_TAG, "Creating response for save configuration");
 
             GXOVnT.config->saveConfiguration();
-            StatusResponseModel *responseModel = new StatusResponseModel(requestCommMessageId, 200, "OK");
+            StatusResponse *responseModel = new StatusResponse(requestCommMessageId, 200, "OK");
             return responseModel->Json();
         }
-        case JSON_MSG_TYPE_REQUEST_REBOOT:
+        case MsgType_RebootRequest:
         {
             ESP_LOGI(LOG_TAG, "Rebooting device");
             delay(1000);

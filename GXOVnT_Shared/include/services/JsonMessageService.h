@@ -5,7 +5,21 @@
 #include <ArduinoJson.h>
 #include "shared/Definitions.h"
 #include "messages/CommMessage.h"
-#include "models/JsonModels.hpp"
+
+#include "models/BaseMessageModel.hpp"
+#include "models/EchoRequest.hpp"
+#include "models/EchoResponse.hpp"
+#include "models/GetSystemSettingsRequest.hpp"
+#include "models/GetSystemSettingsResponse.hpp"
+#include "models/GetTestWiFiSettingsRequest.hpp"
+#include "models/GetTestWiFiSettingsResponse.hpp"
+#include "models/KeepAliveRequest.hpp"
+#include "models/RebootRequest.hpp"
+#include "models/SaveConfigurationRequest.hpp"
+#include "models/SetSystemSettingsRequest.hpp"
+#include "models/StatusResponse.hpp"
+#include "models/TestWiFiSettingsRequest.hpp"
+
 #include "GXOVnTRoot.h"
 
 // Forward declaration of GXOVnTRoot

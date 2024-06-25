@@ -2,7 +2,8 @@
 using GXOVnT.Services.Interfaces;
 using GXOVnT.Services.Models;
 using GXOVnT.Shared.Common;
-using GXOVnT.Shared.JsonModels;
+using GXOVnT.Shared.DeviceMessage.Request;
+using GXOVnT.Shared.DeviceMessage.Response;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -38,7 +39,7 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
     
     private bool DataLoaded { get; set; }
 
-    private RequestSetSystemSettingsModel SetSettingsModel { get; set; } = new();
+    private SetSystemSettingsRequest SetSettingsMessageModel { get; set; } = new();
     #endregion
 
     #region Override
@@ -77,7 +78,7 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
         {
             DeviceInformationGetExecuted = true;
             DataLoaded = false;
-            SetSettingsModel = new RequestSetSystemSettingsModel();
+            SetSettingsMessageModel = new SetSystemSettingsRequest();
             
             SetWizardForwardEnabled(false);
             
@@ -92,8 +93,8 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
 
             SetBusyValues(true, "Querying device info");
 
-            var requestModel = new RequestGetSystemSettingsModel();
-            var responseModel = await MessageOrchestrator.SendMessage<RequestGetSystemSettingsModel, ResponseGetSystemSettingsModel>(
+            var requestModel = new GetSystemSettingsRequest();
+            var responseModel = await MessageOrchestrator.SendMessage<GetSystemSettingsRequest, GetSystemSettingsResponse>(
                 requestModel, Device);
 
             if (responseModel == null)
@@ -102,11 +103,11 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
                 return;
             }
 
-            SetSettingsModel.SystemConfigured = responseModel.SystemConfigured;
-            SetSettingsModel.SystemType = responseModel.SystemType;
-            SetSettingsModel.SystemName = responseModel.SystemName;
-            SetSettingsModel.WiFiPassword = responseModel.WiFiPassword;
-            SetSettingsModel.WiFiSSID = responseModel.WiFiSSID;
+            SetSettingsMessageModel.SystemConfigured = responseModel.SystemConfigured;
+            SetSettingsMessageModel.SystemType = responseModel.SystemType;
+            SetSettingsMessageModel.SystemName = responseModel.SystemName;
+            SetSettingsMessageModel.WiFiPassword = responseModel.WiFiPassword;
+            SetSettingsMessageModel.WiFiSsid = responseModel.WiFiSsid;
             DataLoaded = true;
   
         }
@@ -125,8 +126,8 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
 
         try
         {
-            var wifiSsid = SetSettingsModel.WiFiSSID;
-            var wifiPassword = SetSettingsModel.WiFiPassword;
+            var wifiSsid = SetSettingsMessageModel.WiFiSsid;
+            var wifiPassword = SetSettingsMessageModel.WiFiPassword;
             
             SetWizardForwardEnabled(false);
             
@@ -140,13 +141,13 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
                 return;
             
             SetBusyValues(true, "Sending WiFi Settings to test");
-            var requestTestWifiModel = new RequestTestWiFiSettingsModel()
+            var requestTestWifiModel = new TestWiFiSettingsRequest()
             {
                 WiFiPassword = wifiPassword,
-                WiFiSSID = wifiSsid
+                WiFiSsid = wifiSsid
             };
             var responseTestWifiModel =
-                await MessageOrchestrator.SendMessage<RequestTestWiFiSettingsModel, StatusResponseModel>(
+                await MessageOrchestrator.SendMessage<TestWiFiSettingsRequest, StatusResponse>(
                     requestTestWifiModel, Device);
 
             if (responseTestWifiModel is not { StatusCode: 200 })
@@ -159,7 +160,7 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
             // Send the reboot command
             SetBusyValues(true, "Sending device reboot request");
 
-            await Device.SendJsonModelToDevice(new RequestRebootModel());
+            await Device.SendJsonModelToDevice(new RebootRequest());
             await Task.Delay(2000);
 
             // Now wait until the device is online again
@@ -177,8 +178,8 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
             
             SetBusyValues(true, "Querying the WiFi Test results ");
             var responseTestWifiModelResults =
-                await MessageOrchestrator.SendMessage<RequestLastWiFiTestResultModel, ResponseLastTestWiFiSettingsResult>(
-                    new RequestLastWiFiTestResultModel() , Device);
+                await MessageOrchestrator.SendMessage<GetTestWiFiSettingsRequest, GetTestWiFiSettingsResponse>(
+                    new GetTestWiFiSettingsRequest() , Device);
 
             if (responseTestWifiModelResults == null)
             {

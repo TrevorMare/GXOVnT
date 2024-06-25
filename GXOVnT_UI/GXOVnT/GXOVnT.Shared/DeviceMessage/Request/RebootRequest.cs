@@ -1,8 +1,9 @@
 ﻿using GXOVnT.Shared.Common;
+using GXOVnT.Shared.DeviceMessage.Common;
 
 namespace GXOVnT.Shared.DeviceMessage.Request;
 
-public class RequestRebootMessageModel() : BaseMessageModel(JsonModelType.RequestReboot)
+public class RebootRequest() : BaseMessageModel(JsonModelType.RebootRequest)
 {
     
 }

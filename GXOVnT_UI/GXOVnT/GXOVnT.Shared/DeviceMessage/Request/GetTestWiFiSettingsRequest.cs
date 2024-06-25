@@ -1,12 +1,9 @@
 ﻿using GXOVnT.Shared.Common;
-using GXOVnT.Shared.DeviceMessage;
+using GXOVnT.Shared.DeviceMessage.Common;
 
-namespace GXOVnT.Shared.JsonModels;
+namespace GXOVnT.Shared.DeviceMessage.Request;
 
-public class RequestLastWiFiTestResultMessageModel : BaseMessageModel
+public class GetTestWiFiSettingsRequest() : BaseMessageModel(JsonModelType.GetTestWiFiSettingsResultRequest)
 {
-    public RequestLastWiFiTestResultMessageModel()
-    {
-        MessageTypeId = (int)JsonModelType.RequestLastTestWiFiSettingsResult;
-    }
+  
 }

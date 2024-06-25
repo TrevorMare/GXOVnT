@@ -13,17 +13,17 @@
 
             <MudForm @ref="_form" @bind-IsValid="@success" @bind-Errors="@errors">
 
-                <MudTextField T="string" Label="System Name" Required="true" RequiredError="System name is required!" @bind-Value="@SetSettingsModel.SystemName"/>
+                <MudTextField T="string" Label="System Name" Required="true" RequiredError="System name is required!" @bind-Value="@SetSettingsMessageModel.SystemName"/>
 
-                <MudSelect Label="System Type" T="int" Dense="true" RequiredError="System type is required" Required="true" Value="@SetSettingsModel.SystemType" ValueChanged="id => SetSettingsModel.SystemType = id">
+                <MudSelect Label="System Type" T="int" Dense="true" RequiredError="System type is required" Required="true" Value="@SetSettingsMessageModel.SystemType" ValueChanged="id => SetSettingsMessageModel.SystemType = id">
                     @foreach (var item in Enumeration.GetAll<GXOVnTSystemType>(f => f.Id != GXOVnTSystemType.UnInitialized.Id))
                     {
                         <MudSelectItem Value="@item.Id">@item.ToString()</MudSelectItem>
                     }
                 </MudSelect>
 
-                <MudTextField T="string" Label="WiFi SSID" Required="true" RequiredError="WiFi SSID is required" @bind-Value="@SetSettingsModel.WiFiSSID"/>
-                <MudTextField InputType="InputType.Password" T="string" Label="WiFi Password" Required="false" @bind-Value="@SetSettingsModel.WiFiPassword"/>
+                <MudTextField T="string" Label="WiFi SSID" Required="true" RequiredError="WiFi SSID is required" @bind-Value="@SetSettingsMessageModel.WiFiSsid"/>
+                <MudTextField InputType="InputType.Password" T="string" Label="WiFi Password" Required="false" @bind-Value="@SetSettingsMessageModel.WiFiPassword"/>
 
             </MudForm>
 

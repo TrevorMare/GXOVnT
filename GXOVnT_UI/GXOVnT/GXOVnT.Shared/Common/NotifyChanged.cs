@@ -5,8 +5,7 @@ namespace GXOVnT.Shared.Common;
 
 public abstract class NotifyChanged : INotifyPropertyChanged
 {
-    
-    
+
     #region Properties
 
     public event PropertyChangedEventHandler? PropertyChanged;

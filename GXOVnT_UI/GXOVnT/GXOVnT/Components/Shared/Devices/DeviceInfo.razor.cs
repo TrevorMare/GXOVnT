@@ -2,7 +2,8 @@
 using GXOVnT.Services.Interfaces;
 using GXOVnT.Services.Models;
 using GXOVnT.Shared.Common;
-using GXOVnT.Shared.JsonModels;
+using GXOVnT.Shared.DeviceMessage.Request;
+using GXOVnT.Shared.DeviceMessage.Response;
 using Microsoft.AspNetCore.Components;
 
 namespace GXOVnT.Components.Shared.Devices;
@@ -31,7 +32,7 @@ public partial class DeviceInfo : GXOVnTComponent
     
     private bool DataLoaded { get; set; }
     
-    private ResponseGetSystemSettingsModel? DeviceSettingsResponse { get; set; }
+    private GetSystemSettingsResponse? DeviceSettingsResponse { get; set; }
 
     private bool NeedConfirmation => StepRequiresConfirmation();
     
@@ -87,8 +88,8 @@ public partial class DeviceInfo : GXOVnTComponent
 
             SetBusyValues(true, "Querying device info");
 
-            var requestModel = new RequestGetSystemSettingsModel();
-            var responseModel = await MessageOrchestrator.SendMessage<RequestGetSystemSettingsModel, ResponseGetSystemSettingsModel>(
+            var requestModel = new GetSystemSettingsRequest();
+            var responseModel = await MessageOrchestrator.SendMessage<GetSystemSettingsRequest, GetSystemSettingsResponse>(
                 requestModel, Device);
 
             if (responseModel == null)

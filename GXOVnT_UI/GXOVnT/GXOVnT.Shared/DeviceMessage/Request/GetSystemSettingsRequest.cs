@@ -1,12 +1,12 @@
 ﻿using GXOVnT.Shared.Common;
-using GXOVnT.Shared.DeviceMessage;
+using GXOVnT.Shared.DeviceMessage.Common;
 
-namespace GXOVnT.Shared.JsonModels;
+namespace GXOVnT.Shared.DeviceMessage.Request;
 
 /// <summary>
 /// Model to request the system configuration settings
 /// </summary>
-public class SystemSettingsRequest() 
-    : BaseMessageModel(JsonModelType.RequestGetSystemSettings)
+public class GetSystemSettingsRequest() 
+    : BaseMessageModel(JsonModelType.GetSystemSettingsRequest)
 {
 }

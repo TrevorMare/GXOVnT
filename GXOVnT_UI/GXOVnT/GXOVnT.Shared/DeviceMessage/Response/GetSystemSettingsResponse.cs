@@ -1,38 +1,40 @@
 ﻿using System.Text.Json.Serialization;
 using GXOVnT.Shared.Common;
-using GXOVnT.Shared.DeviceMessage;
+using GXOVnT.Shared.DeviceMessage.Common;
 
-namespace GXOVnT.Shared.JsonModels;
+namespace GXOVnT.Shared.DeviceMessage.Response;
 
-public class SystemSettingsResponse : BaseMessageModel
+public class GetSystemSettingsResponse() : BaseMessageModel(JsonModelType.GetSystemSettingsResponse)
 {
 
-    [JsonPropertyName("systemName")]
+    #region Properties
+
+    [JsonPropertyName(JsonFieldNames.JsonFieldSystemName)]
     public string SystemName { get; set; } = string.Empty;
 
-    [JsonPropertyName("systemId")] 
+    [JsonPropertyName(JsonFieldNames.JsonFieldSystemId)] 
     public string SystemId { get; set; } = string.Empty;
 
-    [JsonPropertyName("systemConfigured")]
+    [JsonPropertyName(JsonFieldNames.JsonFieldSystemConfigured)]
     public bool SystemConfigured { get; set; }
 
-    [JsonPropertyName("systemType")]
+    [JsonPropertyName(JsonFieldNames.JsonFieldSystemType)]
     public int SystemType { get; set; }
 
     [JsonIgnore]
     public GXOVnTSystemType? GXOVnTSystemType => Enumeration.FromValue<GXOVnTSystemType>(SystemType);
     
-    [JsonPropertyName("firmwareVersion")] 
+    [JsonPropertyName(JsonFieldNames.JsonFieldFirmwareVersion)] 
     public string FirmwareVersion { get; set; } = string.Empty;
     
-    [JsonPropertyName("wifiSsid")] 
+    [JsonPropertyName(JsonFieldNames.JsonFieldWiFiSsid)] 
     public string WiFiSsid { get; set; } = string.Empty;
     
-    [JsonPropertyName("wifiPassword")] 
+    [JsonPropertyName(JsonFieldNames.JsonFieldWiFiPassword)] 
     public string WiFiPassword { get; set; } = string.Empty;
 
-    public SystemSettingsResponse()
-    {
-        MessageTypeId = (int)JsonModelType.ResponseSystemSettings;
-    }
+    #endregion
+   
+
+ 
 }

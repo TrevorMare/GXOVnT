@@ -1,28 +1,29 @@
 ﻿using System.Text.Json.Serialization;
 using GXOVnT.Shared.Common;
+using GXOVnT.Shared.DeviceMessage.Common;
 
 namespace GXOVnT.Shared.DeviceMessage.Request;
 
-public class RequestSetSystemSettingsMessageModel : BaseMessageModel
+public class SetSystemSettingsRequest() : BaseMessageModel(JsonModelType.SetSystemSettingsRequest)
 {
-    
-    [JsonPropertyName("systemName")]
+
+    #region Properties
+
+    [JsonPropertyName(JsonFieldNames.JsonFieldSystemName)]
     public string SystemName { get; set; } = string.Empty;
 
-    [JsonPropertyName("systemConfigured")]
+    [JsonPropertyName(JsonFieldNames.JsonFieldSystemConfigured)]
     public bool SystemConfigured { get; set; }
     
-    [JsonPropertyName("systemType")]
+    [JsonPropertyName(JsonFieldNames.JsonFieldSystemType)]
     public int SystemType { get; set; }
     
-    [JsonPropertyName("wifiSSID")] 
-    public string WiFiSSID { get; set; } = string.Empty;
+    [JsonPropertyName(JsonFieldNames.JsonFieldWiFiSsid)] 
+    public string WiFiSsid { get; set; } = string.Empty;
     
-    [JsonPropertyName("wifiPassword")] 
+    [JsonPropertyName(JsonFieldNames.JsonFieldWiFiPassword)] 
     public string WiFiPassword { get; set; } = string.Empty;
-    
-    public RequestSetSystemSettingsMessageModel()
-    {
-        MessageTypeId = (int)JsonModelType.RequestSetSystemSettings;
-    }
+
+    #endregion
+
 }

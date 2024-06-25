@@ -35,9 +35,6 @@
         "version": "^1.4.1"
       }
     ],
-    "build": {
-      "extraScript": "scripts/build-proto-messages.py"
-    },
     "frameworks": "*",
     "platforms": "*"
   }
