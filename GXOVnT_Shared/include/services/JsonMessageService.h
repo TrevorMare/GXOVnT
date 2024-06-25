@@ -7,6 +7,7 @@
 #include "messages/CommMessage.h"
 
 #include "models/BaseMessageModel.hpp"
+#include "models/DeleteSystemSettingsRequest.hpp"
 #include "models/EchoRequest.hpp"
 #include "models/EchoResponse.hpp"
 #include "models/GetSystemSettingsRequest.hpp"

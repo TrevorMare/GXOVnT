@@ -52,12 +52,15 @@ namespace GXOVnTLib::settings
 		const char *m_valueName_systemType = "SystemType";
 		const char *m_valueName_firmwareVersion = "FirmwareVersion";
 		const char *m_valueName_systemConfigured = "SystemConfigured";
+		const char *m_valueName_systemPassword = "systemPassword";
 
 		std::string m_systemName = "GXOVnTDevice";
 		std::string m_systemId = "";
 		GXOVnT_SYSTEM_TYPE m_systemType = SYSTEM_TYPE_UN_INITIALIZED;
 		std::string m_firmwareVersion = "";
+		std::string m_systemPassword = "";
 		bool m_systemConfigured = false;
+
 
 	public:
 		SytemSettingsSection();
@@ -69,9 +72,11 @@ namespace GXOVnTLib::settings
 		std::string SystemName();
 		std::string SystemId();
 		std::string FirmwareVersion();
+		std::string SystemPassword();
 		bool SystemConfigured();
 		GXOVnT_SYSTEM_TYPE SystemType();
 		void SystemName(std::string input);
+		void SystemPassword(std::string input);
 		void SystemConfigured(bool input);
 	};
 

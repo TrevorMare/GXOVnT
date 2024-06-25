@@ -10,6 +10,7 @@ public static class JsonFieldNames
     public const string JsonFieldStatusCode = "statusCode";
     public const string JsonFieldStatusMessage = "statusMessage";
     public const string JsonFieldEchoMessage = "echoMessage";
+    public const string JsonFieldSystemPassword = "systemPassword";
     public const string JsonFieldSystemType = "systemType";
     public const string JsonFieldSystemConfigured = "systemConfigured";
     public const string JsonFieldSystemName = "systemName";

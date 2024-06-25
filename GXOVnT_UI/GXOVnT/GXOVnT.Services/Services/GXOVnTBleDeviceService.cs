@@ -253,6 +253,49 @@ public class GXOVnTBleDeviceService : NotifyChanged, IGXOVnTBleDeviceService
             SetBusyStatus(false);
         }
     }
+    
+    public async Task DeleteSystemSettingsAsync(GXOVnTBleDevice device, string systemPassword, bool rebootDevice = true)
+    {
+        try
+        {
+            ArgumentNullException.ThrowIfNull(device);
+
+            SetBusyStatus(true, "Checking device connection");
+            
+            // Make sure that we are connected to the device
+            var deviceConnected = await device.ConnectToDeviceAsync();
+            if (!deviceConnected)
+                throw new GXOVnTException("Unable to send the delete system settings request. The device is not connected");
+
+            SetBusyStatus(true, "Sending delete system settings request");
+            
+            var responseModel = await _messageOrchestrator.SendMessage<DeleteSystemSettingsRequest, StatusResponse>(
+                new DeleteSystemSettingsRequest()
+                {
+                    SystemPassword = systemPassword
+                }, device);
+            
+            if (responseModel == null)
+                throw new GXOVnTException("Unable to get the delete system settings response. The device did not respond");
+            
+            if (responseModel.StatusCode != 200)
+                throw new GXOVnTException($"The device did not return a success response code ({responseModel.StatusCode}). {responseModel.StatusMessage}");
+
+            if (!rebootDevice)
+                return;
+
+            await RequestRebootAsync(device, true);
+        }
+        catch (Exception ex)
+        {
+            _logService.LogError($"An error occured communicating with the device. {ex.Message}");
+            throw;
+        }
+        finally
+        {
+            SetBusyStatus(false);
+        }
+    }
 
     public async Task SaveSystemSettingsAsync(GXOVnTBleDevice device)
     {

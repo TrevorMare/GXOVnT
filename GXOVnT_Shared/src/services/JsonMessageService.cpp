@@ -123,6 +123,25 @@ JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument
             delay(1000);
             ESP.restart();
         }
+        case MsgType_DeleteSystemSettingsRequest:
+        {
+
+            DeleteSystemSettingsRequest requestModel(inputDocument);
+
+            ESP_LOGI(LOG_TAG, "Deleting the system configuration");
+
+            std::string currentSystemPassword = GXOVnT.config->Settings.SystemSettings.SystemPassword();
+            std::string requestSystemPassword = requestModel.SystemPassword();
+
+            if (currentSystemPassword.compare(requestSystemPassword) != 0) {
+                StatusResponse *responseModel = new StatusResponse(requestCommMessageId, 1, "The input password did not match the system password");
+                return responseModel->Json();
+            } else {
+                GXOVnT.config->deleteConfigurationFile();
+                StatusResponse *responseModel = new StatusResponse(requestCommMessageId, 200, "OK");
+                return responseModel->Json();
+            }
+        }
         default:
         {
             ESP_LOGE(LOG_TAG, "Message type could not be handled due to unknown message type Id");

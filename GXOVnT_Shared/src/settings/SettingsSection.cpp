@@ -42,12 +42,18 @@ SytemSettingsSection::SytemSettingsSection() {
 std::string SytemSettingsSection::SystemName() { return m_systemName; }
 std::string SytemSettingsSection::SystemId() { return m_systemId; }
 std::string SytemSettingsSection::FirmwareVersion() { return m_firmwareVersion; }
+std::string SytemSettingsSection::SystemPassword() { return m_systemPassword; }
 bool SytemSettingsSection::SystemConfigured() { return m_systemConfigured; }
 GXOVnT_SYSTEM_TYPE SytemSettingsSection::SystemType() { return m_systemType; }
 void SytemSettingsSection::SystemName(std::string input) { 
     if (m_systemName.compare(input) == 0) return; 
     m_systemName = input;
     setSettingsChanged(true, "SystemSettings:SystemName");;
+}
+void SytemSettingsSection::SystemPassword(std::string input) { 
+    if (m_systemPassword.compare(input) == 0) return; 
+    m_systemPassword = input;
+    setSettingsChanged(true, "SystemSettings:SystemPassword");;
 }
 void SytemSettingsSection::SystemConfigured(bool input) { 
     if (m_systemConfigured == input) return; 
@@ -73,6 +79,8 @@ void SytemSettingsSection::readSettingsFromJson(JsonDocument &document) {
         sectionJsonObject = document[m_sectionName];
         const char *settingsSystemName = sectionJsonObject[m_valueName_systemName];
         m_systemName = CharToString(settingsSystemName);
+        const char *settingsSystemPassword = sectionJsonObject[m_valueName_systemPassword];
+        m_systemPassword = CharToString(settingsSystemPassword);
         m_systemConfigured = sectionJsonObject[m_valueName_systemConfigured].as<bool>();
     }
 }

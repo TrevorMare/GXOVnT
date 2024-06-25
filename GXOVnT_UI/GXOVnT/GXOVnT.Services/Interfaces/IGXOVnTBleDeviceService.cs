@@ -21,4 +21,6 @@ public interface IGXOVnTBleDeviceService : INotifyPropertyChanged
     Task SaveSystemSettingsAsync(GXOVnTBleDevice device);
 
     Task SendKeepAliveRequestAsync(GXOVnTBleDevice device);
+
+    Task DeleteSystemSettingsAsync(GXOVnTBleDevice device, string systemPassword, bool rebootDevice = true);
 }

@@ -14,6 +14,7 @@ namespace GXOVnTLib::models::constants {
     static const std::string JsonFieldStatusCode = "statusCode";
     static const std::string JsonFieldStatusMessage = "statusMessage";
     static const std::string JsonFieldEchoMessage = "echoMessage";
+    static const std::string JsonFieldSystemPassword = "systemPassword";
     static const std::string JsonFieldSystemType = "systemType";
     static const std::string JsonFieldSystemConfigured = "systemConfigured";
     static const std::string JsonFieldSystemName = "systemName";
@@ -30,6 +31,7 @@ namespace GXOVnTLib::models::constants {
 	static const uint8_t MsgType_SetSystemSettingsRequest = 6;
 	static const uint8_t MsgType_TestWiFiSettingsRequest = 7;
 	static const uint8_t MsgType_GetTestWiFiSettingsResultRequest = 8;
+    static const uint8_t MsgType_DeleteSystemSettingsRequest = 97;
 	static const uint8_t MsgType_RebootRequest = 98;
 	static const uint8_t MsgType_SaveConfigurationRequest = 99;
 

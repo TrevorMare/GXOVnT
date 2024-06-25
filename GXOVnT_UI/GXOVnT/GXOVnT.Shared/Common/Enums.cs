@@ -18,6 +18,7 @@ public enum JsonModelType
     TestWiFiSettingsRequest = 7,
     GetTestWiFiSettingsResultRequest = 8,
 
+    DeleteSystemSettingsRequest = 97,
     RebootRequest = 98,
     SaveConfigurationRequest = 99,
 

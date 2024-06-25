@@ -22,8 +22,6 @@ class Config
 		String readConfigurationFromFileSystem();
 
 		void writeConfigurationToFileSystem(String content);
-		
-		void deleteConfigurationFile();
 
 		bool openSPIFFS();
 
@@ -46,6 +44,8 @@ class Config
 
 		// Saves the configuration to the file system
 		void saveConfiguration();
+
+		void deleteConfigurationFile();
 };
 
 
