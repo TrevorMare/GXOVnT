@@ -26,8 +26,8 @@ public class BaseMessageModel
     #endregion
 
     #region ctor
-
-    internal BaseMessageModel()
+    
+    public BaseMessageModel()
     {
         
     }

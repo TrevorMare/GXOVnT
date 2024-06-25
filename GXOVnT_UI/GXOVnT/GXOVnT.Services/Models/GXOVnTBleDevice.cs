@@ -6,6 +6,7 @@ using GXOVnT.Shared.DeviceMessage.Extensions;
 using Plugin.BLE.Abstractions;
 using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE.Abstractions.EventArgs;
+using Plugin.BLE.Abstractions.Exceptions;
 
 namespace GXOVnT.Services.Models;
 
@@ -50,6 +51,7 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
     
     private GXOVnTSystemType _systemType = GXOVnTSystemType.UnInitialized;
     private bool _systemConfigured;
+    private bool _deviceIsReconnecting;
     #endregion
     
     #region Properties
@@ -75,7 +77,7 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
         private set => SetField(ref _deviceServicesBound, value);
     }
 
-    public bool DeviceIsConnected => Device.State == DeviceState.Connected;
+    public bool DeviceIsConnected => (Device.State == DeviceState.Connected && !DeviceIsReconnecting);
     
     public IReadOnlyList<MessageAggregate> HistoricCommMessages => _historicCommMessages.AsReadOnly();
 
@@ -90,8 +92,14 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
         get => _isBusy;
         private set => SetField(ref _isBusy, value);
     }
+    
+    public bool DeviceIsReconnecting
+    {
+        get => _deviceIsReconnecting;
+        private set => SetField(ref _deviceIsReconnecting, value);
+    }
 
-    public IDevice Device { get; }
+    public IDevice Device { get; private set; }
 
     public string DeviceName => Device.Name ;
 
@@ -126,13 +134,7 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
         try
         {
             IsBusy = true;
-            
-            // Check if this device is already connected
-            if (DeviceIsConnected)
-            {
-                _logService.LogInformation($"The device with Id {Id} is already connected");
-                return true;
-            }
+            DeviceIsReconnecting = true;
 
             if (_bluetoothAdapter == null)
                 throw new GXOVnTException(
@@ -142,27 +144,55 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
                 throw new GXOVnTException(
                     "The Bluetooth connection cannot be made at this stage. The Device reference was lost");
 
+            UnBindFromDeviceServicesAndCharacteristics();
+            
             using var localCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
 
             if (cancellationToken == default)
                 cancellationToken = localCancellationTokenSource.Token;
 
-            while (!cancellationToken.IsCancellationRequested && !DeviceIsConnected)
+            
+            // First perform the connect to known device
+            var deviceReconnected = false;
+            while (!cancellationToken.IsCancellationRequested && !deviceReconnected)
             {
-                if (Device.IsConnectable)
+                try
                 {
-                    // Connect to the device
-                    await _bluetoothAdapter.ConnectToDeviceAsync(Device, new ConnectParameters(), cancellationToken);
-
-                    OnPropertyChanged(nameof(DeviceIsConnected));
+                    // The return value is the same device object that was created and returned from the bluetooth service 
+                    Device = await _bluetoothAdapter.ConnectToKnownDeviceAsync(Device.Id, new ConnectParameters(), cancellationToken);
                     
-                    // Load the services and the characteristics
-                    await BindToDeviceServicesAndCharacteristics();
+                    deviceReconnected = true;
                 }
-                await Task.Delay(2000);
+                catch (Exception ex) when (ex is DeviceConnectionException)
+                {
+                    // Android will throw this exception after a few seconds if it could not connect
+                    await Task.Delay(2000, cancellationToken);
+                }
+                catch (Exception ex) when (ex is OperationCanceledException)
+                {
+                    // IoS will not throw an exception but the cancellation token will expire
+                }
             }
-           
-            return DeviceIsConnected;
+            
+            // Next wait until the device status is back to connected
+            if (deviceReconnected)
+            {
+                await Task.Delay(1000, cancellationToken);
+                while (!cancellationToken.IsCancellationRequested && Device.State != DeviceState.Connected)
+                {
+                    try
+                    {
+                        await Task.Delay(200, cancellationToken);
+                    }
+                    catch (Exception ex) when (ex is OperationCanceledException)
+                    {
+                        // Wait until the device gives the connected state again 
+                    }
+                }
+            }
+            
+            OnPropertyChanged(nameof(DeviceIsConnected));
+            return deviceReconnected;
         }
         catch (Exception ex)
         {
@@ -172,6 +202,10 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
         }
         finally
         {
+           
+            await BindToDeviceServicesAndCharacteristics();
+            
+            DeviceIsReconnecting = false;
             IsBusy = false;
         }
     }
@@ -272,6 +306,9 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
                     throw new GXOVnTException(
                         "Unable to send the message to the device, could not connect to the device");
             }
+
+            if (_outgoingMessageCharacteristic == null)
+                await BindToDeviceServicesAndCharacteristics();
             
             if (_outgoingMessageCharacteristic == null)
                 throw new GXOVnTException(

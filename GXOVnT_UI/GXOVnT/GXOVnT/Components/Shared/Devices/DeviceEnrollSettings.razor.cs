@@ -121,6 +121,55 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
         }
     }
 
+    private async Task RebootDeviceAsync()
+    {
+        try
+        {
+            
+            if (Device == null)
+                return;
+            
+            SetBusyValues(true, "Connecting to device");
+            ConnectedToDevice = await Device.ConnectToDeviceAsync();
+
+            if (!ConnectedToDevice)
+                return;
+            
+            // Send the reboot command
+            SetBusyValues(true, "Sending device reboot request");
+
+            await Device.SendJsonModelToDevice(new RebootRequest());
+            await Task.Delay(2000);
+
+            // Now wait until the device is online again
+            SetBusyValues(true, "Waiting for the device to get back online again");
+
+            using var reConnectCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(1));
+            var isReconnected = await Device.ReconnectWhenAvailable(reConnectCancellationTokenSource.Token);
+
+            if (!isReconnected)
+            {
+                await DialogService.ShowMessageBox("Error",
+                    "Could not reconnect to the device within the allocated time");
+                return;
+            }
+            
+            await DialogService.ShowMessageBox("Success",
+                "The device successfully connected to the WiFi with the specified settings");
+            
+        }
+        catch (Exception)
+        {
+            LogService.LogError("There was an internal error testing the WiFi settings on the device");
+        }
+        finally
+        {
+            SetBusyValues(false);
+        }
+        
+        
+    }
+
     private async Task TestDeviceWiFiSettings()
     {
 

@@ -28,8 +28,4 @@
       <ProjectReference Include="..\GXOVnT.Shared\GXOVnT.Shared.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="ViewModels\" />
-    </ItemGroup>
-
 </Project>
