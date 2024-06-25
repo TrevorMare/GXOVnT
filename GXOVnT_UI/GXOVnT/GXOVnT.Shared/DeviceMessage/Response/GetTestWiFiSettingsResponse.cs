@@ -1,21 +1,19 @@
 ﻿using System.Text.Json.Serialization;
 using GXOVnT.Shared.Common;
 
-namespace GXOVnT.Shared.JsonModels;
+namespace GXOVnT.Shared.DeviceMessage.Response;
 
-public class ResponseLastTestWiFiSettingsResult : BaseModel
+public class ResponseLastTestWiFiSettingsResult() : BaseMessageModel(JsonModelType.ResponseLastTestWiFiSettingsResult)
 {
 
     #region Properties
-
-    
     [JsonPropertyName("statusCode")]
     public int StatusCode { get; set; } = 0;
     
     [JsonPropertyName("statusMessage")]
     public string StatusMessage { get; set; } = string.Empty;
 
-    [JsonPropertyName("wifiSSID")]
+    [JsonPropertyName("wifiSsid")]
     public string WiFiSSID { get; set; } = string.Empty;
 
     [JsonPropertyName("wifiPassword")]
@@ -27,9 +25,5 @@ public class ResponseLastTestWiFiSettingsResult : BaseModel
     [JsonPropertyName("tested")]
     public bool Tested { get; set; }
     #endregion
-    
-    public ResponseLastTestWiFiSettingsResult()
-    {
-        MessageTypeId = (int)JsonModelType.ResponseLastTestWiFiSettingsResult;
-    }
+ 
 }

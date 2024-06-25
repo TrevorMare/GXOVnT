@@ -1,11 +1,12 @@
 ﻿using GXOVnT.Shared.Common;
+using GXOVnT.Shared.DeviceMessage;
 
 namespace GXOVnT.Shared.JsonModels;
 
-public class RequestSaveConfigurationModel : BaseModel
+public class RequestSaveConfigurationMessageModel : BaseMessageModel
 {
     
-    public RequestSaveConfigurationModel()
+    public RequestSaveConfigurationMessageModel()
     {
         MessageTypeId = (int)JsonModelType.RequestSaveConfiguration;
     }

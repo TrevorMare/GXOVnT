@@ -1,9 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 using GXOVnT.Shared.Common;
 
-namespace GXOVnT.Shared.JsonModels;
+namespace GXOVnT.Shared.DeviceMessage.Request;
 
-public class RequestSetSystemSettingsModel : BaseModel
+public class RequestSetSystemSettingsMessageModel : BaseMessageModel
 {
     
     [JsonPropertyName("systemName")]
@@ -21,7 +21,7 @@ public class RequestSetSystemSettingsModel : BaseModel
     [JsonPropertyName("wifiPassword")] 
     public string WiFiPassword { get; set; } = string.Empty;
     
-    public RequestSetSystemSettingsModel()
+    public RequestSetSystemSettingsMessageModel()
     {
         MessageTypeId = (int)JsonModelType.RequestSetSystemSettings;
     }
