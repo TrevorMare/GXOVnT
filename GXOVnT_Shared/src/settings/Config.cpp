@@ -55,11 +55,6 @@ void Config::saveConfiguration() {
     // Try open the file system object
     if (!openSPIFFS()) return;
 
-    if (!Settings.settingsHasChanges()) {
-        ESP_LOGI(LOG_TAG, "Skipping the save of the configuration file as no changes were made");
-        return;
-    }
-
     ESP_LOGI(LOG_TAG, "Saving configuration file");
     // Create a new document
     JsonDocument document;

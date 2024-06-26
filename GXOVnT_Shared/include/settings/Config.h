@@ -7,7 +7,7 @@
 /////////////////////////////////////////////////////////////////
 #include <SPIFFS.h>
 #include "shared/Definitions.h"
-#include "settings/ConfigSettings.h"
+#include "settings/ConfigSettings.hpp"
 
 
 namespace GXOVnTLib::settings {

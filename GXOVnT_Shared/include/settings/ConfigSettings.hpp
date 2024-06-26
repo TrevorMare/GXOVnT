@@ -8,7 +8,6 @@
 #include "ConfigSectionWiFi.hpp"
 #include "ConfigSectionTPMS.hpp"
 
-//#include "SettingsSection.h"
 #include "shared/Definitions.h"
 #include <ArduinoJson.h>
 
@@ -35,15 +34,26 @@ namespace GXOVnTLib::settings {
     ConfigSettings() { };
     ConfigSettings(JsonDocument &document) { readSettingsFromJson(document); }
     ~ConfigSettings() {};
-              
-    // Gets a value indicating if there were changes made to the settings
-    bool settingsHasChanges();
 
     // Method to write the section settings to a json document
-    void writeSettingsToJson(JsonDocument &document);
+    void writeSettingsToJson(JsonDocument &document) {
+      ESP_LOGI(LOG_TAG, "Writing of settings to configuration file \n");
+
+      SystemSettings.writeSettingsToJson(document);
+      TestWiFiSettings.writeSettingsToJson(document);
+      WiFiSettings.writeSettingsToJson(document);
+      BLETPMSSettings.writeSettingsToJson(document);      
+    }
 
     // Method to read the section from a json document
-    void readSettingsFromJson(JsonDocument &document);
+    void readSettingsFromJson(JsonDocument &document) {
+      ESP_LOGI(LOG_TAG, "Reading of settings from configuration file \n");
+
+      SystemSettings.readSettingsFromJson(document);
+      WiFiSettings.readSettingsFromJson(document);
+      TestWiFiSettings.readSettingsFromJson(document);
+      BLETPMSSettings.readSettingsFromJson(document);
+    }
   };
 }
 
