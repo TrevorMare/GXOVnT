@@ -23,9 +23,6 @@
 
 #include "GXOVnTRoot.h"
 
-// Forward declaration of GXOVnTRoot
-
-
 namespace GXOVnTLib::services
 {
 	class JsonMessageService
