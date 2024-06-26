@@ -3,7 +3,12 @@
 #ifndef _GXOVNT_SETTINGS_H_
 #define _GXOVNT_SETTINGS_H_
 
-#include "SettingsSection.h"
+#include "ConfigSectionSystem.hpp"
+#include "ConfigSectionTestWiFi.hpp"
+#include "ConfigSectionWiFi.hpp"
+#include "ConfigSectionTPMS.hpp"
+
+//#include "SettingsSection.h"
 #include "shared/Definitions.h"
 #include <ArduinoJson.h>
 
@@ -22,10 +27,10 @@ namespace GXOVnTLib::settings {
   class ConfigSettings {
     public:
 
-    WiFiSettingsSection WiFiSettings;
-    TestWiFiSettingsSection TestWiFiSettings;
-    BleTPMSSettingsSection BLETPMSSettings;
-    SytemSettingsSection SystemSettings;
+    ConfigSectionWiFi WiFiSettings;
+    ConfigSectionTestWiFi TestWiFiSettings;
+    ConfigSectionTPMS BLETPMSSettings;
+    ConfigSectionSystem SystemSettings;
 
     ConfigSettings() { };
     ConfigSettings(JsonDocument &document) { readSettingsFromJson(document); }

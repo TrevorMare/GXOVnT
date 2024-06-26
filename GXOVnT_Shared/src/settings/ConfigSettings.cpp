@@ -22,12 +22,5 @@ void ConfigSettings::writeSettingsToJson(JsonDocument &document) {
 }
 
 bool ConfigSettings::settingsHasChanges() {
-    bool result = false;
-    
-    result |= SystemSettings.getSettingsChanged();
-    result |= WiFiSettings.getSettingsChanged();
-    result |= TestWiFiSettings.getSettingsChanged();
-    result |= BLETPMSSettings.getSettingsChanged();
-    
-    return result;
+    return true;
 }

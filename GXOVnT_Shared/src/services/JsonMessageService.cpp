@@ -57,8 +57,8 @@ JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument
             responseModel->SystemName(GXOVnT.config->Settings.SystemSettings.SystemName());
             responseModel->SystemType(static_cast<int>(GXOVnT.config->Settings.SystemSettings.SystemType()));
 
-            responseModel->WifiSsid(GXOVnT.config->Settings.WiFiSettings.SSID());
-            responseModel->WifiPassword(GXOVnT.config->Settings.WiFiSettings.Password());
+            responseModel->WifiSsid(GXOVnT.config->Settings.WiFiSettings.WiFiSsid());
+            responseModel->WifiPassword(GXOVnT.config->Settings.WiFiSettings.WiFiPassword());
 
             return responseModel->Json();
         }
@@ -70,8 +70,8 @@ JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument
             SetSystemSettingsRequest requestModel(inputDocument);
             GXOVnT.config->Settings.SystemSettings.SystemName(requestModel.SystemName());
             GXOVnT.config->Settings.SystemSettings.SystemConfigured(requestModel.SystemConfigured());
-            GXOVnT.config->Settings.WiFiSettings.SSID(requestModel.WifiSsid());
-            GXOVnT.config->Settings.WiFiSettings.Password(requestModel.WifiPassword());
+            GXOVnT.config->Settings.WiFiSettings.WiFiSsid(requestModel.WifiSsid());
+            GXOVnT.config->Settings.WiFiSettings.WiFiPassword(requestModel.WifiPassword());
 
             StatusResponse *responseModel = new StatusResponse(requestCommMessageId, 200, "OK");
             return responseModel->Json();
@@ -83,12 +83,12 @@ JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument
             
             ESP_LOGI(LOG_TAG, "Set the test WiFi configuration to test settings on next boot for SSID %s", requestModel.WifiSsid().c_str());
 
-            GXOVnT.config->Settings.TestWiFiSettings.SSID(requestModel.WifiSsid());
-            GXOVnT.config->Settings.TestWiFiSettings.Password(requestModel.WifiPassword());
+            GXOVnT.config->Settings.TestWiFiSettings.WiFiSsid(requestModel.WifiSsid());
+            GXOVnT.config->Settings.TestWiFiSettings.WiFiPassword(requestModel.WifiPassword());
             GXOVnT.config->Settings.TestWiFiSettings.Tested(false);
             GXOVnT.config->Settings.TestWiFiSettings.Success(false);
-            GXOVnT.config->Settings.TestWiFiSettings.TestResultCode(0);
-            GXOVnT.config->Settings.TestWiFiSettings.TestResultMessage("");
+            GXOVnT.config->Settings.TestWiFiSettings.StatusCode(0);
+            GXOVnT.config->Settings.TestWiFiSettings.StatusMessage("");
             GXOVnT.config->Settings.TestWiFiSettings.TestOnNextBoot(true);
 
             GXOVnT.config->saveConfiguration();
@@ -101,10 +101,10 @@ JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument
 
             GetTestWiFiSettingsResponse *responseModel = new GetTestWiFiSettingsResponse(requestCommMessageId);
 
-            responseModel->StatusCode(GXOVnT.config->Settings.TestWiFiSettings.TestResultCode());
-            responseModel->StatusMessage(GXOVnT.config->Settings.TestWiFiSettings.TestResultMessage());
-            responseModel->WifiSsid(GXOVnT.config->Settings.TestWiFiSettings.SSID());
-            responseModel->WifiPassword(GXOVnT.config->Settings.TestWiFiSettings.Password());
+            responseModel->StatusCode(GXOVnT.config->Settings.TestWiFiSettings.StatusCode());
+            responseModel->StatusMessage(GXOVnT.config->Settings.TestWiFiSettings.StatusMessage());
+            responseModel->WifiSsid(GXOVnT.config->Settings.TestWiFiSettings.WiFiSsid());
+            responseModel->WifiPassword(GXOVnT.config->Settings.TestWiFiSettings.WiFiPassword());
             responseModel->Success(GXOVnT.config->Settings.TestWiFiSettings.Success());
 
             return responseModel->Json();
