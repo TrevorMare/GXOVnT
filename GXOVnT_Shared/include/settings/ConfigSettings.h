@@ -11,24 +11,9 @@
 // Pre-Processor definitions depending on the system type
 /////////////////////////////////////////////////////////////////
 
-
-#if defined(GXOVNT_BUILD_FIRMWARE_TYPE) && GXOVNT_BUILD_FIRMWARE_TYPE == GXOVNT_SYSTEM_TYPE_UN_INITIALIZED
-#define GXOVnT_Settings_HAS_WIFI_SETTINGS true
-#define GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS false
-#define GXOVnT_Settings_HAS_SYSTEM_SETTINGS true
-#endif
-
-#if defined(GXOVNT_BUILD_FIRMWARE_TYPE) && GXOVNT_BUILD_FIRMWARE_TYPE == GXOVNT_SYSTEM_TYPE_EXTENSION
 #define GXOVnT_Settings_HAS_WIFI_SETTINGS true
 #define GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS true
 #define GXOVnT_Settings_HAS_SYSTEM_SETTINGS true
-#endif
-
-#if defined(GXOVNT_BUILD_FIRMWARE_TYPE) && GXOVNT_BUILD_FIRMWARE_TYPE == GXOVNT_SYSTEM_TYPE_PRIMARY
-#define GXOVnT_Settings_HAS_WIFI_SETTINGS true
-#define GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS true
-#define GXOVnT_Settings_HAS_SYSTEM_SETTINGS true
-#endif
 
 /////////////////////////////////////////////////////////////////
 
@@ -37,16 +22,10 @@ namespace GXOVnTLib::settings {
   class ConfigSettings {
     public:
 
-    #if GXOVnT_Settings_HAS_WIFI_SETTINGS
-      WiFiSettingsSection WiFiSettings;
-      TestWiFiSettingsSection TestWiFiSettings;
-    #endif
-    #if GXOVnT_Settings_HAS_BLE_TPMS_SETTINGS
-      BleTPMSSettingsSection BLETPMSSettings;
-    #endif
-    #if GXOVnT_Settings_HAS_SYSTEM_SETTINGS
-      SytemSettingsSection SystemSettings;
-    #endif
+    WiFiSettingsSection WiFiSettings;
+    TestWiFiSettingsSection TestWiFiSettings;
+    BleTPMSSettingsSection BLETPMSSettings;
+    SytemSettingsSection SystemSettings;
 
     ConfigSettings() { };
     ConfigSettings(JsonDocument &document) { readSettingsFromJson(document); }
