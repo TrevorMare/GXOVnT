@@ -18,6 +18,10 @@ public static class JsonFieldNames
     public const string JsonFieldFirmwareVersion = "firmwareVersion";
     public const string JsonFieldMessageTypeId = "messageTypeId";
     public const string JsonFieldReplyMessageId = "replyMessageId";
+    public const string JsonFieldFirmwareVersions = "firmwareVersions";
+    public const string JsonFieldDownloadLocation = "downloadLocation";
+    public const string JsonFieldVersionNumber = "versionNumber";
+    public const string JsonFieldFirmwareVersionInstalled = "firmwareVersionInstalled";
 
 
 }

@@ -20,6 +20,10 @@
 #include "models/SetSystemSettingsRequest.hpp"
 #include "models/StatusResponse.hpp"
 #include "models/TestWiFiSettingsRequest.hpp"
+#include "models/CheckFirmwareUpdateRequest.hpp"
+#include "models/GetFirmwareUpdateResultRequest.hpp"
+#include "models/GetFirmwareUpdateResultResponse.hpp"
+
 
 #include "GXOVnTRoot.h"
 

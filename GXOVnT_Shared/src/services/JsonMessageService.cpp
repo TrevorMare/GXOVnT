@@ -56,7 +56,6 @@ JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument
             responseModel->SystemId(GXOVnT.config->Settings.SystemSettings.SystemId());
             responseModel->SystemName(GXOVnT.config->Settings.SystemSettings.SystemName());
             responseModel->SystemType(static_cast<int>(GXOVnT.config->Settings.SystemSettings.SystemType()));
-
             responseModel->WifiSsid(GXOVnT.config->Settings.WiFiSettings.WiFiSsid());
             responseModel->WifiPassword(GXOVnT.config->Settings.WiFiSettings.WiFiPassword());
 
@@ -70,6 +69,7 @@ JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument
             SetSystemSettingsRequest requestModel(inputDocument);
             GXOVnT.config->Settings.SystemSettings.SystemName(requestModel.SystemName());
             GXOVnT.config->Settings.SystemSettings.SystemConfigured(requestModel.SystemConfigured());
+            GXOVnT.config->Settings.SystemSettings.SystemType(requestModel.SystemType());
             GXOVnT.config->Settings.WiFiSettings.WiFiSsid(requestModel.WifiSsid());
             GXOVnT.config->Settings.WiFiSettings.WiFiPassword(requestModel.WifiPassword());
 

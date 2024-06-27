@@ -17,6 +17,8 @@ public enum JsonModelType
     SetSystemSettingsRequest = 6,
     TestWiFiSettingsRequest = 7,
     GetTestWiFiSettingsResultRequest = 8,
+    CheckFirmwareUpdateRequest = 9,
+    GetFirmwareUpdateResultRequest = 10,
 
     DeleteSystemSettingsRequest = 97,
     RebootRequest = 98,
@@ -27,6 +29,7 @@ public enum JsonModelType
     GetSystemSettingsResponse = 102,
     GetTestWiFiSettingsResultResponse = 103,
     EchoResponse = 104,
+    GetFirmwareUpdateResultResponse = 105,
     
     Unknown = 999
 }
