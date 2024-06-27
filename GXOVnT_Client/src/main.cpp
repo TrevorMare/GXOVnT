@@ -34,7 +34,7 @@ void setup() {
   
   delay(1500);
 
-
+  GXOVnT.config->deleteConfigurationFile();
   GXOVnT.config->readConfiguration();
 
   Serial.printf("System name: %s \n",  GXOVnT.config->Settings.SystemSettings.SystemName().c_str());
@@ -44,9 +44,11 @@ void setup() {
   Serial.printf("WiFi name: %s",  GXOVnT.config->Settings.WiFiSettings.WiFiSsid().c_str());
   
   Serial.printf("Test WiFi name: %s",  GXOVnT.config->Settings.TestWiFiSettings.WiFiSsid().c_str());
-  Serial.printf("Should Test WiFi: %s", GXOVnT.config->Settings.TestWiFiSettings.TestOnNextBoot() ? "true" : "false");
+  
 
-  if (GXOVnT.config->Settings.TestWiFiSettings.TestOnNextBoot()) {
+  GXOVnT_BOOT_MODE bootMode = GXOVnT.config->Settings.SystemSettings.SystemBootMode();
+
+  if (bootMode == BOOT_MODE_TEST_WIFI_MODE) {
     const char *ssid = GXOVnT.config->Settings.TestWiFiSettings.WiFiSsid().c_str();
     const char *password = GXOVnT.config->Settings.TestWiFiSettings.WiFiPassword().c_str();
 
@@ -68,7 +70,7 @@ void setup() {
       }
 
       if (!attemptingConnect) {
-        GXOVnT.config->Settings.TestWiFiSettings.TestOnNextBoot(false);
+        GXOVnT.config->Settings.SystemSettings.SystemBootMode(BOOT_MODE_SYSTEM_BLE_MODE);
         GXOVnT.config->Settings.TestWiFiSettings.Tested(true);
         GXOVnT.config->saveConfiguration();
       }

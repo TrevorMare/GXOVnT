@@ -20,6 +20,7 @@ namespace GXOVnTLib::settings {
             std::string m_firmwareVersion = GXOVnT_FIRMWARE_VERSION;
             std::string m_systemPassword = "";
             GXOVnT_SYSTEM_TYPE m_systemType = SYSTEM_TYPE_UN_INITIALIZED;
+            GXOVnT_BOOT_MODE m_systemBootMode = BOOT_MODE_SYSTEM_BLE_MODE;
             bool m_systemConfigured = false;
 
         public:
@@ -36,6 +37,7 @@ namespace GXOVnTLib::settings {
                 writeValue(document, sectionKeys::FieldName_SystemPassword, m_systemPassword);
                 writeValue(document, sectionKeys::FieldName_SystemConfigured, m_systemConfigured);
                 writeValue(document, sectionKeys::FieldName_SystemType, (int)m_systemType);
+                writeValue(document, sectionKeys::FieldName_SystemBootMode, (int)m_systemBootMode);
             };
 
             // Method to read the section from a json document
@@ -44,6 +46,7 @@ namespace GXOVnTLib::settings {
                 m_systemPassword = readValueString(document, sectionKeys::FieldName_SystemPassword, "1234admin");
                 m_systemConfigured = readValueBool(document, sectionKeys::FieldName_SystemConfigured);
                 m_systemType = (GXOVnT_SYSTEM_TYPE)readValueInt(document, sectionKeys::FieldName_SystemType);
+                m_systemBootMode = (GXOVnT_BOOT_MODE)readValueInt(document, sectionKeys::FieldName_SystemBootMode);
             }
 
             // Getters
@@ -53,12 +56,14 @@ namespace GXOVnTLib::settings {
             std::string SystemPassword() { return m_systemPassword; }
             bool SystemConfigured() { return m_systemConfigured; }
             GXOVnT_SYSTEM_TYPE SystemType() { return m_systemType; }
+            GXOVnT_BOOT_MODE SystemBootMode() { return m_systemBootMode; }
 
             // Setters
             void SystemName(std::string input) { m_systemName = input; }
             void SystemPassword(std::string input) { m_systemPassword = input; }
             void SystemConfigured(bool input) { m_systemConfigured = input; }
             void SystemType(GXOVnT_SYSTEM_TYPE input) { m_systemType = input; }
+            void SystemBootMode(GXOVnT_BOOT_MODE input) { m_systemBootMode = input; }
 	};
 
 

@@ -23,6 +23,7 @@
 #include "models/CheckFirmwareUpdateRequest.hpp"
 #include "models/GetFirmwareUpdateResultRequest.hpp"
 #include "models/GetFirmwareUpdateResultResponse.hpp"
+#include "models/SetSystemBootModeRequest.hpp"
 
 
 #include "GXOVnTRoot.h"

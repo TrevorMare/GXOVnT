@@ -21,7 +21,6 @@ namespace GXOVnTLib::settings {
             bool m_success = false;
             int m_statusCode = 0;
             std::string m_statusMessage = "";
-            bool m_testOnNextBoot = false;
 
         public:
             // Constructor
@@ -37,7 +36,6 @@ namespace GXOVnTLib::settings {
                 writeValue(document, sectionKeys::FieldName_WiFiTestSuccess, m_success);
                 writeValue(document, sectionKeys::FieldName_StatusCode, m_statusCode);
                 writeValue(document, sectionKeys::FieldName_StatusMessage, m_statusMessage);
-                writeValue(document, sectionKeys::FieldName_WiFiTestOnNextBoot, m_testOnNextBoot);
             };
 
             // Method to read the section from a json document
@@ -48,7 +46,6 @@ namespace GXOVnTLib::settings {
                 m_success = readValueBool(document, sectionKeys::FieldName_WiFiTestSuccess);
                 m_statusCode = readValueInt(document, sectionKeys::FieldName_StatusCode);
                 m_statusMessage = readValueString(document, sectionKeys::FieldName_StatusMessage);
-                m_testOnNextBoot = readValueBool(document, sectionKeys::FieldName_WiFiTestOnNextBoot);
             }
 
             // Getters
@@ -56,7 +53,6 @@ namespace GXOVnTLib::settings {
             std::string WiFiSsid() { return m_ssid; }
             bool Tested() { return m_tested; }
             bool Success() { return m_success; }
-            bool TestOnNextBoot() { return m_testOnNextBoot; }
             std::string StatusMessage() { return m_statusMessage; }
             int StatusCode() { return m_statusCode; }
 
@@ -67,7 +63,6 @@ namespace GXOVnTLib::settings {
             void Success(bool input) { m_success = input; }
             void StatusMessage(std::string input) { m_statusMessage = input; }
             void StatusCode(int input) { m_statusCode = input; }
-            void TestOnNextBoot(bool input){ m_testOnNextBoot = input; }
 	};
 
 

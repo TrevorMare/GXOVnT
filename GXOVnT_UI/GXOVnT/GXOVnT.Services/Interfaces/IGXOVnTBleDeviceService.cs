@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using GXOVnT.Services.Models;
+using GXOVnT.Shared.Common;
 using GXOVnT.Shared.DeviceMessage.Request;
 using GXOVnT.Shared.DeviceMessage.Response;
 
@@ -23,4 +24,6 @@ public interface IGXOVnTBleDeviceService : INotifyPropertyChanged
     Task SendKeepAliveRequestAsync(GXOVnTBleDevice device);
 
     Task DeleteSystemSettingsAsync(GXOVnTBleDevice device, string systemPassword, bool rebootDevice = true);
+
+    Task SendSystemBootMode(GXOVnTBleDevice device, SystemBootMode systemBootMode, bool rebootDevice = true);
 }

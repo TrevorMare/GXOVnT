@@ -89,7 +89,7 @@ JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument
             GXOVnT.config->Settings.TestWiFiSettings.Success(false);
             GXOVnT.config->Settings.TestWiFiSettings.StatusCode(0);
             GXOVnT.config->Settings.TestWiFiSettings.StatusMessage("");
-            GXOVnT.config->Settings.TestWiFiSettings.TestOnNextBoot(true);
+            GXOVnT.config->Settings.SystemSettings.SystemBootMode(BOOT_MODE_TEST_WIFI_MODE);
 
             GXOVnT.config->saveConfiguration();
 
@@ -122,6 +122,20 @@ JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument
             ESP_LOGI(LOG_TAG, "Rebooting device");
             delay(1000);
             ESP.restart();
+        }
+        case MsgType_SetSystemBootModeRequest:
+        {
+            SetSystemBootModeRequest requestModel(inputDocument);
+            // Test the WiFi Settings
+            
+            ESP_LOGI(LOG_TAG, "Setting the system boot mode");
+
+            GXOVnT.config->Settings.SystemSettings.SystemBootMode(requestModel.SystemBootMode());
+
+            GXOVnT.config->saveConfiguration();
+
+            StatusResponse *responseModel = new StatusResponse(requestCommMessageId, 200, "OK");
+            return responseModel->Json();
         }
         case MsgType_DeleteSystemSettingsRequest:
         {

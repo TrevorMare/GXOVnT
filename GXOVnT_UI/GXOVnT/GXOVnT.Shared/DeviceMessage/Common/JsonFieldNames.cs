@@ -22,6 +22,7 @@ public static class JsonFieldNames
     public const string JsonFieldDownloadLocation = "downloadLocation";
     public const string JsonFieldVersionNumber = "versionNumber";
     public const string JsonFieldFirmwareVersionInstalled = "firmwareVersionInstalled";
+    public const string JsonFieldSystemBootMode = "systemBootMode";
 
 
 }

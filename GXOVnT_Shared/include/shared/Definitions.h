@@ -55,6 +55,12 @@ namespace GXOVnTLib::shared {
       SYSTEM_TYPE_PRIMARY = 2
     };
 
+    enum GXOVnT_BOOT_MODE {
+      BOOT_MODE_SYSTEM_BLE_MODE = 0, 
+      BOOT_MODE_TEST_WIFI_MODE = 1, 
+      BOOT_MODE_CHECK_FIRMWARE = 2
+    };
+
     enum GXOVnT_BLE_TPMS_TYPE {
       BLE_TPMS_TYPE_UNKNOWN = 99, BLE_TPMS_TYPE_JD_DY_BLE_I = 1
     };

@@ -26,6 +26,7 @@ namespace GXOVnTLib::models::constants {
     static const std::string JsonFieldDownloadLocation = "downloadLocation";
     static const std::string JsonFieldFirmwareVersionInstalled = "firmwareVersionInstalled";
     static const std::string JsonFieldVersionNumber = "versionNumber";
+    static const std::string JsonFieldSystemBootMode = "systemBootMode";
     
 
 
@@ -38,6 +39,8 @@ namespace GXOVnTLib::models::constants {
 	static const uint8_t MsgType_GetTestWiFiSettingsResultRequest = 8;
     static const uint8_t MsgType_CheckFirmwareUpdateRequest = 9;
     static const uint8_t MsgType_GetFirmwareUpdateResultRequest = 10;
+
+    static const uint8_t MsgType_SetSystemBootModeRequest = 96;
     static const uint8_t MsgType_DeleteSystemSettingsRequest = 97;
 	static const uint8_t MsgType_RebootRequest = 98;
 	static const uint8_t MsgType_SaveConfigurationRequest = 99;

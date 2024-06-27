@@ -29,7 +29,7 @@ namespace GXOVnTLib::settings {
 		static const std::string FieldName_WiFiTestSuccess = "success";
 		static const std::string FieldName_StatusCode = "statusCode";
 		static const std::string FieldName_StatusMessage = "statusMessage";
-		static const std::string FieldName_WiFiTestOnNextBoot = "testOnNextBoot";
+		static const std::string FieldName_SystemBootMode = "bootMode";
 
 		static const std::string FieldName_TPMSSensorId = "sensorId";
 		static const std::string FieldName_TPMSSensorPosition = "sensorPosition";
