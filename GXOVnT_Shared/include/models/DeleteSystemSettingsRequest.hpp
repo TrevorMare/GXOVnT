@@ -21,7 +21,7 @@ class DeleteSystemSettingsRequest : public BaseMessageModel
 		DeleteSystemSettingsRequest(JsonDocument &doc, uint16_t requestCommMessageId = 0) : BaseMessageModel(doc, requestCommMessageId) {
 			if (m_jsonDocument.containsKey(JsonFieldSystemPassword)) {
                 const char *systemPassword = m_jsonDocument[JsonFieldSystemPassword];
-                m_systemPassword = std::string(systemPassword);
+                m_systemPassword = CharToString(systemPassword);
 			} 
 		};
         ~DeleteSystemSettingsRequest() {};

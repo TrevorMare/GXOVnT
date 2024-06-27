@@ -410,6 +410,58 @@ public class GXOVnTBleDeviceService : NotifyChanged, IGXOVnTBleDeviceService
         }
     }
     
+     public async Task<GetFirmwareUpdateResultResponse> CheckFirmwareUpdates(GXOVnTBleDevice device, string wifiSsid = "", string wifiPassword = "")
+    {
+        try
+        {
+            ArgumentNullException.ThrowIfNull(device);
+
+            SetBusyStatus(true, "Checking device connection");
+            
+            // Make sure that we are connected to the device
+            var deviceConnected = await device.ConnectToDeviceAsync();
+            if (!deviceConnected)
+                throw new GXOVnTException("Unable to send the check firmware request. The device is not connected");
+
+            SetBusyStatus(true, "Sending check firmware request");
+            
+            var responseTestWifiModel =
+                await _messageOrchestrator.SendMessage<CheckFirmwareUpdateRequest, StatusResponse>(
+                    new CheckFirmwareUpdateRequest()
+                    {
+                        WiFiPassword = wifiPassword,
+                        WiFiSsid = wifiSsid
+                    }, device);
+            
+            if (responseTestWifiModel == null)
+                throw new GXOVnTException("Unable to send the check firmware update request. The device did not respond");
+            
+            if (responseTestWifiModel.StatusCode != 200)
+                throw new GXOVnTException($"The device did not return a success response code ({responseTestWifiModel.StatusCode}). {responseTestWifiModel.StatusMessage}");
+                
+            // Request the reboot of the device
+            await RequestRebootAsync(device, true);
+            
+            SetBusyStatus(true, "Requesting the firmware update results from the device ");
+            var responseResults =
+                await _messageOrchestrator.SendMessage<GetFirmwareUpdateResultRequest, GetFirmwareUpdateResultResponse>(
+                    new GetFirmwareUpdateResultRequest() , device);
+
+            if (responseResults == null)
+                throw new GXOVnTException("Unable to query the firmware results. The device did not respond");
+
+            return responseResults;
+        }
+        catch (Exception ex)
+        {
+            _logService.LogError($"An error occured communicating with the device. {ex.Message}");
+            throw;
+        }
+        finally
+        {
+            SetBusyStatus(false);
+        }
+    }
     #endregion
 
     #region Private Methods

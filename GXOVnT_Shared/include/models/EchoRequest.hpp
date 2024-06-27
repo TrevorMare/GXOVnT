@@ -20,7 +20,7 @@ class EchoRequest : public BaseMessageModel
 		EchoRequest(JsonDocument &doc, uint16_t requestCommMessageId = 0) : BaseMessageModel(doc, requestCommMessageId) {
 			if (m_jsonDocument.containsKey(JsonFieldEchoMessage)) {
 					const char *echoMessage = m_jsonDocument[JsonFieldEchoMessage];
-					m_echoMessage = std::string(echoMessage);
+					m_echoMessage = CharToString(echoMessage);
 			} 
 		};
 		~EchoRequest() {};

@@ -139,10 +139,7 @@ JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument
         }
         case MsgType_DeleteSystemSettingsRequest:
         {
-
             DeleteSystemSettingsRequest requestModel(inputDocument);
-
-            ESP_LOGI(LOG_TAG, "Deleting the system configuration");
 
             std::string currentSystemPassword = GXOVnT.config->Settings.SystemSettings.SystemPassword();
             std::string requestSystemPassword = requestModel.SystemPassword();
@@ -151,7 +148,37 @@ JsonDocument *JsonMessageService::processJsonMessage(JsonDocument &inputDocument
                 StatusResponse *responseModel = new StatusResponse(requestCommMessageId, 1, "The input password did not match the system password");
                 return responseModel->Json();
             } else {
+                ESP_LOGI(LOG_TAG, "Deleting the system configuration");
                 GXOVnT.config->deleteConfigurationFile();
+                StatusResponse *responseModel = new StatusResponse(requestCommMessageId, 200, "OK");
+                return responseModel->Json();
+            }
+        }
+        case MsgType_CheckFirmwareUpdateRequest:
+        {
+            CheckFirmwareUpdateRequest requestModel(inputDocument);
+
+            std::string wifiSsid = requestModel.WifiSsid();
+            std::string wifiPassword = requestModel.WifiPassword();
+
+            if (wifiSsid.compare("") == 0) {
+                wifiSsid = GXOVnT.config->Settings.WiFiSettings.WiFiSsid();
+                wifiPassword = GXOVnT.config->Settings.WiFiSettings.WiFiPassword();
+            }
+
+            if (wifiSsid.compare("") == 0) {
+                StatusResponse *responseModel = new StatusResponse(requestCommMessageId, 1, "Unable to check for firmware updates, No WiFi settings configured or supplied");
+                return responseModel->Json();
+            } else {
+                GXOVnT.config->Settings.CheckFirmwareSettings.WiFiSsid(wifiSsid);
+                GXOVnT.config->Settings.CheckFirmwareSettings.WiFiPassword(wifiPassword);
+                GXOVnT.config->Settings.CheckFirmwareSettings.Success(false);
+                GXOVnT.config->Settings.CheckFirmwareSettings.StatusCode(0);
+                GXOVnT.config->Settings.CheckFirmwareSettings.StatusMessage("");
+                GXOVnT.config->Settings.SystemSettings.SystemBootMode(BOOT_MODE_CHECK_FIRMWARE);
+
+                GXOVnT.config->saveConfiguration();
+
                 StatusResponse *responseModel = new StatusResponse(requestCommMessageId, 200, "OK");
                 return responseModel->Json();
             }

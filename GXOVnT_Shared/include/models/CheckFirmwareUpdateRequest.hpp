@@ -21,11 +21,11 @@ class CheckFirmwareUpdateRequest : public BaseMessageModel
 			CheckFirmwareUpdateRequest(JsonDocument &doc, uint16_t requestCommMessageId = 0) : BaseMessageModel(doc, requestCommMessageId) {
 				if (m_jsonDocument.containsKey(JsonFieldWiFiSsid)) {
 					const char *wifiSsid = m_jsonDocument[JsonFieldWiFiSsid];
-					m_wifiSsid = std::string(wifiSsid);
+					m_wifiSsid = CharToString(wifiSsid);
 				} 
 				if (m_jsonDocument.containsKey(JsonFieldWiFiPassword)) {
 					const char *wifiPassword = m_jsonDocument[JsonFieldWiFiPassword];
-					m_wifiPassword = std::string(wifiPassword);
+					m_wifiPassword = CharToString(wifiPassword);
 				} 
 			};
 			std::string WifiSsid() { return m_wifiSsid; }

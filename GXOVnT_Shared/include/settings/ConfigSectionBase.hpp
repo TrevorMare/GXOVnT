@@ -15,6 +15,7 @@ namespace GXOVnTLib::settings {
 		static const std::string SectionName_SystemSettings = "systemSettings";
 		static const std::string SectionName_WiFiSettings = "wifiSettings";
 		static const std::string SectionName_TestWiFiSettings = "testWiFiSettings";
+		static const std::string SectionName_CheckFirmwareSettings = "checkFirmware";
 		static const std::string SectionName_TPMSSettings = "tpmsSettings";
 
 		static const std::string FieldName_SystemName = "systemName";
@@ -26,7 +27,7 @@ namespace GXOVnTLib::settings {
 		static const std::string FieldName_WiFiSsid = "ssid";
 		static const std::string FieldName_WiFiPassword = "password";
 		static const std::string FieldName_WiFiTested = "tested";
-		static const std::string FieldName_WiFiTestSuccess = "success";
+		static const std::string FieldName_Success = "success";
 		static const std::string FieldName_StatusCode = "statusCode";
 		static const std::string FieldName_StatusMessage = "statusMessage";
 		static const std::string FieldName_SystemBootMode = "bootMode";

@@ -18,7 +18,7 @@ class GetTestWiFiSettingsResponse : public BaseMessageModel
 		std::string m_wifiPassword = "";
 		bool m_tested = false;
 		bool m_success = false;
-		uint8_t m_statusCode = 200;
+		int m_statusCode = 200;
 		std::string m_statusMessage = "OK";
 	public:
 		GetTestWiFiSettingsResponse(uint16_t requestCommMessageId = 0) : BaseMessageModel(MsgType_GetTestWiFiSettingsResultResponse, requestCommMessageId) {};
@@ -48,7 +48,7 @@ class GetTestWiFiSettingsResponse : public BaseMessageModel
 			m_jsonDocument[JsonFieldSuccess] = m_success;
 		}
 
-		void StatusCode(uint8_t value) {  
+		void StatusCode(int value) {  
 			m_statusCode = value;
 			m_jsonDocument[JsonFieldStatusCode] = m_statusCode;
 		}

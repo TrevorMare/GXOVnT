@@ -26,4 +26,7 @@ public interface IGXOVnTBleDeviceService : INotifyPropertyChanged
     Task DeleteSystemSettingsAsync(GXOVnTBleDevice device, string systemPassword, bool rebootDevice = true);
 
     Task SendSystemBootMode(GXOVnTBleDevice device, SystemBootMode systemBootMode, bool rebootDevice = true);
+
+    Task<GetFirmwareUpdateResultResponse> CheckFirmwareUpdates(GXOVnTBleDevice device, string wifiSsid = "",
+        string wifiPassword = "");
 }

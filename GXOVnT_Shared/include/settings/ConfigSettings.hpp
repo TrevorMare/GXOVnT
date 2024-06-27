@@ -7,6 +7,7 @@
 #include "ConfigSectionTestWiFi.hpp"
 #include "ConfigSectionWiFi.hpp"
 #include "ConfigSectionTPMS.hpp"
+#include "ConfigSectionCheckFirmware.hpp"
 
 #include "shared/Definitions.h"
 #include <ArduinoJson.h>
@@ -30,6 +31,7 @@ namespace GXOVnTLib::settings {
     ConfigSectionTestWiFi TestWiFiSettings;
     ConfigSectionTPMS BLETPMSSettings;
     ConfigSectionSystem SystemSettings;
+    ConfigSectionCheckFirmware CheckFirmwareSettings; 
 
     ConfigSettings() { };
     ConfigSettings(JsonDocument &document) { readSettingsFromJson(document); }
@@ -42,7 +44,9 @@ namespace GXOVnTLib::settings {
       SystemSettings.writeSettingsToJson(document);
       TestWiFiSettings.writeSettingsToJson(document);
       WiFiSettings.writeSettingsToJson(document);
-      BLETPMSSettings.writeSettingsToJson(document);      
+      BLETPMSSettings.writeSettingsToJson(document);  
+      CheckFirmwareSettings.writeSettingsToJson(document);    
+
     }
 
     // Method to read the section from a json document
@@ -53,6 +57,8 @@ namespace GXOVnTLib::settings {
       WiFiSettings.readSettingsFromJson(document);
       TestWiFiSettings.readSettingsFromJson(document);
       BLETPMSSettings.readSettingsFromJson(document);
+      CheckFirmwareSettings.readSettingsFromJson(document);
+      
     }
   };
 }

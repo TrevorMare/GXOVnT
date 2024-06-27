@@ -14,18 +14,18 @@ namespace GXOVnTLib::models {
 class StatusResponse : public BaseMessageModel
 {
     private:
-		uint8_t m_statusCode = 200;
+		int m_statusCode = 200;
 		std::string m_statusMessage = "OK";
 	public:
-		StatusResponse(uint16_t requestCommMessageId = 0, uint8_t statusCode = 200, std::string statusMessage = "OK") 
+		StatusResponse(uint16_t requestCommMessageId = 0, int statusCode = 200, std::string statusMessage = "OK") 
 				: BaseMessageModel(MsgType_StatusResponse, requestCommMessageId) {
             StatusCode(statusCode);
             StatusMessage(statusMessage);
 		};
 		~StatusResponse() {};
-		uint8_t StatusCode() { return m_statusCode; }
+		int StatusCode() { return m_statusCode; }
 		std::string StatusMessage() { return m_statusMessage; }
-		void StatusCode(uint8_t value) {  
+		void StatusCode(int value) {  
             m_statusCode = value;
             m_jsonDocument[JsonFieldStatusCode] = m_statusCode;
 		}
