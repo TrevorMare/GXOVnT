@@ -14,10 +14,11 @@ namespace GXOVnTLib::models {
 struct FirmwareVersionResult {
     public:
         std::string FirmwareVersion = "";
-        std::string DownloadLocation = "";
+        std::string DownloadUrl = "";
         std::string VersionNumber = "";
         int SystemType = 1; 
         bool InstalledVersion = false;
+        
 };
 
 class GetFirmwareUpdateResultResponse : public BaseMessageModel
@@ -31,18 +32,18 @@ class GetFirmwareUpdateResultResponse : public BaseMessageModel
             JsonObject settingsObject = m_jsonDocument[JsonFieldFirmwareVersions].add<JsonObject>();
 
             settingsObject[JsonFieldFirmwareVersion] = firmwareVersionResult.FirmwareVersion;
-            settingsObject[JsonFieldDownloadLocation] = firmwareVersionResult.DownloadLocation;
+            settingsObject[JsonFieldDownloadUrl] = firmwareVersionResult.DownloadUrl;
             settingsObject[JsonFieldFirmwareVersionInstalled] = firmwareVersionResult.InstalledVersion;
             settingsObject[JsonFieldVersionNumber] = firmwareVersionResult.VersionNumber;
             settingsObject[JsonFieldSystemType] = firmwareVersionResult.SystemType;
 
         }
 
-        void AddFirmwareVersionResult(std::string firmwareVersion, std::string downloadLocation, std::string versionNumber, int systemType, bool installedVersion) {
+        void AddFirmwareVersionResult(std::string firmwareVersion, std::string downloadUrl, std::string versionNumber, int systemType, bool installedVersion) {
             JsonObject settingsObject = m_jsonDocument[JsonFieldFirmwareVersions].add<JsonObject>();
 
             settingsObject[JsonFieldFirmwareVersion] = firmwareVersion;
-            settingsObject[JsonFieldDownloadLocation] = downloadLocation;
+            settingsObject[JsonFieldDownloadUrl] = downloadUrl;
             settingsObject[JsonFieldFirmwareVersionInstalled] = installedVersion;
             settingsObject[JsonFieldVersionNumber] = versionNumber;
             settingsObject[JsonFieldSystemType] = systemType;

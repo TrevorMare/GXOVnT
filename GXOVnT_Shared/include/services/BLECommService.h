@@ -80,15 +80,15 @@ namespace GXOVnTLib
 			/// @brief Method to write an outgoing message to the m_outgoingMessagesCharacteristic 
 			/// @param commMessage 
 			/// @return 
-			bool sendMessage(CommMessage *commMessage) override;
+			bool SendMessage(CommMessage *commMessage) override;
 			/// @brief Method to clean up after a comm message has been handled
 			/// @param commMessageId 
-			void receivedMessageHandled(uint16_t commMessageId) override;
+			void ReceivedMessageHandled(uint16_t commMessageId) override;
 			/// @brief Starts the bluetooth services and characteristics for reading and writing
 			/// @param messageHandler 
-			void start(CommMessageReceiveHandler *messageHandler);
+			void Start(CommMessageReceiveHandler *messageHandler);
 			/// @brief Stops the bluetooth services
-			void stop();
+			void Stop();
 		};
 	}
 }

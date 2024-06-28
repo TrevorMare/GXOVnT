@@ -11,7 +11,7 @@ namespace GXOVnTLib::messages
 	class CommMessageReceivedCompleteHandler
 	{
 		public:
-			virtual void receivedMessageHandled(uint16_t commMessageId) {};
+			virtual void ReceivedMessageHandled(uint16_t commMessageId) {};
 	};
 }
 #endif

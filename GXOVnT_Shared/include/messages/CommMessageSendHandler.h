@@ -12,7 +12,7 @@ namespace GXOVnTLib::messages
 		class CommMessageSendHandler
 		{
 			public:
-				virtual bool sendMessage(CommMessage *commMessage) { return true; };
+				virtual bool SendMessage(CommMessage *commMessage) { return true; };
 		};
 
 }

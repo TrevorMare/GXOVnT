@@ -23,10 +23,12 @@ namespace GXOVnTLib::models::constants {
     static const std::string JsonFieldMessageTypeId = "messageTypeId";
     static const std::string JsonFieldReplyMessageId = "replyMessageId";
     static const std::string JsonFieldFirmwareVersions = "firmwareVersions";
-    static const std::string JsonFieldDownloadLocation = "downloadLocation";
+    static const std::string JsonFieldFirmwareName = "firmwareVersions";
+    static const std::string JsonFieldDownloadUrl = "downloadUrl";
     static const std::string JsonFieldFirmwareVersionInstalled = "firmwareVersionInstalled";
     static const std::string JsonFieldVersionNumber = "versionNumber";
     static const std::string JsonFieldSystemBootMode = "systemBootMode";
+    static const std::string JsonFieldFirmwareType = "firmwareType";
     
 
 

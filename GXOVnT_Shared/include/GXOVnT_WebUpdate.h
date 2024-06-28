@@ -110,7 +110,7 @@ struct GVOVnT_SystemFirmware {
         // Firmware name
         std::string FirmwareName = "";
         
-        // Absolute download url
+        // Absolute download url 
         std::string DownloadUrl = "";
         
         // The version number of the firmware

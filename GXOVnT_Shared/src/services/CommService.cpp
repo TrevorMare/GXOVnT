@@ -35,16 +35,16 @@ void CommService::ProcessMessagesTask() {
 }
 
 /////////////////////////////////////////////////////////////////
-void CommService::start() {
+void CommService::Start() {
     if (m_BleCommService != nullptr) return;
 
     m_BleCommService = new BleCommService();
-    m_BleCommService->start(this);
+    m_BleCommService->Start(this);
 }
 
-void CommService::stop() {
+void CommService::Stop() {
     if (m_BleCommService == nullptr) return;
-    m_BleCommService->stop();
+    m_BleCommService->Stop();
 }
 
 void CommService::onMessageReceived(CommMessage *commMessage) {
@@ -57,13 +57,13 @@ void CommService::onMessageReceived(CommMessage *commMessage) {
 }
 
 /////////////////////////////////////////////////////////////////
-bool CommService::sendMessage(uint8_t *buffer, size_t messageSize, enum GXOVnT_COMM_SERVICE_TYPE commServiceType) {
+bool CommService::SendMessage(uint8_t *buffer, size_t messageSize, enum GXOVnT_COMM_SERVICE_TYPE commServiceType) {
     CommMessage *commMessage = new CommMessage(commServiceType);
     commMessage->Write(m_sendMessageId, buffer, messageSize);
-    return sendMessage(commMessage);
+    return SendMessage(commMessage);
 }
 
-bool CommService::sendMessage(CommMessage *commMessage) {
+bool CommService::SendMessage(CommMessage *commMessage) {
     if (commMessage == nullptr) return false;
     std::lock_guard<std::mutex> guard(m_messagesToSendLock);
     m_messagesToSend.push_back(commMessage);
@@ -91,12 +91,12 @@ void CommService::processReceivedMessages() {
                 serializeJson(*responseDocument, responseJsonString);
                 uint8_t *responseBuffer = CharPtrToUInt8Ptr(responseJsonString.c_str());
                 // Add the message to the outgoing queue
-                sendMessage(responseBuffer, responseJsonString.length(), commMessage->GetSourceService());
+                SendMessage(responseBuffer, responseJsonString.length(), commMessage->GetSourceService());
             }
 
             // Lastly mark the message as completed in the applicable service
             if (commMessage->GetSourceService() == COMM_SERVICE_TYPE_BLE) {
-                m_BleCommService->receivedMessageHandled(commMessage->MessageId());
+                m_BleCommService->ReceivedMessageHandled(commMessage->MessageId());
             }
         }
         // Do not delete the object here as we are not the owner, rather let the owner service know that we are 
@@ -115,7 +115,7 @@ void CommService::processSendMessages() {
         for (size_t i = 0; i < numberOfOutgoingMessages; i++) {
             CommMessage *messageToSend = m_messagesToSend[i];
             if (messageToSend->GetSourceService() == COMM_SERVICE_TYPE_BLE) {
-                m_BleCommService->sendMessage(messageToSend);
+                m_BleCommService->SendMessage(messageToSend);
             } else {
                 ESP_LOGW(LOG_TAG, "Message could not be sent, source service type not implemented");
             }

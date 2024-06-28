@@ -57,15 +57,15 @@ namespace GXOVnTLib::services
 		/// @param messageSize 
 		/// @param  
 		/// @return 
-		bool sendMessage(uint8_t *buffer, size_t messageSize, enum GXOVnT_COMM_SERVICE_TYPE commServiceType);
+		bool SendMessage(uint8_t *buffer, size_t messageSize, enum GXOVnT_COMM_SERVICE_TYPE commServiceType);
 		/// @brief Adds new message to send and adds it to the queue to be sent via the task
 		/// @param commMessage 
 		/// @return 
-		bool sendMessage(CommMessage *commMessage);
+		bool SendMessage(CommMessage *commMessage);
 		/// @brief Starts the comm services
-		void start();
+		void Start();
 		/// @brief Stops the comm services
-		void stop();
+		void Stop();
 	};
 }
 

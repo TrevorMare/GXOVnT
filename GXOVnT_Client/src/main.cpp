@@ -9,67 +9,10 @@
 
 //https://medium.com/@adityabangde/esp32-firmware-updates-from-github-a-simple-ota-solution-173a95f4a97b
 
-// GXOVnT_TPMS_BLE_Manager *m_bleManager = new GXOVnT_TPMS_BLE_Manager();
-// GXOVnT_WebUpdate *updater = new GXOVnT_WebUpdate();
+
 int scanTime = 10; //In seconds
 
-
-
-void setup() {
-  
-  Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Disable*/, true /*Serial Enable*/, true /*PABOOST Enable*/, 470E6 /**/);
-  Serial.begin(115200);
-  Serial.println("Type update in the console to flash latest firmware...");
-
-  //m_bleManager->initializeManager();
-  delay(500);
-
-  String systemVer = "Version " + String(GXOVnT_FIRMWARE_VERSION);
-
-  //Heltec.display->printf("Version %s \n", GXOVnT_FIRMWARE_VERSION);
-  Heltec.display->clear();
-  Heltec.display->drawString(0, 0, "I Love You");
-  Heltec.display->display();
-  
-  
-  delay(1500);
-
-  GXOVnT.config->deleteConfigurationFile();
-  GXOVnT.config->readConfiguration();
-
-  Serial.printf("System name: %s \n",  GXOVnT.config->Settings.SystemSettings.SystemName().c_str());
-  Serial.printf("Firmware version %s \n",  GXOVnT.config->Settings.SystemSettings.FirmwareVersion().c_str());
-  Serial.printf("System Id: %s \n",  GXOVnT.config->Settings.SystemSettings.SystemId().c_str());
-  Serial.printf("System Type: %d \n",  GXOVnT.config->Settings.SystemSettings.SystemType());
-  Serial.printf("WiFi name: %s",  GXOVnT.config->Settings.WiFiSettings.WiFiSsid().c_str());
-  
-  Serial.printf("Test WiFi name: %s",  GXOVnT.config->Settings.TestWiFiSettings.WiFiSsid().c_str());
-  
-
-  GXOVnT_BOOT_MODE bootMode = GXOVnT.config->Settings.SystemSettings.SystemBootMode();
-
-  if (bootMode == BOOT_MODE_TEST_WIFI_MODE) {
-    TestWiFiConnection();
-  } else if (bootMode == BOOT_MODE_CHECK_FIRMWARE) {
-    CheckFirmwareUpdates();
-  } else {
-    GXOVnT.commService->start();
-  }
-  
-  
-
-}
-
-void loop() {
-
- 
-  delay(200);
-  
-
-}
-
-
-void TestWiFiConnection() {
+static void TestWiFiConnection() {
   const char *ssid = GXOVnT.config->Settings.TestWiFiSettings.WiFiSsid().c_str();
   const char *password = GXOVnT.config->Settings.TestWiFiSettings.WiFiPassword().c_str();
 
@@ -100,7 +43,7 @@ void TestWiFiConnection() {
   ESP.restart();
 }
 
-void CheckFirmwareUpdates() {
+static void CheckFirmwareUpdates() {
   const char *ssid = GXOVnT.config->Settings.CheckFirmwareSettings.WiFiSsid().c_str();
   const char *password = GXOVnT.config->Settings.CheckFirmwareSettings.WiFiPassword().c_str();
 
@@ -134,3 +77,58 @@ void CheckFirmwareUpdates() {
 
   ESP.restart();
 }
+
+void setup() {
+  
+  Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Disable*/, true /*Serial Enable*/, true /*PABOOST Enable*/, 470E6 /**/);
+  Serial.begin(115200);
+  Serial.println("Type update in the console to flash latest firmware...");
+
+  
+  delay(500);
+
+  String systemVer = "Version " + String(GXOVnT_FIRMWARE_VERSION);
+
+  //Heltec.display->printf("Version %s \n", GXOVnT_FIRMWARE_VERSION);
+  Heltec.display->clear();
+  Heltec.display->drawString(0, 0, "I Love You");
+  Heltec.display->display();
+  
+  
+  delay(1500);
+
+  GXOVnT.config->deleteConfigurationFile();
+  GXOVnT.config->readConfiguration();
+
+  Serial.printf("System name: %s \n",  GXOVnT.config->Settings.SystemSettings.SystemName().c_str());
+  Serial.printf("Firmware version %s \n",  GXOVnT.config->Settings.SystemSettings.FirmwareVersion().c_str());
+  Serial.printf("System Id: %s \n",  GXOVnT.config->Settings.SystemSettings.SystemId().c_str());
+  Serial.printf("System Type: %d \n",  GXOVnT.config->Settings.SystemSettings.SystemType());
+  Serial.printf("WiFi name: %s",  GXOVnT.config->Settings.WiFiSettings.WiFiSsid().c_str());
+  
+  Serial.printf("Test WiFi name: %s",  GXOVnT.config->Settings.TestWiFiSettings.WiFiSsid().c_str());
+  
+
+  GXOVnT_BOOT_MODE bootMode = GXOVnT.config->Settings.SystemSettings.SystemBootMode();
+
+  if (bootMode == BOOT_MODE_TEST_WIFI_MODE) {
+    TestWiFiConnection();
+  } else if (bootMode == BOOT_MODE_CHECK_FIRMWARE) {
+    CheckFirmwareUpdates();
+  } else {
+    GXOVnT.commService->Start();
+  }
+  
+  
+
+}
+
+void loop() {
+
+ 
+  delay(200);
+  
+
+}
+
+

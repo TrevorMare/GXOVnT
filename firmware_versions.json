@@ -1,32 +1,28 @@
 {
     "FirmwareVersions": [
         {
-            "FirmwareName": "Alpha Version 1.0.0.0",
-            "DownloadUrl": "/systemfirmware/firmware.bin",
-            "FirmwareType": 4,
-            "SystemType": 1,
-            "VersionNumber": "1.0.0.0"
+            "firmwareName": "Alpha Version 0.1.0.0",
+            "downloadUrl": "/systemfirmware/firmware.bin",
+            "firmwareType": 1,
+            "versionNumber": "0.1.0.0"
         },
         {
-            "FirmwareName": "Alpha Version 1.0.0.1",
-            "DownloadUrl": "/systemfirmware/firmware.bin",
-            "FirmwareType": 4,
-            "SystemType": 1,
-            "VersionNumber": "1.0.0.1"
+            "firmwareName": "Beta Version 0.2.0.0",
+            "downloadUrl": "/systemfirmware/firmware.bin",
+            "firmwareType": 2,
+            "versionNumber": "0.2.0.0"
         },
         {
-            "FirmwareName": "Alpha Version 1.0.0.4",
-            "DownloadUrl": "/systemfirmware/firmware.bin",
-            "FirmwareType": 4,
-            "SystemType": 1,
-            "VersionNumber": "1.0.0.4"
+            "firmwareName": "Version 1.0.0.0",
+            "downloadUrl": "/systemfirmware/firmware.bin",
+            "firmwareType": 3,
+            "versionNumber": "1.0.0.0"
         },
         {
-            "FirmwareName": "Alpha Version 1.0.0.5",
-            "DownloadUrl": "/systemfirmware/firmware.bin",
-            "FirmwareType": 4,
-            "SystemType": 1,
-            "VersionNumber": "1.0.0.5"
+            "firmwareName": "Version 1.0.0.1",
+            "downloadUrl": "/systemfirmware/firmware.bin",
+            "firmwareType": 3,
+            "versionNumber": "1.0.0.1"
         }
     ]
 }

@@ -11,7 +11,7 @@ BleCommService::~BleCommService() {}
 
 // Public
 /////////////////////////////////////////////////////////////////
-void BleCommService::start(CommMessageReceiveHandler *messageHandler)
+void BleCommService::Start(CommMessageReceiveHandler *messageHandler)
 {
 	m_stopRequested = false;
 	// Check if we already started the service
@@ -36,7 +36,7 @@ void BleCommService::start(CommMessageReceiveHandler *messageHandler)
 	ESP_LOGI(LOG_TAG, "BLE server started");
 }
 
-void BleCommService::stop()
+void BleCommService::Stop()
 {
 
 	m_stopRequested = true;
@@ -70,11 +70,11 @@ void BleCommService::stop()
 	BLEDevice::deinit(true);
 }
 
-bool BleCommService::sendMessage(CommMessage *commMessage) {
+bool BleCommService::SendMessage(CommMessage *commMessage) {
 	return processOutgoingCharacteristicMessage(commMessage);
 }
 
-void BleCommService::receivedMessageHandled(uint16_t commMessageId) {
+void BleCommService::ReceivedMessageHandled(uint16_t commMessageId) {
 	removeProcessedMessage(commMessageId);
 }
 // Bluetooth connections and methods
