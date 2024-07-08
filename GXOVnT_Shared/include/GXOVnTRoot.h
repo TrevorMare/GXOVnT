@@ -25,6 +25,7 @@ class GXOVnTRoot {
     private:
         void testWiFiConnection();
         void downloadLatestFirmwareList();
+        void installFirmware();
     public:
         GXOVnTLib::services::CommService *commService = nullptr;
         GXOVnTLib::services::FirmwareUpdateService *firmwareUpdateService = nullptr;

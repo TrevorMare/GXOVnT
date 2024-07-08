@@ -25,6 +25,8 @@ void GXOVnTRoot::Initialize() {
     testWiFiConnection();
   } else if (bootMode == BOOT_MODE_CHECK_FIRMWARE) {
     downloadLatestFirmwareList();
+  } else if (bootMode == BOOT_MODE_INSTALL_FIRMWARE) {
+    installFirmware();
   } else {
     commService->Start();
   }
@@ -76,6 +78,16 @@ void GXOVnTRoot::downloadLatestFirmwareList() {
   config->Settings.CheckFirmwareSettings.Success(result->Success);
   config->Settings.CheckFirmwareSettings.StatusCode(result->StatusCode);
   config->Settings.CheckFirmwareSettings.StatusMessage(result->StatusMessage);
+  config->Settings.SystemSettings.SystemBootMode(BOOT_MODE_SYSTEM_BLE_MODE);
+  config->saveConfiguration();
+
+  delay(1000);
+
+  ESP.restart();
+}
+
+void GXOVnTRoot::installFirmware() {
+
   config->Settings.SystemSettings.SystemBootMode(BOOT_MODE_SYSTEM_BLE_MODE);
   config->saveConfiguration();
 

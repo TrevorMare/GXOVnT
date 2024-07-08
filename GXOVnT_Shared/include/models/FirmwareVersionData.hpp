@@ -74,15 +74,19 @@ class FirmwareVersionData
         std::string DownloadUrl = "";
         std::string VersionNumber = "";
         FirmwareVersionDetail Version;
+        std::string Host = "";
+        int HostPort = 443;
         enum GXOVnT_FIRMWARE_VERSION_TYPE FirmwareType = FIRMWARE_VERSION_TYPE_RELEASE;
         
         // Constructor
-        FirmwareVersionData(std::string firmwareName, std::string downloadUrl, std::string versionNumber, int firmwareType) {
+        FirmwareVersionData(std::string firmwareName, std::string downloadUrl, std::string versionNumber, int firmwareType, std::string host, int hostPort) {
             FirmwareName = firmwareName;
             DownloadUrl = downloadUrl;
             VersionNumber = versionNumber;
             Version = FirmwareVersionDetail(versionNumber);
             FirmwareType = (GXOVnT_FIRMWARE_VERSION_TYPE)firmwareType;
+            Host = host;
+            HostPort = hostPort;
         }
 };
 

@@ -4,25 +4,33 @@
             "firmwareName": "Alpha Version 0.1.0.0",
             "downloadUrl": "/systemfirmware/firmware.bin",
             "firmwareType": 1,
-            "versionNumber": "0.1.0.0"
+            "versionNumber": "0.1.0.0",
+            "host": "gxovntstoragetest.blob.core.windows.net",
+            "hostPort": 443
         },
         {
             "firmwareName": "Beta Version 0.2.0.0",
             "downloadUrl": "/systemfirmware/firmware.bin",
             "firmwareType": 2,
-            "versionNumber": "0.2.0.0"
+            "versionNumber": "0.2.0.0",
+            "host": "gxovntstoragetest.blob.core.windows.net",
+            "hostPort": 443
         },
         {
             "firmwareName": "Version 1.0.0.0",
             "downloadUrl": "/systemfirmware/firmware.bin",
             "firmwareType": 3,
-            "versionNumber": "1.0.0.0"
+            "versionNumber": "1.0.0.0",
+            "host": "gxovntstoragetest.blob.core.windows.net",
+            "hostPort": 443
         },
         {
             "firmwareName": "Version 1.0.0.1",
             "downloadUrl": "/systemfirmware/firmware.bin",
             "firmwareType": 3,
-            "versionNumber": "1.0.0.1"
+            "versionNumber": "1.0.0.1",
+            "host": "gxovntstoragetest.blob.core.windows.net",
+            "hostPort": 443
         }
     ]
 }

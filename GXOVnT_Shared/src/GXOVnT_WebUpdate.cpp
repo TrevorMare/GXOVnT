@@ -225,7 +225,7 @@ void GXOVnT_WebUpdate::getFileFromServer(const GVOVnT_SystemFirmware *firmwareVe
   else {
     Serial.println("Failed to connect to server");
   }
-}
+} 
 
 void GXOVnT_WebUpdate::performOTAUpdateFromSPIFFS() {
   // Open the firmware file in SPIFFS for reading

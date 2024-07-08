@@ -36,6 +36,8 @@ namespace GXOVnTLib::shared {
     static const char *GXOVNT_BLE_OUTGOING_CHARACTERISTIC_UUID = "4687b690-cd36-4a7c-9134-49ffe62d954f";
     static const char *GXOVNT_BLE_MANUFACTURER = "GXOVnT";
     static const char *GXOVNT_BLE_MANUFACTURER_DELIMITER = "|";
+    static const char *GXOVNT_FIRMWARE_LIST_URL = "https://github.com/TrevorMare/GXOVnT/raw/main/firmware_versions.json";
+    static const char *GXOVNT_FIRMWARE_FILE_NAME = "firmware.bin";
 
     // BLE Settings and adjustments
     /////////////////////////////////////////////////////////////////
@@ -58,7 +60,8 @@ namespace GXOVnTLib::shared {
     enum GXOVnT_BOOT_MODE {
       BOOT_MODE_SYSTEM_BLE_MODE = 0, 
       BOOT_MODE_TEST_WIFI_MODE = 1, 
-      BOOT_MODE_CHECK_FIRMWARE = 2
+      BOOT_MODE_CHECK_FIRMWARE = 2,
+      BOOT_MODE_INSTALL_FIRMWARE = 3
     };
 
     enum GXOVnT_BLE_TPMS_TYPE {
