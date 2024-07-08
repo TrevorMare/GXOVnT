@@ -7,12 +7,14 @@
 
 #include "shared/Definitions.h"
 #include "services/CommService.h"
+#include "services/FirmwareUpdateService.hpp"
 #include "settings/Config.h"
 
 // Forward declaration of the services
 /////////////////////////////////////////////////////////////////
 namespace GXOVnTLib::services {
     class CommService;
+    
 }
 namespace GXOVnTLib::settings {
     class Config;
@@ -20,9 +22,14 @@ namespace GXOVnTLib::settings {
 
 
 class GXOVnTRoot {
+    private:
+        void testWiFiConnection();
+        void downloadLatestFirmwareList();
     public:
         GXOVnTLib::services::CommService *commService = nullptr;
+        GXOVnTLib::services::FirmwareUpdateService *firmwareUpdateService = nullptr;
         GXOVnTLib::settings::Config *config = nullptr;
+        void Initialize();
         GXOVnTRoot();
 };
 

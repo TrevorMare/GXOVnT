@@ -17,7 +17,7 @@
 using namespace GXOVnTLib::models;
 using namespace GXOVnTLib::models::constants;
 
-namespace GXOVnT::services {
+namespace GXOVnTLib::services {
 
 struct FirmwareServiceOpenWiFiResult {
     int StatusCode = 200;
@@ -236,13 +236,17 @@ class FirmwareUpdateService
         }
         
     public:
+        FirmwareUpdateService() {}
         FirmwareUpdateService(std::string wifiSsid, std::string wifiPassword = "", std::string firmwareListUrl = "") {
+           Setup(wifiSsid, wifiPassword, firmwareListUrl);
+        };
+        void Setup(std::string wifiSsid, std::string wifiPassword = "", std::string firmwareListUrl = "") {
             m_wifiPassword = wifiPassword;
             m_wifiSsid = wifiSsid;
             if (firmwareListUrl.compare("") != 0) {
                 m_firmwareListUrl = firmwareListUrl;
             }
-        };
+        }
 
         FirmwareServiceDownloadListResult *DownloadLatestFirmwareList() {
             return downloadFirmwareVersionsList();

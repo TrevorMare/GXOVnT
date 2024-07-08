@@ -30,11 +30,6 @@ void GXOVnT_WebUpdate::openWifiConnection() {
   // Begin connecting to WiFi using the provided SSID and password
   WiFi.begin(ssid_XXX, password_XXX);
 
-#ifdef Heltec_Screen
-  Heltec.display->clear();
-  Heltec.display->drawString(0, 0, "Hello from lib");
-  Heltec.display->display();
-#endif
 
   ESP_LOGI(LOG_TAG, "Connecting to WiFi");
 
