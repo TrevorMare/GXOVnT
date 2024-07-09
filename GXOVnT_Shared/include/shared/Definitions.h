@@ -28,7 +28,7 @@ namespace GXOVnTLib::shared {
 
     // System firmware version
     /////////////////////////////////////////////////////////////////
-    static const char *GXOVnT_FIRMWARE_VERSION = "v1.0.3";
+    static const char *GXOVnT_FIRMWARE_VERSION = "v1.0.0.0";
     static const char *GXOVNT_BLE_SERVICE_UUID = "05c1fba8-cc8b-4534-8787-0e6a0775c3de";
     /// @brief Characteristic for the incoming messages relative to this device
     static const char *GXOVNT_BLE_INCOMING_CHARACTERISTIC_UUID = "4687b690-cd36-4a7c-9134-49ffe62d9e4f";

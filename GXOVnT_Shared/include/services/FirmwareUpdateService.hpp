@@ -52,7 +52,7 @@ struct FirmwareServiceDownloadListResult {
         void SetError(std::string message) {
             StatusCode = 500;
             StatusMessage = message;
-            ESP_LOGE(LOG_TAG, "%s", message);
+            ESP_LOGE(LOG_TAG, "%s", message, 299);
         }
 };
 
