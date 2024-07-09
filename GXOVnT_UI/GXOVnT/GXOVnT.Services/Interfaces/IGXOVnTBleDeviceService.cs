@@ -9,6 +9,10 @@ namespace GXOVnT.Services.Interfaces;
 public interface IGXOVnTBleDeviceService : INotifyPropertyChanged
 {
     
+    bool IsBusy { get; }
+    
+    string BusyText { get; }
+    
     Task RequestRebootAsync(GXOVnTBleDevice device, bool reconnect = true);
 
     Task<bool> TestWiFiSettingsOnDeviceAsync(GXOVnTBleDevice device, string wifiSsid, string wifiPassword);

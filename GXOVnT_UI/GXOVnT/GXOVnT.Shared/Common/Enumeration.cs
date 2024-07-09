@@ -34,7 +34,7 @@ public abstract class Enumeration : IComparable
         return GetAll<T>().FirstOrDefault(e => e.Id == value);
     }
     
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not Enumeration otherValue)
         {
@@ -47,11 +47,8 @@ public abstract class Enumeration : IComparable
         return typeMatches && valueMatches;
     }
 
-    public override int GetHashCode()
-    {
-        return base.GetHashCode();
-    }
 
-    public int CompareTo(object other) => Id.CompareTo(((Enumeration)other).Id);
+    public int CompareTo(object? obj) => Id.CompareTo(((Enumeration)obj!)?.Id ?? -1);
+    
 }
 

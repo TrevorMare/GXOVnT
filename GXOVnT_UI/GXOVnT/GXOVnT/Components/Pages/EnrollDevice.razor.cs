@@ -26,10 +26,6 @@ public partial class EnrollDevice : ComponentBase
 
     #endregion
 
-    #region Override Methods
-
-
-    #endregion
 
     #region Event Callbacks
     private void OnDeviceSelected(GXOVnTBleDevice? device)

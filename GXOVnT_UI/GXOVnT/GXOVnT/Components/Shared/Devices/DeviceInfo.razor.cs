@@ -13,11 +13,9 @@ public partial class DeviceInfo : GXOVnTComponent
     
     #region Properties
 
+
     [Inject]
-    private IBluetoothService BluetoothService { get; set; } = default!;
-    
-    [Inject]
-    private IMessageOrchestrator MessageOrchestrator { get; set; } = default!;
+    private IGXOVnTBleDeviceService GXOVnTBleDeviceService { get; set; } = default!;
    
     [Parameter]
     public GXOVnTBleDevice? Device { get; set; } 
@@ -47,8 +45,8 @@ public partial class DeviceInfo : GXOVnTComponent
         
         SetWizardForwardEnabled(false);
         
-        MessageOrchestrator.PropertyChanged -= MessageOrchestratorOnPropertyChanged;
-        MessageOrchestrator.PropertyChanged += MessageOrchestratorOnPropertyChanged;
+        GXOVnTBleDeviceService.PropertyChanged -= DeviceServiceOnPropertyChanged;
+        GXOVnTBleDeviceService.PropertyChanged += DeviceServiceOnPropertyChanged;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -79,24 +77,8 @@ public partial class DeviceInfo : GXOVnTComponent
             
             if (Device == null)
                 return;
-            
-            SetBusyValues(true, "Connecting to device");
-            ConnectedToDevice = await Device.ConnectToDeviceAsync();
 
-            if (!ConnectedToDevice)
-                return;
-
-            SetBusyValues(true, "Querying device info");
-
-            var requestModel = new GetSystemSettingsRequest();
-            var responseModel = await MessageOrchestrator.SendMessage<GetSystemSettingsRequest, GetSystemSettingsResponse>(
-                requestModel, Device);
-
-            if (responseModel == null)
-            {
-                FailedToGetInformation = true;
-                return;
-            }
+            var responseModel = await GXOVnTBleDeviceService.GetDeviceInfoAsync(Device);
                 
             DataLoaded = true;
             DeviceSettingsResponse = responseModel;
@@ -106,6 +88,7 @@ public partial class DeviceInfo : GXOVnTComponent
         }
         catch (Exception)
         {
+            FailedToGetInformation = true;
             LogService.LogError("There was an internal error retrieving the device information");
         }
         finally
@@ -136,8 +119,10 @@ public partial class DeviceInfo : GXOVnTComponent
         SetWizardForwardEnabled(ConfirmedContinue);
     }
     
-    private async void MessageOrchestratorOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private async void DeviceServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        SetBusyValues(GXOVnTBleDeviceService.IsBusy, GXOVnTBleDeviceService.BusyText);
+        
         await InvokeAsync(StateHasChanged);
     }
 
