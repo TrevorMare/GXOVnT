@@ -37,7 +37,6 @@ public partial class CommunicationStatusIndicator
 
     #endregion
 
-
     #region Event Callbacks
     
     private async void BluetoothServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)

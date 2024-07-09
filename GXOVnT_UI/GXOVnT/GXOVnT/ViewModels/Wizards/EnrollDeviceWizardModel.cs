@@ -1,4 +1,4 @@
-﻿namespace GXOVnT.Models;
+﻿namespace GXOVnT.ViewModels.Wizards;
 
 public class EnrollDeviceWizardModel : WizardComponentModel
 {

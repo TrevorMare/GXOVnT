@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
-using GXOVnT.Models;
 using GXOVnT.Services.Interfaces;
+using GXOVnT.ViewModels.Wizards;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 

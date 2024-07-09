@@ -75,7 +75,7 @@ public partial class CheckBTPermissions : GXOVnTComponent
                 return;
             }
 
-            await CheckIfApplicationHasBluetoothServiceAccess();
+            await CheckIfApplicationHasBluetoothServiceAccess(); 
 
         }
         catch (Exception)

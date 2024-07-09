@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using GXOVnT.Models;
+using GXOVnT.ViewModels.Wizards;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 

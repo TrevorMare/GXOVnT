@@ -1,4 +1,4 @@
-﻿using GXOVnT.Models;
+﻿using GXOVnT.ViewModels.Wizards;
 using Microsoft.AspNetCore.Components;
 
 namespace GXOVnT.Components.Shared.WizardComponent;

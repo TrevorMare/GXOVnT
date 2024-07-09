@@ -1,11 +1,11 @@
-﻿using GXOVnT.Models;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using GXOVnT.Services.Models;
+using GXOVnT.ViewModels.Wizards;
 using MudBlazor;
 
-namespace GXOVnT.Components.Pages;
+namespace GXOVnT.Components.Shared.Wizards;
 
-public partial class EnrollDevice : ComponentBase
+public partial class EnrollDeviceWizard : ComponentBase
 {
 
     #region Members
@@ -16,10 +16,7 @@ public partial class EnrollDevice : ComponentBase
 
     #region Properties
 
-    private EnrollDeviceWizardModel _enrollDeviceWizardModel = new()
-    {
-        WizardStartStep = 0
-    }; 
+    private EnrollDeviceWizardModel _enrollDeviceWizardModel = new();
 
     [Inject]
     private IDialogService DialogService { get; set; } = default!;

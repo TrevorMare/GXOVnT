@@ -1,6 +1,6 @@
 ﻿using GXOVnT.Shared.Common;
 
-namespace GXOVnT.Models;
+namespace GXOVnT.ViewModels.Wizards;
 
 public class WizardStepModel : NotifyChanged
 {
@@ -125,6 +125,16 @@ public class WizardStepModel : NotifyChanged
         get => _isCurrentStep;
         set => SetField(ref _isCurrentStep, value);
     }
+    #endregion
+
+    #region Methods
+
+    public void SetIsBusy(bool isBusy, string? busyText = null)
+    {
+        IsBusy = isBusy;
+        BusyText = isBusy ? busyText : string.Empty;
+    }
+
     #endregion
     
 }

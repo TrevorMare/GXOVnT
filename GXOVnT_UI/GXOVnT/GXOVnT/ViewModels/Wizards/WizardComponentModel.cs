@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using GXOVnT.Shared.Common;
 
-namespace GXOVnT.Models;
+namespace GXOVnT.ViewModels.Wizards;
 
 public class WizardComponentModel : NotifyChanged
 {
@@ -16,10 +16,11 @@ public class WizardComponentModel : NotifyChanged
     #endregion
 
     #region Properties
+
     /// <summary>
     /// Gets or sets the wizard start step
     /// </summary>
-    public int WizardStartStep { get; set; }
+    public int WizardStartStep { get; set; } = 0;
 
     /// <summary>
     /// Gets the current wizard step
