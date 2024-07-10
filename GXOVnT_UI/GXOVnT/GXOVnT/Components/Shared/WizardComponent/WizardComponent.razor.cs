@@ -5,7 +5,7 @@ using MudBlazor;
 
 namespace GXOVnT.Components.Shared.WizardComponent;
 
-public partial class WizardComponent<TWizardModelType> : ComponentBase where TWizardModelType: WizardComponentModel, new()
+public partial class WizardComponent<TWizardModelType> : ComponentBase where TWizardModelType: WizardComponentModel
 {
 
     #region Members
@@ -20,7 +20,7 @@ public partial class WizardComponent<TWizardModelType> : ComponentBase where TWi
     private IDialogService DialogService { get; set; } = default!;
 
     [Parameter]
-    public TWizardModelType WizardComponentModel { get; set; } = new();
+    public TWizardModelType WizardComponentModel { get; set; }
     
     [Parameter]
     public string? WizardTitle { get; set; } = string.Empty;

@@ -1,19 +1,24 @@
 ﻿using GXOVnT.Services.Interfaces;
-using GXOVnT.ViewModels.Wizards;
 
 namespace GXOVnT.ViewModels;
 
-public class CheckBTPermissionsVM : WizardStepModel
+public class CheckBTPermissionsVM : ViewModelBase
 {
 
     #region Members
-
     private readonly IRequestPermissionService _requestPermissionService;
-    private bool _hasBluetoothPermission; 
+    private bool _hasBluetoothPermission;
+    private bool _hasCheckedPermissions;
     #endregion
 
     #region Properties
 
+    public bool HasCheckedPermissions
+    {
+        get => _hasCheckedPermissions;
+        private set => SetField(ref _hasCheckedPermissions, value);
+    }
+    
     public bool HasBluetoothPermission
     {
         get => _hasBluetoothPermission; 
@@ -24,7 +29,8 @@ public class CheckBTPermissionsVM : WizardStepModel
     
     #region ctor
 
-    public CheckBTPermissionsVM(IRequestPermissionService requestPermissionService)
+    public CheckBTPermissionsVM(IRequestPermissionService requestPermissionService, 
+        ILogService logService) : base(logService)
     {
         _requestPermissionService = requestPermissionService;
     }
@@ -35,20 +41,23 @@ public class CheckBTPermissionsVM : WizardStepModel
 
     public async Task CheckHasBluetoothPermission()
     {
-        try
+        await RunTaskAsync(async () =>
         {
-            SetIsBusy(true, "Checking Bluetooth permissions");
+            HasCheckedPermissions = true;
             HasBluetoothPermission = await _requestPermissionService.ApplicationHasBluetoothPermission();
-        }
-        catch (Exception ex)
+        }, "Checking Bluetooth permissions");
+    }
+    
+    public async Task<bool> RequestBluetoothPermissions()
+    {
+        return await RunTaskAsync(async () =>
         {
-            Console.WriteLine(ex);
-            throw;
-        }
-        finally
-        {
-            SetIsBusy(false);   
-        }
+            var permissionGranted = await _requestPermissionService.RequestBluetoothPermission();
+            if (!permissionGranted)
+                return false;
+            await CheckHasBluetoothPermission();
+            return _hasBluetoothPermission;
+        }, "Requesting Bluetooth permissions");
     }
 
     #endregion

@@ -15,8 +15,8 @@ public partial class EnrollDeviceWizard : ComponentBase
     #endregion
 
     #region Properties
-
-    private EnrollDeviceWizardModel _enrollDeviceWizardModel = new();
+    [Inject]
+    private EnrollDeviceWizardModel EnrollDeviceWizardModel { get; set; }
 
     [Inject]
     private IDialogService DialogService { get; set; } = default!;
