@@ -106,8 +106,8 @@ public partial class DeviceInfo : GXOVnTComponent
         if (DeviceSettingsResponse.SystemConfigured)
             return true;
 
-        return (DeviceSettingsResponse.GXOVnTSystemType?.Id ?? GXOVnTSystemType.UnInitialized.Id) !=
-               GXOVnTSystemType.UnInitialized.Id;
+        return (DeviceSettingsResponse.GXOVnTSystemType?.Id ?? SystemType.UnInitialized.Id) !=
+               SystemType.UnInitialized.Id;
     }
 
     #endregion

@@ -314,7 +314,7 @@ public class DeviceService : NotifyChanged, IDeviceService
             var responseModel = await _messageOrchestrator.SendMessage<SetSystemBootModeRequest, StatusResponse>(
                 new SetSystemBootModeRequest()
                 {
-                    SystemBootMode = (int)systemBootMode
+                    SystemBootMode = systemBootMode.Id
                 }, device);
             
             if (responseModel == null)

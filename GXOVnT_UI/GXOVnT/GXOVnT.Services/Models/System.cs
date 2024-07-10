@@ -49,7 +49,7 @@ public class System : NotifyChanged, IAsyncDisposable
     private readonly List<MessageAggregate> _historicCommMessages = new();
     private MessageAggregate? _lastReceivedMessage;
     
-    private GXOVnTSystemType _systemType = GXOVnTSystemType.UnInitialized;
+    private SystemType _systemType = Shared.Common.SystemType.UnInitialized;
     private bool _systemConfigured;
     private bool _deviceIsReconnecting;
     #endregion
@@ -61,7 +61,7 @@ public class System : NotifyChanged, IAsyncDisposable
         set => SetField(ref _systemConfigured, value);
     }
     
-    public GXOVnTSystemType SystemType
+    public SystemType SystemType
     {
         get => _systemType;
         set => SetField(ref _systemType, value);
@@ -373,7 +373,7 @@ public class System : NotifyChanged, IAsyncDisposable
             var manufacturerParts = manufacturerDataValue.Split("|");
 
             if (manufacturerParts.Length >= 2)
-                SystemType = Enumeration.FromValue<GXOVnTSystemType>(int.Parse(manufacturerParts[1])) ?? GXOVnTSystemType.UnInitialized;
+                SystemType = Enumeration.FromValue<SystemType>(int.Parse(manufacturerParts[1])) ?? SystemType.UnInitialized;
             if (manufacturerParts.Length >= 3)
                 SystemConfigured = manufacturerParts[2] == "1";
         }

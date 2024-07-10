@@ -8,13 +8,6 @@ public enum CommMessageDetail : byte
     IsEndPacket = 2
 }
 
-public enum SystemBootMode
-{
-    SystemBleMode = 0,
-    TestWiFiMode = 1,
-    CheckFirmwareMode = 2
-}
-
 public enum JsonModelType 
 {
     // Requests are from 1 to 100

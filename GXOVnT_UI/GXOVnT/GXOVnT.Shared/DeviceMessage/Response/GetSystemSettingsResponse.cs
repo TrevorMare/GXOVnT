@@ -22,7 +22,7 @@ public class GetSystemSettingsResponse() : BaseMessageModel(JsonModelType.GetSys
     public int SystemType { get; set; }
 
     [JsonIgnore]
-    public GXOVnTSystemType? GXOVnTSystemType => Enumeration.FromValue<GXOVnTSystemType>(SystemType);
+    public SystemType? GXOVnTSystemType => Enumeration.FromValue<SystemType>(SystemType);
     
     [JsonPropertyName(JsonFieldNames.JsonFieldFirmwareVersion)] 
     public string FirmwareVersion { get; set; } = string.Empty;
