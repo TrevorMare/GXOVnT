@@ -1,39 +1,19 @@
-﻿using GXOVnT.Services.Interfaces;
-using GXOVnT.Shared.Common;
-using GXOVnT.Shared.Interfaces;
+﻿using GXOVnT.Shared.Interfaces;
 
-namespace GXOVnT.ViewModels;
+namespace GXOVnT.Shared.Common;
 
-public abstract class ViewModelBase : NotifyChanged
+public abstract class NotifyChangedTask : NotifyChangedWithBusy, INotifyChangedTask
 {
 
     #region Members
 
-    private bool _isBusy;
-    private string _busyText = string.Empty;
     protected readonly ILogService LogService;
-    
-    #endregion
-
-    #region Properties
-
-    public bool IsBusy
-    {
-        get => _isBusy;
-        set => SetField(ref _isBusy, value);
-    }
-    
-    public string BusyText
-    {
-        get => _busyText;
-        set => SetField(ref _busyText, value);
-    }
 
     #endregion
-
+    
     #region ctor
 
-    protected ViewModelBase(ILogService logService)
+    public NotifyChangedTask(ILogService logService)
     {
         LogService = logService;
     }
@@ -42,17 +22,11 @@ public abstract class ViewModelBase : NotifyChanged
 
     #region Methods
 
-    public void SetStatus(bool isBusy, string busyText = "")
-    {
-        IsBusy = isBusy;
-        BusyText = isBusy ? busyText : "";
-    }
-
     protected void RunTask(Action action, string initialBusyText = "Busy...")
     {
         try
         {
-            SetStatus(true, initialBusyText);
+            SetBusyState(true, initialBusyText);
             
             action.Invoke();
         }
@@ -62,7 +36,7 @@ public abstract class ViewModelBase : NotifyChanged
         }
         finally
         {
-            SetStatus(false);
+            SetBusyState(false);
         }
     }
     
@@ -70,7 +44,7 @@ public abstract class ViewModelBase : NotifyChanged
     {
         try
         {
-            SetStatus(true, initialBusyText);
+            SetBusyState(true, initialBusyText);
             
             await action.Invoke();
         }
@@ -80,7 +54,7 @@ public abstract class ViewModelBase : NotifyChanged
         }
         finally
         {
-            SetStatus(false);
+            SetBusyState(false);
         }
     }
     
@@ -88,7 +62,7 @@ public abstract class ViewModelBase : NotifyChanged
     {
         try
         {
-            SetStatus(true, initialBusyText);
+            SetBusyState(true, initialBusyText);
             
             return action.Invoke();
         }
@@ -99,7 +73,7 @@ public abstract class ViewModelBase : NotifyChanged
         }
         finally
         {
-            SetStatus(false);
+            SetBusyState(false);
         }
     }
     
@@ -107,7 +81,7 @@ public abstract class ViewModelBase : NotifyChanged
     {
         try
         {
-            SetStatus(true, initialBusyText);
+            SetBusyState(true, initialBusyText);
             
             return await action.Invoke();
         }
@@ -118,9 +92,10 @@ public abstract class ViewModelBase : NotifyChanged
         }
         finally
         {
-            SetStatus(false);
+            SetBusyState(false);
         }
     }
+    
     #endregion
-
+    
 }

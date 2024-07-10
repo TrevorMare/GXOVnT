@@ -1,6 +1,6 @@
-﻿using GXOVnT.Services.Interfaces;
-using GXOVnT.Services.Models;
-using GXOVnT.Shared.Common;
+﻿using GXOVnT.Shared.Common;
+using GXOVnT.Shared.Interfaces;
+using GXOVnT.Shared.Models;
 
 namespace GXOVnT.Services.Services;
 
@@ -9,7 +9,7 @@ public class LogService : NotifyChanged, ILogService
     
     #region Members
 
-    private readonly List<Models.LogMessage> _logMessages = new();
+    private readonly List<LogMessage> _logMessages = new();
 
     private LogMessageType _minLogLevel = LogMessageType.Information; 
     #endregion

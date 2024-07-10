@@ -3,6 +3,7 @@ using GXOVnT.Services.Models;
 using GXOVnT.Shared.Common;
 using GXOVnT.Shared.DeviceMessage.Request;
 using GXOVnT.Shared.DeviceMessage.Response;
+using GXOVnT.Shared.Interfaces;
 
 namespace GXOVnT.Services.Services;
 

@@ -1,6 +1,6 @@
 ﻿using GXOVnT.Shared.Common;
 
-namespace GXOVnT.Services.Models;
+namespace GXOVnT.Shared.Models;
 
 public class LogMessage
 {

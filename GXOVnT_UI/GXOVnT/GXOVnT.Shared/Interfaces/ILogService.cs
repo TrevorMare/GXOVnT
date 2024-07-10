@@ -1,10 +1,9 @@
-﻿using System.ComponentModel;
-using GXOVnT.Services.Models;
-using GXOVnT.Shared.Common;
+﻿using GXOVnT.Shared.Common;
+using GXOVnT.Shared.Models;
 
-namespace GXOVnT.Services.Interfaces;
+namespace GXOVnT.Shared.Interfaces;
 
-public interface ILogService : INotifyPropertyChanged
+public interface ILogService : INotifyChanged
 {
     IReadOnlyCollection<LogMessage> LogMessages { get; }
     

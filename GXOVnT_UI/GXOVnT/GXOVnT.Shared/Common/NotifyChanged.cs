@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using GXOVnT.Shared.Interfaces;
 
 namespace GXOVnT.Shared.Common;
 
-public abstract class NotifyChanged : INotifyPropertyChanged
+public abstract class NotifyChanged : INotifyChanged
 {
 
     #region Properties

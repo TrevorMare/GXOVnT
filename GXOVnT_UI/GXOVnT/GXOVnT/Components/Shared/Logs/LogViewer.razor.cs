@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using GXOVnT.Services.Interfaces;
+using GXOVnT.Shared.Interfaces;
 using Microsoft.AspNetCore.Components;
 
 namespace GXOVnT.Components.Shared.Logs;

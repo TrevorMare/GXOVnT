@@ -3,6 +3,7 @@ using GXOVnT.Shared.Common;
 using GXOVnT.Shared.DeviceMessage;
 using GXOVnT.Shared.DeviceMessage.Common;
 using GXOVnT.Shared.DeviceMessage.Extensions;
+using GXOVnT.Shared.Interfaces;
 using Plugin.BLE.Abstractions;
 using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE.Abstractions.EventArgs;

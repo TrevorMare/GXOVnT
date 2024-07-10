@@ -2,6 +2,7 @@
 using GXOVnT.Services.Interfaces;
 using GXOVnT.Services.Models;
 using GXOVnT.Shared.Common;
+using GXOVnT.Shared.Interfaces;
 using Plugin.BLE;
 using Plugin.BLE.Abstractions;
 using Plugin.BLE.Abstractions.Contracts;

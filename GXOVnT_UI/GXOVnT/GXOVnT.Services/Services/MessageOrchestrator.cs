@@ -3,6 +3,7 @@ using GXOVnT.Services.Models;
 using GXOVnT.Shared.Common;
 using GXOVnT.Shared.DeviceMessage;
 using GXOVnT.Shared.DeviceMessage.Common;
+using GXOVnT.Shared.Interfaces;
 using Plugin.BLE.Abstractions;
 
 namespace GXOVnT.Services.Services;

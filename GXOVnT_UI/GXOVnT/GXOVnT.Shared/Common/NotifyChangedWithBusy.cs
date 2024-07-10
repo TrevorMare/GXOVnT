@@ -1,6 +1,8 @@
-﻿namespace GXOVnT.Shared.Common;
+﻿using GXOVnT.Shared.Interfaces;
 
-public class NotifyChangedWithBusy : NotifyChanged
+namespace GXOVnT.Shared.Common;
+
+public abstract class NotifyChangedWithBusy : NotifyChanged, INotifyChangedWithBusy
 {
 
     #region Events
@@ -41,7 +43,7 @@ public class NotifyChangedWithBusy : NotifyChanged
 
     #region Methods
 
-    protected void SetBusyState(bool isBusy, string? busyStatus = null)
+    public void SetBusyState(bool isBusy, string? busyStatus = null)
     {
         // Set the fields and if there is a change in either one of the values, we need to raise an event
         if (SetField(ref _isBusy, isBusy, nameof(IsBusy)) ||
