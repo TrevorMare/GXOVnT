@@ -24,7 +24,7 @@ public class MessageAggregate
     {
         CommMessage = commMessage;
         MessageId = commMessage.MessageId;
-        BaseModel = System.Text.Json.JsonSerializer.Deserialize<BaseMessageModel>(commMessage.ToString());
+        BaseModel = global::System.Text.Json.JsonSerializer.Deserialize<BaseMessageModel>(commMessage.ToString());
         ReplyToMessageId = BaseModel?.ReplyMessageId ?? 0;
         if (BaseModel != null)
             ModelType = (JsonModelType)BaseModel.MessageTypeId;

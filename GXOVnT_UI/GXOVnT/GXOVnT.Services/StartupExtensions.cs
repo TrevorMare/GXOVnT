@@ -16,7 +16,7 @@ public static class StartupExtensions
         services.AddSingleton<IMessageOrchestrator, MessageOrchestrator>();
         services.AddSingleton<IAlertService, AlertService>();
         services.AddSingleton<ILogService, LogService>();
-        services.AddTransient<IGXOVnTBleDeviceService, GXOVnTBleDeviceService>();
+        services.AddTransient<IDeviceService, DeviceService>();
 
         return services;
     }

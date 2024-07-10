@@ -15,10 +15,10 @@ public partial class DeviceInfo : GXOVnTComponent
 
 
     [Inject]
-    private IGXOVnTBleDeviceService GXOVnTBleDeviceService { get; set; } = default!;
+    private IDeviceService DeviceService { get; set; } = default!;
    
     [Parameter]
-    public GXOVnTBleDevice? Device { get; set; } 
+    public Services.Models.System? Device { get; set; } 
     
     private bool DeviceInformationGetExecuted { get; set; }
     
@@ -45,8 +45,8 @@ public partial class DeviceInfo : GXOVnTComponent
         
         SetWizardForwardEnabled(false);
         
-        GXOVnTBleDeviceService.PropertyChanged -= DeviceServiceOnPropertyChanged;
-        GXOVnTBleDeviceService.PropertyChanged += DeviceServiceOnPropertyChanged;
+        DeviceService.PropertyChanged -= DeviceServiceOnPropertyChanged;
+        DeviceService.PropertyChanged += DeviceServiceOnPropertyChanged;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -78,7 +78,7 @@ public partial class DeviceInfo : GXOVnTComponent
             if (Device == null)
                 return;
 
-            var responseModel = await GXOVnTBleDeviceService.GetDeviceInfoAsync(Device);
+            var responseModel = await DeviceService.GetDeviceInfoAsync(Device);
                 
             DataLoaded = true;
             DeviceSettingsResponse = responseModel;
@@ -121,7 +121,7 @@ public partial class DeviceInfo : GXOVnTComponent
     
     private async void DeviceServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        SetBusyValues(GXOVnTBleDeviceService.IsBusy, GXOVnTBleDeviceService.BusyText);
+        SetBusyValues(DeviceService.IsBusy, DeviceService.BusyText);
         
         await InvokeAsync(StateHasChanged);
     }

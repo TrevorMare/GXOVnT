@@ -10,7 +10,7 @@ public partial class EnrollDeviceWizard : ComponentBase
 
     #region Members
 
-    private GXOVnTBleDevice? _selectedDeviceToEnroll;
+    private Services.Models.System? _selectedDeviceToEnroll;
 
     #endregion
 
@@ -25,7 +25,7 @@ public partial class EnrollDeviceWizard : ComponentBase
 
 
     #region Event Callbacks
-    private void OnDeviceSelected(GXOVnTBleDevice? device)
+    private void OnDeviceSelected(Services.Models.System? device)
     {
         _selectedDeviceToEnroll = device;
     }
@@ -46,7 +46,7 @@ public partial class EnrollDeviceWizard : ComponentBase
         _selectedDeviceToEnroll = null;
     }
     
-    private async void EnrollDeviceSelected(GXOVnTBleDevice obj)
+    private async void EnrollDeviceSelected(Services.Models.System obj)
     {
         _selectedDeviceToEnroll = obj;
         

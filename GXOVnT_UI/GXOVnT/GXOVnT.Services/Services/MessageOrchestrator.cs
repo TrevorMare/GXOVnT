@@ -77,7 +77,7 @@ internal class MessageOrchestrator : NotifyChanged, IMessageOrchestrator
         }
     }
 
-    public async Task SendMessage<T>(T message, GXOVnTBleDevice bleDevice) where T : BaseMessageModel
+    public async Task SendMessage<T>(T message, Models.System bleDevice) where T : BaseMessageModel
     {
         try
         {
@@ -120,12 +120,12 @@ internal class MessageOrchestrator : NotifyChanged, IMessageOrchestrator
         }
     }
 
-    public async Task<TOut?> SendMessage<TIn, TOut>(TIn message, GXOVnTBleDevice bleDevice, CancellationToken cancellationToken = default) where TIn : BaseMessageModel where TOut : BaseMessageModel
+    public async Task<TOut?> SendMessage<TIn, TOut>(TIn message, Models.System bleDevice, CancellationToken cancellationToken = default) where TIn : BaseMessageModel where TOut : BaseMessageModel
     {
         short outgoingMessageId;
         var messagesReceivedDuringWait = new List<MessageAggregate>();
         
-        GXOVnTBleDevice.CommMessageReceived commMessageReceivedHandler = (_, e) =>
+        Models.System.CommMessageReceived commMessageReceivedHandler = (_, e) =>
         {
             messagesReceivedDuringWait.Add(e);
         };
@@ -227,7 +227,7 @@ internal class MessageOrchestrator : NotifyChanged, IMessageOrchestrator
         ProgressText = string.Empty;
     }
     
-    private GXOVnTBleDevice? FindDevice(Guid deviceId)
+    private Models.System? FindDevice(Guid deviceId)
     {
         return _bluetoothService.FindDevice(deviceId);
     }

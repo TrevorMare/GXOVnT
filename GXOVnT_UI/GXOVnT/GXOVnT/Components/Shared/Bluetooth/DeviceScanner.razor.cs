@@ -20,7 +20,7 @@ public partial class DeviceScanner : GXOVnTComponent
     private IBluetoothService BluetoothService { get; set; } = default!;
     
     [Parameter] 
-    public EventCallback<GXOVnTBleDevice?> DeviceSelected { get; set; }
+    public EventCallback<Services.Models.System?> DeviceSelected { get; set; }
     
     private bool IsScanningDevices => BluetoothService.IsScanningDevices;
 
@@ -53,7 +53,7 @@ public partial class DeviceScanner : GXOVnTComponent
 
     #region Event Callbacks
     
-    private async Task OnDeviceListItemClick(GXOVnTBleDevice item)
+    private async Task OnDeviceListItemClick(Services.Models.System item)
     {
         _selectedUUId = item.UUID;
         

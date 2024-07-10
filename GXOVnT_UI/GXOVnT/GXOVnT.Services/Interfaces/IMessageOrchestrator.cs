@@ -26,7 +26,7 @@ public interface IMessageOrchestrator : INotifyPropertyChanged
     /// <returns></returns>
     Task SendMessage<T>(T message, Guid deviceId) where T : BaseMessageModel;
     
-    Task SendMessage<T>(T message, GXOVnTBleDevice bleDevice) where T : BaseMessageModel;
+    Task SendMessage<T>(T message, Models.System bleDevice) where T : BaseMessageModel;
 
     /// <summary>
     /// Sends a message and waits for a response from the device
@@ -39,6 +39,6 @@ public interface IMessageOrchestrator : INotifyPropertyChanged
     /// <returns></returns>
     Task<TOut?> SendMessage<TIn, TOut>(TIn message, Guid deviceId, CancellationToken cancellationToken = default) where TOut : BaseMessageModel where TIn : BaseMessageModel;
     
-    Task<TOut?> SendMessage<TIn, TOut>(TIn message, GXOVnTBleDevice bleDevice, CancellationToken cancellationToken = default) where TOut : BaseMessageModel where TIn : BaseMessageModel;
+    Task<TOut?> SendMessage<TIn, TOut>(TIn message, Models.System bleDevice, CancellationToken cancellationToken = default) where TOut : BaseMessageModel where TIn : BaseMessageModel;
 
 }

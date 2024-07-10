@@ -27,7 +27,7 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
     private IMessageOrchestrator MessageOrchestrator { get; set; } = default!;
    
     [Parameter]
-    public GXOVnTBleDevice? Device { get; set; }
+    public Services.Models.System? Device { get; set; }
     
     private bool DeviceInformationGetExecuted { get; set; }
     

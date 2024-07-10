@@ -14,13 +14,13 @@ public interface IBluetoothService : INotifyPropertyChanged, IAsyncDisposable
     
     bool IsScanningDevices { get; }
     
-    IReadOnlyList<GXOVnTBleDevice> DiscoveredDevices { get; }
+    IReadOnlyList<Models.System> DiscoveredDevices { get; }
 
     Task<bool> StartScanForDevicesAsync(CancellationTokenSource? cancellationTokenSource = default);
 
     Task StopScanForDevicesAsync();
 
-    GXOVnTBleDevice? FindDevice(Guid deviceId);
+    Models.System? FindDevice(Guid deviceId);
 
 
 }

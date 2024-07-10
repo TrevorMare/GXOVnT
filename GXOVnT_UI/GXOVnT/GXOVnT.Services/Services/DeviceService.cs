@@ -6,7 +6,7 @@ using GXOVnT.Shared.DeviceMessage.Response;
 
 namespace GXOVnT.Services.Services;
 
-public class GXOVnTBleDeviceService : NotifyChanged, IGXOVnTBleDeviceService
+public class DeviceService : NotifyChanged, IDeviceService
 {
 
     #region Members
@@ -36,7 +36,7 @@ public class GXOVnTBleDeviceService : NotifyChanged, IGXOVnTBleDeviceService
 
     #region ctor
 
-    public GXOVnTBleDeviceService(ILogService logService, IMessageOrchestrator messageOrchestrator)
+    public DeviceService(ILogService logService, IMessageOrchestrator messageOrchestrator)
     {
         _logService = logService;
         _messageOrchestrator = messageOrchestrator;
@@ -46,7 +46,7 @@ public class GXOVnTBleDeviceService : NotifyChanged, IGXOVnTBleDeviceService
 
     #region Public Methods
 
-    public async Task RequestRebootAsync(GXOVnTBleDevice device, bool reconnect = true)
+    public async Task RequestRebootAsync(Models.System device, bool reconnect = true)
     {
         try
         {
@@ -85,7 +85,7 @@ public class GXOVnTBleDeviceService : NotifyChanged, IGXOVnTBleDeviceService
         }
     }
 
-    public async Task<bool> TestWiFiSettingsOnDeviceAsync(GXOVnTBleDevice device, string wifiSsid, string wifiPassword)
+    public async Task<bool> TestWiFiSettingsOnDeviceAsync(Models.System device, string wifiSsid, string wifiPassword)
     {
         try
         {
@@ -99,7 +99,6 @@ public class GXOVnTBleDeviceService : NotifyChanged, IGXOVnTBleDeviceService
                 throw new GXOVnTException("Unable to send the reboot request. The device is not connected");
 
             SetBusyStatus(true, "Sending test WiFi connection request");
-
             
             var responseTestWifiModel =
                 await _messageOrchestrator.SendMessage<TestWiFiSettingsRequest, StatusResponse>(
@@ -142,7 +141,7 @@ public class GXOVnTBleDeviceService : NotifyChanged, IGXOVnTBleDeviceService
         }
     }
     
-    public async Task<GetSystemSettingsResponse> GetDeviceInfoAsync(GXOVnTBleDevice device)
+    public async Task<GetSystemSettingsResponse> GetDeviceInfoAsync(Models.System device)
     {
         try
         {
@@ -176,7 +175,7 @@ public class GXOVnTBleDeviceService : NotifyChanged, IGXOVnTBleDeviceService
         }
     }
    
-    public async Task<EchoResponse> SendEchoMessageAsync(GXOVnTBleDevice device, string echoMessage)
+    public async Task<EchoResponse> SendEchoMessageAsync(Models.System device, string echoMessage)
     {
         try
         {
@@ -213,7 +212,7 @@ public class GXOVnTBleDeviceService : NotifyChanged, IGXOVnTBleDeviceService
         }
     }
     
-    public async Task SetSystemSettingsAsync(GXOVnTBleDevice device, SetSystemSettingsRequest request, bool sendSaveSettings = true)
+    public async Task SetSystemSettingsAsync(Models.System device, SetSystemSettingsRequest request, bool sendSaveSettings = true)
     {
         try
         {
@@ -254,7 +253,7 @@ public class GXOVnTBleDeviceService : NotifyChanged, IGXOVnTBleDeviceService
         }
     }
     
-    public async Task DeleteSystemSettingsAsync(GXOVnTBleDevice device, string systemPassword, bool rebootDevice = true)
+    public async Task DeleteSystemSettingsAsync(Models.System device, string systemPassword, bool rebootDevice = true)
     {
         try
         {
@@ -297,7 +296,7 @@ public class GXOVnTBleDeviceService : NotifyChanged, IGXOVnTBleDeviceService
         }
     }
     
-    public async Task SendSystemBootMode(GXOVnTBleDevice device, SystemBootMode systemBootMode, bool rebootDevice = true)
+    public async Task SendSystemBootMode(Models.System device, SystemBootMode systemBootMode, bool rebootDevice = true)
     {
         try
         {
@@ -340,7 +339,7 @@ public class GXOVnTBleDeviceService : NotifyChanged, IGXOVnTBleDeviceService
         }
     }
 
-    public async Task SaveSystemSettingsAsync(GXOVnTBleDevice device)
+    public async Task SaveSystemSettingsAsync(Models.System device)
     {
         try
         {
@@ -375,7 +374,7 @@ public class GXOVnTBleDeviceService : NotifyChanged, IGXOVnTBleDeviceService
         }
     }
     
-    public async Task SendKeepAliveRequestAsync(GXOVnTBleDevice device)
+    public async Task SendKeepAliveRequestAsync(Models.System device)
     {
         try
         {
@@ -410,7 +409,7 @@ public class GXOVnTBleDeviceService : NotifyChanged, IGXOVnTBleDeviceService
         }
     }
     
-     public async Task<GetFirmwareUpdateResultResponse> CheckFirmwareUpdates(GXOVnTBleDevice device, string wifiSsid = "", string wifiPassword = "")
+     public async Task<GetFirmwareUpdateResultResponse> CheckFirmwareUpdates(Models.System device, string wifiSsid = "", string wifiPassword = "")
     {
         try
         {

@@ -10,7 +10,7 @@ using Plugin.BLE.Abstractions.Exceptions;
 
 namespace GXOVnT.Services.Models;
 
-public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
+public class System : NotifyChanged, IAsyncDisposable
 {
 
     #region Events
@@ -112,7 +112,7 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
 
     #region ctor
 
-    public GXOVnTBleDevice(IAdapter bluetoothAdapter, IDevice device, ILogService logService)
+    public System(IAdapter bluetoothAdapter, IDevice device, ILogService logService)
     {
         _bluetoothAdapter = bluetoothAdapter;
         _logService = logService;
@@ -369,7 +369,7 @@ public class GXOVnTBleDevice : NotifyChanged, IAsyncDisposable
             if (manufacturerDataRecord == null)
                 return;
 
-            var manufacturerDataValue = System.Text.Encoding.UTF8.GetString(manufacturerDataRecord.Data);
+            var manufacturerDataValue = global::System.Text.Encoding.UTF8.GetString(manufacturerDataRecord.Data);
             var manufacturerParts = manufacturerDataValue.Split("|");
 
             if (manufacturerParts.Length >= 2)

@@ -27,11 +27,11 @@ public class BluetoothService : NotifyChanged, IBluetoothService
     private bool _isScanningDevices;
     private CancellationTokenSource _scanCancellationTokenSource = default!;
 
-    private readonly ObservableCollection<GXOVnTBleDevice> _discoveredDevices = new();
+    private readonly ObservableCollection<Models.System> _discoveredDevices = new();
     #endregion
     
     #region Events
-    public delegate void OnDeviceFoundHandler(object sender, GXOVnTBleDevice args);
+    public delegate void OnDeviceFoundHandler(object sender, Models.System args);
     public event OnDeviceFoundHandler? OnDeviceFound;
     #endregion
     
@@ -81,7 +81,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
     /// <summary>
     /// Gets a list of scanned devices
     /// </summary>
-    public IReadOnlyList<GXOVnTBleDevice> DiscoveredDevices => _discoveredDevices.AsReadOnly();
+    public IReadOnlyList<Models.System> DiscoveredDevices => _discoveredDevices.AsReadOnly();
     #endregion
     
     #region ctor
@@ -137,7 +137,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         await _scanCancellationTokenSource.CancelAsync();
     }
 
-    public GXOVnTBleDevice? FindDevice(Guid deviceId)
+    public Models.System? FindDevice(Guid deviceId)
     {
         return _discoveredDevices.ToList().Find(d => d.Id == deviceId);
     }
@@ -243,7 +243,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         if (FindDevice(deviceId) != null)
             return;
 
-        var bleDevice = new GXOVnTBleDevice(_bluetoothAdapter!, e.Device, _logService);
+        var bleDevice = new Models.System(_bluetoothAdapter!, e.Device, _logService);
         
         _discoveredDevices.Add(bleDevice);
         
@@ -290,11 +290,12 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
     #region Dispose
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
         if (_bluetoothAdapter == null)
-            return;
+            return ValueTask.CompletedTask;
         _discoveredDevices.Clear();
+        return ValueTask.CompletedTask;
     }
 
     #endregion
