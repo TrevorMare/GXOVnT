@@ -21,6 +21,8 @@ public class StateObject : IStateObject
     
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    public IServiceProvider Services => AppService.ServiceProvider;
+    
     public bool IsBusy
     {
         get => _isBusy;
@@ -44,7 +46,11 @@ public class StateObject : IStateObject
     #endregion
     
     #region Public Methods
-
+    protected virtual void OnStateChanged()
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("*"));
+    }
+    
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

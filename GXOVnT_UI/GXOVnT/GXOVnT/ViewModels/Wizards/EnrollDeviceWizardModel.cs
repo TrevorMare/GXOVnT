@@ -1,11 +1,13 @@
-﻿namespace GXOVnT.ViewModels.Wizards;
+﻿using GXOVnT.Services.ViewModels;
+
+namespace GXOVnT.ViewModels.Wizards;
 
 public class EnrollDeviceWizardModel : WizardComponentModel
 {
 
     #region Members
 
-    public CheckBTPermissionsVM CheckBTPermissionsVM { get ; private set; }
+    public CheckBluetoothPermissionsViewModel CheckBluetoothPermissionsViewModel { get ; private set; }
 
     #endregion
 

@@ -12,6 +12,8 @@ public delegate void OnStateBusyChangedHandler(object sender, BusyStateChangedAr
 
 public interface IStateObject : INotifyPropertyChanged
 {
+    IServiceProvider Services { get; }
+    
     event OnStateBusyChangedHandler? OnBusyStateChanged;  
     
     bool IsBusy { get; }

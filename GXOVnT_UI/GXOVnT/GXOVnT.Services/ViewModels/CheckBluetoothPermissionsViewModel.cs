@@ -1,9 +1,9 @@
 ﻿using GXOVnT.Services.Interfaces;
-using GXOVnT.Shared.Interfaces;
+using GXOVnT.Shared.Common;
 
-namespace GXOVnT.ViewModels;
+namespace GXOVnT.Services.ViewModels;
 
-public class CheckBTPermissionsVM : ViewModelBase
+public class CheckBluetoothPermissionsViewModel : StateObject
 {
 
     #region Members
@@ -30,10 +30,9 @@ public class CheckBTPermissionsVM : ViewModelBase
     
     #region ctor
 
-    public CheckBTPermissionsVM(IRequestPermissionService requestPermissionService, 
-        ILogService logService) : base(logService)
+    public CheckBluetoothPermissionsViewModel()
     {
-        _requestPermissionService = requestPermissionService;
+        _requestPermissionService = Services.GetRequiredService<IRequestPermissionService>();
     }
 
     #endregion
