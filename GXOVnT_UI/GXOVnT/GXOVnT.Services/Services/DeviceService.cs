@@ -7,39 +7,17 @@ using GXOVnT.Shared.Interfaces;
 
 namespace GXOVnT.Services.Services;
 
-public class DeviceService : NotifyChanged, IDeviceService
+public class DeviceService : StateObject, IDeviceService
 {
 
     #region Members
-
-    private readonly ILogService _logService;
     private readonly IMessageOrchestrator _messageOrchestrator;
-    
-    private bool _isBusy;
-    private string _busyText = "";
-    
-    #endregion
-
-    #region Properties
-
-    public bool IsBusy
-    {
-        get => _isBusy;
-        private set => SetField(ref _isBusy, value);
-    }
-
-    public string BusyText
-    {
-        get => _busyText;
-        private set => SetField(ref _busyText, value);
-    }
     #endregion
 
     #region ctor
 
-    public DeviceService(ILogService logService, IMessageOrchestrator messageOrchestrator)
+    public DeviceService(IMessageOrchestrator messageOrchestrator)
     {
-        _logService = logService;
         _messageOrchestrator = messageOrchestrator;
     }
 
@@ -53,14 +31,14 @@ public class DeviceService : NotifyChanged, IDeviceService
         {
             ArgumentNullException.ThrowIfNull(device);
 
-            SetBusyStatus(true, "Checking device connection");
+            SetBusyState(true, "Checking device connection");
             
             // Make sure that we are connected to the device
             var deviceConnected = await device.ConnectToDeviceAsync();
             if (!deviceConnected)
                 throw new GXOVnTException("Unable to send the reboot request. The device is not connected");
 
-            SetBusyStatus(true, "Sending device reboot request");
+            SetBusyState(true, "Sending device reboot request");
 
             await device.SendJsonModelToDevice(new RebootRequest());
             await Task.Delay(1000);
@@ -77,12 +55,12 @@ public class DeviceService : NotifyChanged, IDeviceService
         }
         catch (Exception ex)
         {
-            _logService.LogError($"An error occured communicating with the device. {ex.Message}");
+            LogService.LogError($"An error occured communicating with the device. {ex.Message}");
             throw;
         }
         finally
         {
-            SetBusyStatus(false);
+            SetBusyState(false);
         }
     }
 
@@ -92,14 +70,14 @@ public class DeviceService : NotifyChanged, IDeviceService
         {
             ArgumentNullException.ThrowIfNull(device);
 
-            SetBusyStatus(true, "Checking device connection");
+            SetBusyState(true, "Checking device connection");
             
             // Make sure that we are connected to the device
             var deviceConnected = await device.ConnectToDeviceAsync();
             if (!deviceConnected)
                 throw new GXOVnTException("Unable to send the reboot request. The device is not connected");
 
-            SetBusyStatus(true, "Sending test WiFi connection request");
+            SetBusyState(true, "Sending test WiFi connection request");
             
             var responseTestWifiModel =
                 await _messageOrchestrator.SendMessage<TestWiFiSettingsRequest, StatusResponse>(
@@ -118,7 +96,7 @@ public class DeviceService : NotifyChanged, IDeviceService
             // Request the reboot of the device
             await RequestRebootAsync(device, true);
             
-            SetBusyStatus(true, "Requesting the WiFi test results from the device ");
+            SetBusyState(true, "Requesting the WiFi test results from the device ");
             var responseTestWifiModelResults =
                 await _messageOrchestrator.SendMessage<GetTestWiFiSettingsRequest, GetTestWiFiSettingsResponse>(
                     new GetTestWiFiSettingsRequest() , device);
@@ -133,12 +111,12 @@ public class DeviceService : NotifyChanged, IDeviceService
         }
         catch (Exception ex)
         {
-            _logService.LogError($"An error occured communicating with the device. {ex.Message}");
+            LogService.LogError($"An error occured communicating with the device. {ex.Message}");
             throw;
         }
         finally
         {
-            SetBusyStatus(false);
+            SetBusyState(false);
         }
     }
     
@@ -148,14 +126,14 @@ public class DeviceService : NotifyChanged, IDeviceService
         {
             ArgumentNullException.ThrowIfNull(device);
 
-            SetBusyStatus(true, "Checking device connection");
+            SetBusyState(true, "Checking device connection");
             
             // Make sure that we are connected to the device
             var deviceConnected = await device.ConnectToDeviceAsync();
             if (!deviceConnected)
                 throw new GXOVnTException("Unable to send the get device info request. The device is not connected");
 
-            SetBusyStatus(true, "Sending device info request");
+            SetBusyState(true, "Sending device info request");
             var requestModel = new GetSystemSettingsRequest();
             var responseModel = await _messageOrchestrator.SendMessage<GetSystemSettingsRequest, GetSystemSettingsResponse>(
                 requestModel, device);
@@ -167,12 +145,12 @@ public class DeviceService : NotifyChanged, IDeviceService
         }
         catch (Exception ex)
         {
-            _logService.LogError($"An error occured communicating with the device. {ex.Message}");
+            LogService.LogError($"An error occured communicating with the device. {ex.Message}");
             throw;
         }
         finally
         {
-            SetBusyStatus(false);
+            SetBusyState(false);
         }
     }
    
@@ -182,14 +160,14 @@ public class DeviceService : NotifyChanged, IDeviceService
         {
             ArgumentNullException.ThrowIfNull(device);
 
-            SetBusyStatus(true, "Checking device connection");
+            SetBusyState(true, "Checking device connection");
             
             // Make sure that we are connected to the device
             var deviceConnected = await device.ConnectToDeviceAsync();
             if (!deviceConnected)
                 throw new GXOVnTException("Unable to send the echo request. The device is not connected");
 
-            SetBusyStatus(true, "Sending device echo request");
+            SetBusyState(true, "Sending device echo request");
             var requestModel = new EchoRequest()
             {
                 EchoMessage = echoMessage
@@ -204,12 +182,12 @@ public class DeviceService : NotifyChanged, IDeviceService
         }
         catch (Exception ex)
         {
-            _logService.LogError($"An error occured communicating with the device. {ex.Message}");
+            LogService.LogError($"An error occured communicating with the device. {ex.Message}");
             throw;
         }
         finally
         {
-            SetBusyStatus(false);
+            SetBusyState(false);
         }
     }
     
@@ -220,14 +198,14 @@ public class DeviceService : NotifyChanged, IDeviceService
             ArgumentNullException.ThrowIfNull(device);
             ArgumentNullException.ThrowIfNull(request);
 
-            SetBusyStatus(true, "Checking device connection");
+            SetBusyState(true, "Checking device connection");
             
             // Make sure that we are connected to the device
             var deviceConnected = await device.ConnectToDeviceAsync();
             if (!deviceConnected)
                 throw new GXOVnTException("Unable to send the system settings. The device is not connected");
 
-            SetBusyStatus(true, "Sending device settings request");
+            SetBusyState(true, "Sending device settings request");
             
             var responseModel = await _messageOrchestrator.SendMessage<SetSystemSettingsRequest, StatusResponse>(
                 request, device);
@@ -245,12 +223,12 @@ public class DeviceService : NotifyChanged, IDeviceService
         }
         catch (Exception ex)
         {
-            _logService.LogError($"An error occured communicating with the device. {ex.Message}");
+            LogService.LogError($"An error occured communicating with the device. {ex.Message}");
             throw;
         }
         finally
         {
-            SetBusyStatus(false);
+            SetBusyState(false);
         }
     }
     
@@ -260,14 +238,14 @@ public class DeviceService : NotifyChanged, IDeviceService
         {
             ArgumentNullException.ThrowIfNull(device);
 
-            SetBusyStatus(true, "Checking device connection");
+            SetBusyState(true, "Checking device connection");
             
             // Make sure that we are connected to the device
             var deviceConnected = await device.ConnectToDeviceAsync();
             if (!deviceConnected)
                 throw new GXOVnTException("Unable to send the delete system settings request. The device is not connected");
 
-            SetBusyStatus(true, "Sending delete system settings request");
+            SetBusyState(true, "Sending delete system settings request");
             
             var responseModel = await _messageOrchestrator.SendMessage<DeleteSystemSettingsRequest, StatusResponse>(
                 new DeleteSystemSettingsRequest()
@@ -288,12 +266,12 @@ public class DeviceService : NotifyChanged, IDeviceService
         }
         catch (Exception ex)
         {
-            _logService.LogError($"An error occured communicating with the device. {ex.Message}");
+            LogService.LogError($"An error occured communicating with the device. {ex.Message}");
             throw;
         }
         finally
         {
-            SetBusyStatus(false);
+            SetBusyState(false);
         }
     }
     
@@ -303,14 +281,14 @@ public class DeviceService : NotifyChanged, IDeviceService
         {
             ArgumentNullException.ThrowIfNull(device);
 
-            SetBusyStatus(true, "Checking device connection");
+            SetBusyState(true, "Checking device connection");
             
             // Make sure that we are connected to the device
             var deviceConnected = await device.ConnectToDeviceAsync();
             if (!deviceConnected)
                 throw new GXOVnTException("Unable to send the system boot mode settings request. The device is not connected");
 
-            SetBusyStatus(true, "Sending system boot mode request");
+            SetBusyState(true, "Sending system boot mode request");
             
             var responseModel = await _messageOrchestrator.SendMessage<SetSystemBootModeRequest, StatusResponse>(
                 new SetSystemBootModeRequest()
@@ -331,12 +309,12 @@ public class DeviceService : NotifyChanged, IDeviceService
         }
         catch (Exception ex)
         {
-            _logService.LogError($"An error occured communicating with the device. {ex.Message}");
+            LogService.LogError($"An error occured communicating with the device. {ex.Message}");
             throw;
         }
         finally
         {
-            SetBusyStatus(false);
+            SetBusyState(false);
         }
     }
 
@@ -346,14 +324,14 @@ public class DeviceService : NotifyChanged, IDeviceService
         {
             ArgumentNullException.ThrowIfNull(device);
 
-            SetBusyStatus(true, "Checking device connection");
+            SetBusyState(true, "Checking device connection");
             
             // Make sure that we are connected to the device
             var deviceConnected = await device.ConnectToDeviceAsync();
             if (!deviceConnected)
                 throw new GXOVnTException("Unable to send the system settings. The device is not connected");
 
-            SetBusyStatus(true, "Sending save settings request");
+            SetBusyState(true, "Sending save settings request");
             
             var responseModel = await _messageOrchestrator.SendMessage<SaveConfigurationRequest, StatusResponse>(
                 new SaveConfigurationRequest(), device);
@@ -366,12 +344,12 @@ public class DeviceService : NotifyChanged, IDeviceService
         }
         catch (Exception ex)
         {
-            _logService.LogError($"An error occured communicating with the device. {ex.Message}");
+            LogService.LogError($"An error occured communicating with the device. {ex.Message}");
             throw;
         }
         finally
         {
-            SetBusyStatus(false);
+            SetBusyState(false);
         }
     }
     
@@ -381,14 +359,14 @@ public class DeviceService : NotifyChanged, IDeviceService
         {
             ArgumentNullException.ThrowIfNull(device);
 
-            SetBusyStatus(true, "Checking device connection");
+            SetBusyState(true, "Checking device connection");
             
             // Make sure that we are connected to the device
             var deviceConnected = await device.ConnectToDeviceAsync();
             if (!deviceConnected)
                 throw new GXOVnTException("Unable to send the keep alive request. The device is not connected");
 
-            SetBusyStatus(true, "Sending keep alive request");
+            SetBusyState(true, "Sending keep alive request");
             
             var responseModel = await _messageOrchestrator.SendMessage<KeepAliveRequest, StatusResponse>(
                 new KeepAliveRequest(), device);
@@ -401,12 +379,12 @@ public class DeviceService : NotifyChanged, IDeviceService
         }
         catch (Exception ex)
         {
-            _logService.LogError($"An error occured communicating with the device. {ex.Message}");
+            LogService.LogError($"An error occured communicating with the device. {ex.Message}");
             throw;
         }
         finally
         {
-            SetBusyStatus(false);
+            SetBusyState(false);
         }
     }
     
@@ -416,14 +394,14 @@ public class DeviceService : NotifyChanged, IDeviceService
         {
             ArgumentNullException.ThrowIfNull(device);
 
-            SetBusyStatus(true, "Checking device connection");
+            SetBusyState(true, "Checking device connection");
             
             // Make sure that we are connected to the device
             var deviceConnected = await device.ConnectToDeviceAsync();
             if (!deviceConnected)
                 throw new GXOVnTException("Unable to send the check firmware request. The device is not connected");
 
-            SetBusyStatus(true, "Sending check firmware request");
+            SetBusyState(true, "Sending check firmware request");
             
             var responseTestWifiModel =
                 await _messageOrchestrator.SendMessage<CheckFirmwareUpdateRequest, StatusResponse>(
@@ -442,7 +420,7 @@ public class DeviceService : NotifyChanged, IDeviceService
             // Request the reboot of the device
             await RequestRebootAsync(device, true);
             
-            SetBusyStatus(true, "Requesting the firmware update results from the device ");
+            SetBusyState(true, "Requesting the firmware update results from the device ");
             var responseResults =
                 await _messageOrchestrator.SendMessage<GetFirmwareUpdateResultRequest, GetFirmwareUpdateResultResponse>(
                     new GetFirmwareUpdateResultRequest() , device);
@@ -454,24 +432,15 @@ public class DeviceService : NotifyChanged, IDeviceService
         }
         catch (Exception ex)
         {
-            _logService.LogError($"An error occured communicating with the device. {ex.Message}");
+            LogService.LogError($"An error occured communicating with the device. {ex.Message}");
             throw;
         }
         finally
         {
-            SetBusyStatus(false);
+            SetBusyState(false);
         }
     }
     #endregion
 
-    #region Private Methods
-
-    private void SetBusyStatus(bool isBusy, string busyText = "")
-    {
-        IsBusy = isBusy;
-        BusyText = isBusy ? busyText : "";
-    }
-
-    #endregion
 
 }

@@ -1,6 +1,8 @@
-﻿namespace GXOVnT.Services.Interfaces;
+﻿using GXOVnT.Shared.Interfaces;
 
-public interface IRequestPermissionService
+namespace GXOVnT.Services.Interfaces;
+
+public interface IRequestPermissionService : IStateObject
 {
     Task<bool> ApplicationHasBluetoothPermission();
     

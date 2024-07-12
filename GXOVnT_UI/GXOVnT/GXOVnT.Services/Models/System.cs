@@ -11,7 +11,7 @@ using Plugin.BLE.Abstractions.Exceptions;
 
 namespace GXOVnT.Services.Models;
 
-public class System : NotifyChanged, IAsyncDisposable
+public class System : StateObject, IAsyncDisposable
 {
 
     #region Events

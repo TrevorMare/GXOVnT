@@ -4,7 +4,7 @@ using GXOVnT.Shared.Interfaces;
 
 namespace GXOVnT.ViewModels;
 
-public abstract class ViewModelBase : NotifyChanged
+public abstract class ViewModelBase : StateObject
 {
 
     #region Members

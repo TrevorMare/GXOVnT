@@ -1,9 +1,7 @@
 ﻿using GXOVnT.Services;
-using GXOVnT.ViewModels;
-using GXOVnT.ViewModels.Wizards;
+using GXOVnT.Shared;
 using Microsoft.Extensions.Logging;
 using MudBlazor.Extensions;
-using MudBlazor.Services;
 
 namespace GXOVnT;
 
@@ -29,9 +27,9 @@ public static class MauiProgram
 
         builder.Services.AddMauiBlazorWebView();
         builder.Services.RegisterServices();
-
-        builder.Services.AddTransient<CheckBTPermissionsVM>();
-        builder.Services.AddTransient<EnrollDeviceWizardModel>();
+        //
+        // builder.Services.AddTransient<CheckBTPermissionsVM>();
+        // builder.Services.AddTransient<EnrollDeviceWizardModel>();
         
         // use this to add MudServices and the MudBlazor.Extensions
         builder.Services.AddMudServicesWithExtensions(c => c.WithoutAutomaticCssLoading());
@@ -41,7 +39,10 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
-        return builder.Build();
+        var app = builder.Build();
+        AppService.SetServiceProvider(app.Services);
+
+        return app;
     }
     
   

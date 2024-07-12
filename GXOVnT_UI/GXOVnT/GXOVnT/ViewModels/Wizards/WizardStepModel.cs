@@ -2,7 +2,7 @@
 
 namespace GXOVnT.ViewModels.Wizards;
 
-public class WizardStepModel : NotifyChanged
+public class WizardStepModel : StateObject
 {
 
     #region Members

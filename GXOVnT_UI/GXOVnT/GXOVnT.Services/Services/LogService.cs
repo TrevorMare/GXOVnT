@@ -1,11 +1,19 @@
-﻿using GXOVnT.Shared.Common;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using GXOVnT.Shared.Common;
 using GXOVnT.Shared.Interfaces;
 using GXOVnT.Shared.Models;
 
 namespace GXOVnT.Services.Services;
 
-public class LogService : NotifyChanged, ILogService
+public class LogService : ILogService
 {
+
+    #region Events
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    #endregion
     
     #region Members
 
@@ -74,6 +82,19 @@ public class LogService : NotifyChanged, ILogService
                 .AsReadOnly();
         }
     }
-    #endregion
     
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        field = value;
+        OnPropertyChanged(propertyName);
+        return true;
+    }
+    #endregion
+
 }

@@ -121,7 +121,7 @@ public partial class DeviceInfo : GXOVnTComponent
     
     private async void DeviceServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        SetBusyValues(DeviceService.IsBusy, DeviceService.BusyText);
+        SetBusyValues(DeviceService.IsBusy, DeviceService.BusyStatus);
         
         await InvokeAsync(StateHasChanged);
     }

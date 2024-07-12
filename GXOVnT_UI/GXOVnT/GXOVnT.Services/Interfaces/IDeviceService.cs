@@ -1,18 +1,13 @@
-﻿using System.ComponentModel;
-using GXOVnT.Services.Models;
-using GXOVnT.Shared.Common;
+﻿using GXOVnT.Shared.Common;
 using GXOVnT.Shared.DeviceMessage.Request;
 using GXOVnT.Shared.DeviceMessage.Response;
+using GXOVnT.Shared.Interfaces;
 
 namespace GXOVnT.Services.Interfaces;
 
-public interface IDeviceService : INotifyPropertyChanged
+public interface IDeviceService : IStateObject
 {
-    
-    bool IsBusy { get; }
-    
-    string BusyText { get; }
-    
+   
     Task RequestRebootAsync(Models.System device, bool reconnect = true);
 
     Task<bool> TestWiFiSettingsOnDeviceAsync(Models.System device, string wifiSsid, string wifiPassword);

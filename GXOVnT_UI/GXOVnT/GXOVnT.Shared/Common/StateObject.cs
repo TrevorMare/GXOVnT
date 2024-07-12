@@ -1,26 +1,75 @@
-﻿using GXOVnT.Shared.Interfaces;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using GXOVnT.Shared.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GXOVnT.Shared.Common;
 
-public abstract class NotifyChangedTask : NotifyChangedWithBusy, INotifyChangedTask
+public class StateObject : IStateObject
 {
-
+    
     #region Members
 
+    private bool _isBusy;
+    private string? _busyStatus;
     protected readonly ILogService LogService;
-
+    
     #endregion
     
+    #region Properties
+    public event OnStateBusyChangedHandler? OnBusyStateChanged; 
+    
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public bool IsBusy
+    {
+        get => _isBusy;
+        private set => SetField(ref _isBusy, value);
+    }
+
+    public string? BusyStatus
+    {
+        get => _busyStatus;
+        private set => SetField(ref _busyStatus, value);
+    }
+    #endregion
+
     #region ctor
 
-    public NotifyChangedTask(ILogService logService)
+    public StateObject()
     {
-        LogService = logService;
+        LogService = AppService.ServiceProvider.GetRequiredService<ILogService>();
     }
 
     #endregion
+    
+    #region Public Methods
 
-    #region Methods
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        field = value;
+        OnPropertyChanged(propertyName);
+        return true;
+    }
+
+    public void SetBusyState(bool isBusy, string? busyStatus = null)
+    {
+        // Set the fields and if there is a change in either one of the values, we need to raise an event
+        if (SetField(ref _isBusy, isBusy, nameof(IsBusy)) ||
+            SetField(ref _busyStatus, isBusy ? busyStatus : null, nameof(BusyStatus)))
+        {
+            OnBusyStateChanged?.Invoke(this, new BusyStateChangedArgs() { BusyStatus = _busyStatus, IsBusy = isBusy });
+        }
+    }
+    #endregion
+
+    #region Protected Methods
 
     protected void RunTask(Action action, string initialBusyText = "Busy...")
     {
@@ -95,7 +144,6 @@ public abstract class NotifyChangedTask : NotifyChangedWithBusy, INotifyChangedT
             SetBusyState(false);
         }
     }
-    
+
     #endregion
-    
 }

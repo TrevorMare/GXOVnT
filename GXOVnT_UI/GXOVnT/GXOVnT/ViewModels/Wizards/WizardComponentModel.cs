@@ -3,7 +3,7 @@ using GXOVnT.Shared.Common;
 
 namespace GXOVnT.ViewModels.Wizards;
 
-public class WizardComponentModel : NotifyChanged
+public class WizardComponentModel : StateObject
 {
 
     #region Members

@@ -3,15 +3,12 @@ using GXOVnT.Services.Models;
 using GXOVnT.Services.Services;
 using GXOVnT.Shared.DeviceMessage;
 using GXOVnT.Shared.DeviceMessage.Common;
+using GXOVnT.Shared.Interfaces;
 
 namespace GXOVnT.Services.Interfaces;
 
-public interface IMessageOrchestrator : INotifyPropertyChanged
+public interface IMessageOrchestrator : IStateObject
 {
-
-    bool IsBusy { get; }
-    
-    string ProgressText { get; }
     
     int Progress { get; }
     

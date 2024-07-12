@@ -14,7 +14,7 @@ namespace GXOVnT.Services.Services;
 /// <summary>
 /// Bluetooth service wrapper class. This class is responsible for performing the scans of devices
 /// </summary>
-public class BluetoothService : NotifyChanged, IBluetoothService 
+public class BluetoothService : StateObject, IBluetoothService 
 {
 
 
@@ -22,12 +22,10 @@ public class BluetoothService : NotifyChanged, IBluetoothService
     private const string GXOVnTManufacturerValue = "GXOVnT";
 
     private readonly IRequestPermissionService _requestPermissionService;
-    private readonly ILogService _logService;
     private IBluetoothLE? _bluetoothManager;
     private IAdapter? _bluetoothAdapter;
     private bool _isScanningDevices;
     private CancellationTokenSource _scanCancellationTokenSource = default!;
-
     private readonly ObservableCollection<Models.System> _discoveredDevices = new();
     #endregion
     
@@ -87,13 +85,10 @@ public class BluetoothService : NotifyChanged, IBluetoothService
     
     #region ctor
 
-    public BluetoothService(IRequestPermissionService requestPermissionService, 
-        ILogService logService)
+    public BluetoothService(IRequestPermissionService requestPermissionService)
     {
         
         _requestPermissionService = requestPermissionService;
-        _logService = logService;
-
         _discoveredDevices.CollectionChanged += (_, _) =>
         {
             OnPropertyChanged(nameof(DiscoveredDevices));
@@ -107,6 +102,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
     {
         try
         {
+            SetBusyState(true, "Scanning devices");
             IsScanningDevices = true;
 
             if (!await InitializeBluetooth())
@@ -124,11 +120,12 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         }
         catch (Exception ex)
         {
-            _logService.LogError($"StartScanForDevicesAsync: An error occured scanning for devices. {ex.Message}");
+            LogService.LogError($"StartScanForDevicesAsync: An error occured scanning for devices. {ex.Message}");
             return false;
         }
         finally
         {
+            SetBusyState(false);
             IsScanningDevices = false;    
         }
     }
@@ -169,7 +166,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
             
             if (_bluetoothManager == null || _bluetoothAdapter == null)
             {
-                _logService.LogWarning("InitializeBluetooth: Could not get a reference to the Bluetooth adapter");
+                LogService.LogWarning("InitializeBluetooth: Could not get a reference to the Bluetooth adapter");
                 return false;
             }
             
@@ -187,7 +184,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         }
         catch (Exception ex)
         {
-            _logService.LogError($"InitializeBluetooth: An error occured initializing the Bluetooth adapter. {ex.Message}");
+            LogService.LogError($"InitializeBluetooth: An error occured initializing the Bluetooth adapter. {ex.Message}");
             BluetoothIsReady = false;
             return false;
         }
@@ -244,7 +241,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
         if (FindDevice(deviceId) != null)
             return;
 
-        var bleDevice = new Models.System(_bluetoothAdapter!, e.Device, _logService);
+        var bleDevice = new Models.System(_bluetoothAdapter!, e.Device, LogService);
         
         _discoveredDevices.Add(bleDevice);
         
@@ -283,7 +280,7 @@ public class BluetoothService : NotifyChanged, IBluetoothService
 
     private void BluetoothManagerOnStateChanged(object? sender, BluetoothStateChangedArgs e)
     {
-        _logService.LogInformation($"BluetoothManagerOnStateChanged: Current Bluetooth state changed to {e.NewState.ToString()}");
+        LogService.LogInformation($"BluetoothManagerOnStateChanged: Current Bluetooth state changed to {e.NewState.ToString()}");
         BluetoothState = e.NewState;
     }
 

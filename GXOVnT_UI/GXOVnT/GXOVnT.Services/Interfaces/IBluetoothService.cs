@@ -1,10 +1,9 @@
-﻿using System.ComponentModel;
-using GXOVnT.Services.Models;
+﻿using GXOVnT.Shared.Interfaces;
 using Plugin.BLE.Abstractions.Contracts;
 
 namespace GXOVnT.Services.Interfaces;
 
-public interface IBluetoothService : INotifyPropertyChanged, IAsyncDisposable
+public interface IBluetoothService : IStateObject, IAsyncDisposable
 {
     
     

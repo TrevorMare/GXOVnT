@@ -10,7 +10,7 @@ namespace GXOVnT.Services.Services;
 
 public delegate void MessageAggregateReceivedHandler(object sender, MessageAggregate messageAggregate);
 
-internal class MessageOrchestrator : NotifyChanged, IMessageOrchestrator
+internal class MessageOrchestrator : StateObject, IMessageOrchestrator
 {
 
     #region Events
@@ -19,26 +19,10 @@ internal class MessageOrchestrator : NotifyChanged, IMessageOrchestrator
     
     #region Members
     private readonly IBluetoothService _bluetoothService;
-    private readonly ILogService _logService;
-    private bool _isBusy;
-    private string _progressText = string.Empty;
     private int _progress;
     #endregion
 
     #region Properties
-    
-    public bool IsBusy
-    {
-        get => _isBusy;
-        private set => SetField(ref _isBusy, value);
-    }
-
-    public string ProgressText
-    {
-        get => _progressText;
-        private set => SetField(ref _progressText, value);
-    }
-    
     public int Progress
     {
         get => _progress;
@@ -48,10 +32,10 @@ internal class MessageOrchestrator : NotifyChanged, IMessageOrchestrator
 
     #region ctor
 
-    public MessageOrchestrator(IBluetoothService bluetoothService, ILogService logService)
+    public MessageOrchestrator(IBluetoothService bluetoothService)
     {
         _bluetoothService = bluetoothService;
-        _logService = logService;
+        
     }
 
     #endregion
@@ -70,11 +54,7 @@ internal class MessageOrchestrator : NotifyChanged, IMessageOrchestrator
         }
         catch (Exception ex)
         {
-            _logService.LogError($"An unhandled error occured sending the message to the device, {ex.Message}");
-        }
-        finally
-        {
-            SetProgressComplete();
+            LogService.LogError($"An unhandled error occured sending the message to the device, {ex.Message}");
         }
     }
 
@@ -88,7 +68,7 @@ internal class MessageOrchestrator : NotifyChanged, IMessageOrchestrator
         }
         catch (Exception ex)
         {
-            _logService.LogError($"An unhandled error occured sending the message to the device, {ex.Message}");
+            LogService.LogError($"An unhandled error occured sending the message to the device, {ex.Message}");
         }
         finally
         {
@@ -112,12 +92,8 @@ internal class MessageOrchestrator : NotifyChanged, IMessageOrchestrator
         }
         catch (Exception ex)
         {
-            _logService.LogError($"An unhandled error occured sending the message to the device, {ex.Message}");
+            LogService.LogError($"An unhandled error occured sending the message to the device, {ex.Message}");
             return default(TOut);
-        }
-        finally
-        {
-            SetProgressComplete();
         }
     }
 
@@ -148,7 +124,7 @@ internal class MessageOrchestrator : NotifyChanged, IMessageOrchestrator
             
             if (outgoingMessageId == -1)
             {
-                _logService.LogWarning(
+                LogService.LogWarning(
                     "An attempt was made to send a message to the device but it was not connected");
                 return default(TOut);
             }
@@ -190,7 +166,7 @@ internal class MessageOrchestrator : NotifyChanged, IMessageOrchestrator
         }
         catch (Exception ex)
         {
-            _logService.LogError($"An unhandled error occured sending the message to the device, {ex.Message}");
+            LogService.LogError($"An unhandled error occured sending the message to the device, {ex.Message}");
             return default(TOut);
         }
         finally
@@ -209,23 +185,21 @@ internal class MessageOrchestrator : NotifyChanged, IMessageOrchestrator
 
     private void SetProgressStartSending()
     {
+        SetBusyState(true, "Sending message to system");
         Progress = 0;
-        IsBusy = true;
-        ProgressText = "Sending message to device";
+        
     }
     
     private void SetProgressWaitingResponse()
     {
+        SetBusyState(true, "Waiting for response from system");
         Progress = 0;
-        IsBusy = true;
-        ProgressText = "Waiting for device response";
     }
     
     private void SetProgressComplete()
     {
+        SetBusyState(false);
         Progress = 0;
-        IsBusy = false;
-        ProgressText = string.Empty;
     }
     
     private Models.System? FindDevice(Guid deviceId)
