@@ -1,126 +1,37 @@
-﻿using GXOVnT.ViewModels.Wizards;
+﻿using System.ComponentModel;
+using GXOVnT.Shared.Common;
 using Microsoft.AspNetCore.Components;
 
 namespace GXOVnT.Components.Shared.WizardComponent;
 
-public partial class WizardStep<TWizardModelType> : ComponentBase  where TWizardModelType: WizardComponentModel, new()
+public partial class WizardStep : ComponentBase  
 {
-
+    
     #region Properties
 
-    public WizardStepModel WizardStepModel { get; private set; } = new();
+    private bool IsCurrentStep => WizardSchemaStep.IsCurrentStep;
     
+    public WizardSchemaStep WizardSchemaStep { get; set; } = new();
     
     [Parameter]
-    public string? WizardStepName 
+    public string? StepName 
     {
-        get => WizardStepModel.WizardStepName;
-        set => WizardStepModel.WizardStepName = value;
+        get => WizardSchemaStep.StepName;
+        set => WizardSchemaStep.StepName = value;
     }
     
     [Parameter]
-    public bool IsBusy 
+    public string? StepTitle 
     {
-        get => WizardStepModel.IsBusy;
-        set => WizardStepModel.IsBusy = value;
-    }
-    
-    [Parameter]
-    public string? BusyText 
-    {
-        get => WizardStepModel.BusyText;
-        set => WizardStepModel.BusyText = value;
-    }
-    
-    [Parameter]
-    public bool IsEnabled 
-    {
-        get => WizardStepModel.IsEnabled;
-        set => WizardStepModel.IsEnabled = value;
+        get => WizardSchemaStep.StepTitle;
+        set => WizardSchemaStep.StepTitle = value;
     } 
-    
-    [Parameter]
-    public string? WizardStepTitle 
-    {
-        get => WizardStepModel.StepTitle;
-        set => WizardStepModel.StepTitle = value;
-    } 
-
-    [Parameter]
-    public int StepSequence
-    {
-        get => WizardStepModel.StepSequence;
-        set => WizardStepModel.StepSequence = value;
-    } 
-    
-    [Parameter]
-    public bool HasCancelButton
-    {
-        get => WizardStepModel.HasCancelButton;
-        set => WizardStepModel.HasCancelButton = value;
-    } 
-    
-    [Parameter]
-    public bool CancelEnabled
-    {
-        get => WizardStepModel.CancelEnabled;
-        set => WizardStepModel.CancelEnabled = value;
-    } 
-    
-    [Parameter]
-    public bool HasBackButton
-    {
-        get => WizardStepModel.HasBackButton;
-        set => WizardStepModel.HasBackButton = value;
-    } 
-    
-    [Parameter]
-    public bool BackEnabled
-    {
-        get => WizardStepModel.BackEnabled;
-        set => WizardStepModel.BackEnabled = value;
-    }
-    
-    [Parameter]
-    public bool HasForwardButton
-    {
-        get => WizardStepModel.HasForwardButton;
-        set => WizardStepModel.HasForwardButton = value;
-    }
-    
-    [Parameter]
-    public bool ForwardEnabled
-    {
-        get => WizardStepModel.ForwardEnabled;
-        set => WizardStepModel.ForwardEnabled = value;
-    }
-    
-    [Parameter]
-    public string CancelButtonText
-    {
-        get => WizardStepModel.CancelButtonText;
-        set => WizardStepModel.CancelButtonText = value;
-    }
-    
-    [Parameter]
-    public string BackButtonText
-    {
-        get => WizardStepModel.BackButtonText;
-        set => WizardStepModel.BackButtonText = value;
-    }
-    
-    [Parameter]
-    public string NextButtonText
-    {
-        get => WizardStepModel.NextButtonText;
-        set => WizardStepModel.NextButtonText = value;
-    }
     
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
     
     [CascadingParameter] 
-    private WizardComponent<TWizardModelType>? WizardComponent { get; set; } 
+    private WizardComponent? WizardComponent { get; set; } 
     
     #endregion
 
@@ -130,7 +41,18 @@ public partial class WizardStep<TWizardModelType> : ComponentBase  where TWizard
     {
         base.OnInitialized();
         
-        WizardComponent?.AddWizardStep(WizardStepModel);
+        WizardSchemaStep.PropertyChanged -= WizardSchemaStepOnPropertyChanged;
+        WizardSchemaStep.PropertyChanged += WizardSchemaStepOnPropertyChanged;
+        
+        WizardComponent?.AddWizardStep(this);
+    }
+    #endregion
+
+    #region Event Callbacks
+
+    private async void WizardSchemaStepOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        await InvokeAsync(StateHasChanged);
     }
 
     #endregion

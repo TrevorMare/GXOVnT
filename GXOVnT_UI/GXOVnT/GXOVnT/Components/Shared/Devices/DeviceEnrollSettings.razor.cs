@@ -48,7 +48,7 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
     {
         base.OnInitialized();
         
-        SetWizardForwardEnabled(false);
+        
         
         MessageOrchestrator.PropertyChanged -= MessageOrchestratorOnPropertyChanged;
         MessageOrchestrator.PropertyChanged += MessageOrchestratorOnPropertyChanged;
@@ -80,19 +80,18 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
             DataLoaded = false;
             SetSettingsMessageModel = new SetSystemSettingsRequest();
             
-            SetWizardForwardEnabled(false);
+           
             
             if (Device == null)
                 return;
             
-            SetBusyValues(true, "Connecting to device");
+           
             ConnectedToDevice = await Device.ConnectToDeviceAsync();
 
             if (!ConnectedToDevice)
                 return;
 
-            SetBusyValues(true, "Querying device info");
-
+           
             var requestModel = new GetSystemSettingsRequest();
             var responseModel = await MessageOrchestrator.SendMessage<GetSystemSettingsRequest, GetSystemSettingsResponse>(
                 requestModel, Device);
@@ -117,7 +116,7 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
         }
         finally
         {
-            SetBusyValues(false);
+           
         }
     }
 
@@ -129,20 +128,17 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
             if (Device == null)
                 return;
             
-            SetBusyValues(true, "Connecting to device");
+           
             ConnectedToDevice = await Device.ConnectToDeviceAsync();
 
             if (!ConnectedToDevice)
                 return;
             
-            // Send the reboot command
-            SetBusyValues(true, "Sending device reboot request");
-
+          
             await Device.SendJsonModelToDevice(new RebootRequest());
             await Task.Delay(2000);
 
-            // Now wait until the device is online again
-            SetBusyValues(true, "Waiting for the device to get back online again");
+           
 
             using var reConnectCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(1));
             var isReconnected = await Device.ReconnectWhenAvailable(reConnectCancellationTokenSource.Token);
@@ -164,7 +160,7 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
         }
         finally
         {
-            SetBusyValues(false);
+          
         }
         
         
@@ -178,18 +174,17 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
             var wifiSsid = SetSettingsMessageModel.WiFiSsid;
             var wifiPassword = SetSettingsMessageModel.WiFiPassword;
             
-            SetWizardForwardEnabled(false);
-            
+         
             if (Device == null)
                 return;
             
-            SetBusyValues(true, "Connecting to device");
+         
             ConnectedToDevice = await Device.ConnectToDeviceAsync();
 
             if (!ConnectedToDevice)
                 return;
             
-            SetBusyValues(true, "Sending WiFi Settings to test");
+         
             var requestTestWifiModel = new TestWiFiSettingsRequest()
             {
                 WiFiPassword = wifiPassword,
@@ -206,14 +201,11 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
                 return;
             }
             
-            // Send the reboot command
-            SetBusyValues(true, "Sending device reboot request");
-
+      
             await Device.SendJsonModelToDevice(new RebootRequest());
             await Task.Delay(2000);
 
-            // Now wait until the device is online again
-            SetBusyValues(true, "Waiting for the device to get back online again");
+        
 
             using var reConnectCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(1));
             var isReconnected = await Device.ReconnectWhenAvailable(reConnectCancellationTokenSource.Token);
@@ -225,7 +217,7 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
                 return;
             }
             
-            SetBusyValues(true, "Querying the WiFi Test results ");
+          
             var responseTestWifiModelResults =
                 await MessageOrchestrator.SendMessage<GetTestWiFiSettingsRequest, GetTestWiFiSettingsResponse>(
                     new GetTestWiFiSettingsRequest() , Device);
@@ -246,8 +238,7 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
             
             await DialogService.ShowMessageBox("Success",
                 "The device successfully connected to the WiFi with the specified settings");
-            
-            SetWizardForwardEnabled(true);
+         
         }
         catch (Exception)
         {
@@ -255,7 +246,7 @@ public partial class DeviceEnrollSettings : GXOVnTComponent
         }
         finally
         {
-            SetBusyValues(false);
+          
         }
     }
     

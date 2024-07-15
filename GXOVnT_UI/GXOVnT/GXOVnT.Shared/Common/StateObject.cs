@@ -67,11 +67,11 @@ public class StateObject : IStateObject
     public void SetBusyState(bool isBusy, string? busyStatus = null)
     {
         // Set the fields and if there is a change in either one of the values, we need to raise an event
-        if (SetField(ref _isBusy, isBusy, nameof(IsBusy)) ||
-            SetField(ref _busyStatus, isBusy ? busyStatus : null, nameof(BusyStatus)))
-        {
-            OnBusyStateChanged?.Invoke(this, new BusyStateChangedArgs() { BusyStatus = _busyStatus, IsBusy = isBusy });
-        }
+        var changesMade = SetField(ref _isBusy, isBusy, nameof(IsBusy));
+        changesMade |= SetField(ref _busyStatus, isBusy ? busyStatus : null, nameof(BusyStatus));
+        
+        if (changesMade)
+            OnBusyStateChanged?.Invoke(this, new BusyStateChangedArgs() { BusyStatus = _busyStatus, IsBusy = _isBusy });
     }
     #endregion
 

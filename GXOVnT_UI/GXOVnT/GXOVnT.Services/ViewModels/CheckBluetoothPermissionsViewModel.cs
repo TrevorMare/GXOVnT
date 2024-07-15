@@ -42,12 +42,17 @@ public class CheckBluetoothPermissionsViewModel : StateObject
 
     #region Methods
 
-    public async Task CheckHasBluetoothPermission()
+    private bool _testValue = false;
+    
+    public async Task<bool> CheckHasBluetoothPermission()
     {
-        await RunTaskAsync(async () =>
+        return await RunTaskAsync(async () =>
         {
+            await Task.Delay(2000);
+            
             HasCheckedPermissions = true;
-            HasBluetoothPermission = await _requestPermissionService.ApplicationHasBluetoothPermission();
+            HasBluetoothPermission = _testValue; //await _requestPermissionService.ApplicationHasBluetoothPermission();
+            return HasBluetoothPermission;
         }, "Checking Bluetooth permissions");
     }
     
@@ -58,6 +63,11 @@ public class CheckBluetoothPermissionsViewModel : StateObject
             var permissionGranted = await _requestPermissionService.RequestBluetoothPermission();
             if (!permissionGranted)
                 return false;
+
+            await Task.Delay(2000);
+            
+            
+            _testValue = true;
             await CheckHasBluetoothPermission();
             return _hasBluetoothPermission;
         }, "Requesting Bluetooth permissions");

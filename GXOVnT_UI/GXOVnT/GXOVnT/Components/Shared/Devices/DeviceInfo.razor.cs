@@ -43,7 +43,7 @@ public partial class DeviceInfo : GXOVnTComponent
     {
         base.OnInitialized();
         
-        SetWizardForwardEnabled(false);
+       
         
         DeviceService.PropertyChanged -= DeviceServiceOnPropertyChanged;
         DeviceService.PropertyChanged += DeviceServiceOnPropertyChanged;
@@ -58,7 +58,7 @@ public partial class DeviceInfo : GXOVnTComponent
 
         ComponentInitialized = true;
         DeviceInformationGetExecuted = false;
-        SetWizardForwardEnabled(false);
+        
         await InvokeAsync(StateHasChanged);
         await GetDeviceInfo();
     }
@@ -73,7 +73,7 @@ public partial class DeviceInfo : GXOVnTComponent
             DeviceInformationGetExecuted = true;
             DataLoaded = false;
             ConfirmedContinue = false;
-            SetWizardForwardEnabled(false);
+           
             
             if (Device == null)
                 return;
@@ -83,8 +83,8 @@ public partial class DeviceInfo : GXOVnTComponent
             DataLoaded = true;
             DeviceSettingsResponse = responseModel;
             
-            if (!StepRequiresConfirmation())
-                SetWizardForwardEnabled(true);
+         
+               
         }
         catch (Exception)
         {
@@ -93,7 +93,7 @@ public partial class DeviceInfo : GXOVnTComponent
         }
         finally
         {
-            SetBusyValues(false);
+            
         }
     }
     
@@ -116,12 +116,12 @@ public partial class DeviceInfo : GXOVnTComponent
     private void OnConfirmChanged(bool value)
     {
         ConfirmedContinue = value;
-        SetWizardForwardEnabled(ConfirmedContinue);
+       
     }
     
     private async void DeviceServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        SetBusyValues(DeviceService.IsBusy, DeviceService.BusyStatus);
+      
         
         await InvokeAsync(StateHasChanged);
     }

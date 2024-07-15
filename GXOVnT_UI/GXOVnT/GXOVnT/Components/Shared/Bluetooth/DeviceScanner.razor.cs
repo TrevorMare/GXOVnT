@@ -36,7 +36,6 @@ public partial class DeviceScanner : GXOVnTComponent
     {
         base.OnInitialized();
         
-        SetWizardForwardEnabled(false);
         
         BluetoothService.PropertyChanged -= DeviceScannerViewModelOnPropertyChanged;
         BluetoothService.PropertyChanged += DeviceScannerViewModelOnPropertyChanged;
@@ -59,7 +58,7 @@ public partial class DeviceScanner : GXOVnTComponent
         
         await DeviceSelected.InvokeAsync(item);
         
-        SetWizardForwardEnabled(true);
+        
     }
     
     public async Task ToggleScanDevices()
@@ -70,9 +69,6 @@ public partial class DeviceScanner : GXOVnTComponent
                 await BluetoothService.StopScanForDevicesAsync();
             else
             {
-                SetBusyValues(true, "Scanning for devices...");
-                // We should not be able to continue
-                SetWizardForwardEnabled(false);
                 // Clear the selected device when we start scanning
                 await DeviceSelected.InvokeAsync(null);
                 // Now perform the scan
@@ -85,7 +81,7 @@ public partial class DeviceScanner : GXOVnTComponent
         }
         finally
         {
-            SetBusyValues(false);
+            
         }
     }
 

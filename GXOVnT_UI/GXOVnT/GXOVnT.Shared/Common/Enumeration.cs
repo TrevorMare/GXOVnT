@@ -7,6 +7,12 @@ namespace GXOVnT.Shared.Common;
 /// </summary>
 public abstract class Enumeration : IComparable
 {
+    protected Enumeration(string name, int id)
+    {
+        Name = name;
+        Id = id;
+    }
+
     public string Name { get; private set; }
 
     public int Id { get; private set; }
@@ -29,9 +35,15 @@ public abstract class Enumeration : IComparable
             .Select(f => f.GetValue(null))
             .Cast<T>()
             .Where(filter);
+    
     public static T? FromValue<T>(int value) where T: Enumeration
     {
         return GetAll<T>().FirstOrDefault(e => e.Id == value);
+    }
+
+    public static T? FromName<T>(string name) where T: Enumeration
+    {
+        return GetAll<T>().FirstOrDefault(e => e.Name.Equals(name));
     }
     
     public override bool Equals(object? obj)

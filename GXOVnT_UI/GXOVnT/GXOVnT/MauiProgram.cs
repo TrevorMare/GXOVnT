@@ -1,4 +1,5 @@
 ﻿using GXOVnT.Services;
+using GXOVnT.Services.Wizards;
 using GXOVnT.Shared;
 using GXOVnT.ViewModels.Wizards;
 using Microsoft.Extensions.Logging;
@@ -30,7 +31,7 @@ public static class MauiProgram
         builder.Services.RegisterServices();
         //
         // builder.Services.AddTransient<CheckBTPermissionsVM>();
-        builder.Services.AddTransient<EnrollDeviceWizardModel>();
+        builder.Services.AddTransient<EnrollDeviceWizardSchema>();
         
         // use this to add MudServices and the MudBlazor.Extensions
         builder.Services.AddMudServicesWithExtensions(c => c.WithoutAutomaticCssLoading());

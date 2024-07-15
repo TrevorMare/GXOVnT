@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel;
-using GXOVnT.Services.Interfaces;
 using GXOVnT.Shared;
 using GXOVnT.Shared.Common;
 using GXOVnT.Shared.Interfaces;
-using GXOVnT.ViewModels.Wizards;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -15,12 +13,6 @@ public class GXOVnTComponent : ComponentBase
     #region Members
 
     protected StateObject? AttachedViewModelStateObject;
-    
-    
-    
-    
-    private bool _isBusy;
-    private string? _busyText;
 
     #endregion
     
@@ -33,30 +25,7 @@ public class GXOVnTComponent : ComponentBase
     [Inject]
     protected ILogService LogService { get; set; } = default!;
     
-    [CascadingParameter]
-    protected WizardStepModel? WizardStepModel { get; set; }
-
-    protected bool IsBusy
-    {
-        get => WizardStepModel?.IsBusy ?? _isBusy;
-        set
-        {
-            if (WizardStepModel != null)
-                WizardStepModel.IsBusy = value;
-            _isBusy = value;
-        } 
-    }
     
-    protected string? BusyText
-    {
-        get => WizardStepModel?.BusyText ?? _busyText;
-        set
-        {
-            if (WizardStepModel != null)
-                WizardStepModel.BusyText = value;
-            _busyText = value;
-        } 
-    }
     #endregion
 
     #region Override
@@ -65,12 +34,6 @@ public class GXOVnTComponent : ComponentBase
     {
         base.OnInitialized();
         InitializeViewModel();
-        
-
-        if (WizardStepModel == null) return;
-        
-        WizardStepModel.PropertyChanged -= WizardStepModelOnPropertyChanged;
-        WizardStepModel.PropertyChanged += WizardStepModelOnPropertyChanged;
     }
     
     
@@ -95,26 +58,6 @@ public class GXOVnTComponent : ComponentBase
     }
     #endregion
 
-    #region Protected Methods
-
-    protected void SetBusyValues(bool isBusy, string? busyText = default)
-    {
-        IsBusy = isBusy;
-        BusyText = isBusy ? busyText : "";
-    }
-
-    protected void SetWizardForwardEnabled(bool value)
-    {
-        if (WizardStepModel == null) return;
-        WizardStepModel.ForwardEnabled = value;
-    }
-
-    protected void SetWizardBackEnabled(bool value)
-    {
-        if (WizardStepModel == null) return;
-        WizardStepModel.BackEnabled = value;
-    }
-    #endregion
     
     #region Event Callbacks
 

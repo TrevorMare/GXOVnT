@@ -1,17 +1,15 @@
-﻿@typeparam TWizardModelType
-
-@if (WizardStepModel.IsCurrentStep)
+﻿@if (IsCurrentStep)
 {
-    if (!string.IsNullOrWhiteSpace(WizardStepTitle))
+
+    
+    if (!string.IsNullOrWhiteSpace(StepTitle))
     {
-        <MudText Typo="Typo.h6" Class="mb-4">@WizardStepTitle</MudText>
+        <MudText Typo="Typo.h6" Class="mb-4">@StepTitle</MudText>
     }
 
     if (ChildContent != null)
     {
-        <CascadingValue Value="WizardStepModel">
-            @ChildContent    
-        </CascadingValue>
+        @ChildContent
     }  
 }
 

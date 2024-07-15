@@ -1,39 +1,28 @@
-﻿@using GXOVnT.ViewModels.Wizards
+﻿@using GXOVnT.Shared.Common
+
 <MudGrid>
     <WizardComponent WizardTitle="Device Enrollment Wizard"
                      WizardCancelled="OnEnrollWizardCancelled"
                      WizardCompleted="OnEnrollWizardCompleted"
-                     TWizardModelType="EnrollDeviceWizardModel"
-                     WizardComponentModel="EnrollDeviceWizardModel">
-
-
-        <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Checking Permissions"
-                    StepSequence="0" WizardStepName="step_permissions">
-            <CheckBTPermissions InitialViewModel="@EnrollDeviceWizardSchema.CheckBluetoothPermissionsViewModel"></CheckBTPermissions>
-        </WizardStep>   
+                     WizardSchema="EnrollDeviceWizardSchema">
         
-        @* <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Information" *@
-        @*             StepSequence="0" HasBackButton="false" WizardStepName="step_information"> *@
-        @*     <DeviceEnrollmentStart></DeviceEnrollmentStart> *@
-        @* </WizardStep> *@
+        <WizardStep StepTitle="Information" StepName="@WizardSchemaStepType.EnrollDeviceStartupInformation.Name">
+            <DeviceEnrollmentStart></DeviceEnrollmentStart>
+        </WizardStep>
 
-        @* <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Checking Permissions"  *@
-        @*             StepSequence="1" WizardStepName="step_permissions"> *@
-        @*     <CheckBTPermissions></CheckBTPermissions> *@
-        @* </WizardStep> *@
+        <WizardStep StepTitle="Checking Permissions" StepName="@WizardSchemaStepType.CheckBluetoothPermissions.Name">
+            <CheckBTPermissions></CheckBTPermissions>
+        </WizardStep>
 
-        <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Find device" 
-                    StepSequence="2" WizardStepName="step_find_device">
+        <WizardStep StepTitle="Find device" StepName="@WizardSchemaStepType.ScanBluetoothSystems.Name">
             <DeviceScanner DeviceSelected="OnDeviceSelected"></DeviceScanner>
         </WizardStep>
 
-        <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Device Information"
-                    StepSequence="3" WizardStepName="step_device_info">
+        <WizardStep StepTitle="Device Information" StepName="@WizardSchemaStepType.ConfirmDeviceInformation.Name">
             <DeviceInfo Device="@_selectedDeviceToEnroll"></DeviceInfo>
         </WizardStep>
 
-        <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Device Settings"
-                    StepSequence="4" WizardStepName="step_device_settings">
+        <WizardStep StepTitle="Device Settings" StepName="@WizardSchemaStepType.SetDeviceConfiguration.Name">
             <DeviceEnrollSettings Device="@_selectedDeviceToEnroll"></DeviceEnrollSettings>
         </WizardStep>
     </WizardComponent>

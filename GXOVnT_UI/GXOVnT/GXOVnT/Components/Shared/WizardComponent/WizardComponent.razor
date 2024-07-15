@@ -1,50 +1,51 @@
-﻿@typeparam TWizardModelType
-
-
-<div class="d-flex flex-column justify-center" style="width: 100%">
-    @{
-        var isBusy = CurrentStepModel is { IsBusy: true };
-        var busyText = CurrentStepModel?.BusyText ?? "";
-        <MudProgressLinear Color="Color.Primary" Indeterminate="isBusy" Class="my-1" Style="width: 100%"/>
-        <MudText Typo="Typo.caption" Align="Align.Center" Color="Color.Info" Style="width: 100%">@busyText</MudText>
-    }
-</div>
-
+﻿
 @if (!string.IsNullOrWhiteSpace(WizardTitle))
 {
     <MudText Typo="Typo.h5" Class="mb-4">@WizardTitle</MudText>
 }
 
-<CascadingValue Value="this">
-    <CascadingValue Name="WizardContext" Value="WizardComponentModel">
-        <MudPaper Class="pa-2" Width="100%" Elevation="3">
-            @ChildContent
-        </MudPaper>
+@if (WizardSchema != null)
+{
+    
+    <div class="d-flex flex-column justify-center" style="width: 100%">
+        @{
+            <MudProgressLinear Color="Color.Primary" Indeterminate="@WizardSchema.IsBusy" Class="my-1" Style="width: 100%"/>
+            <MudText Typo="Typo.caption" Align="Align.Center" Color="Color.Info" Style="width: 100%">@WizardSchema.BusyStatus</MudText>
+        }
+    </div>
+    
+    <CascadingValue Value="this">
+        <CascadingValue Name="WizardContext" Value="WizardSchema">
+            <MudPaper Class="pa-2" Width="100%" Elevation="3">
+                @ChildContent
+            </MudPaper>
 
-        <MudContainer Class="d-flex justify-end flex-grow-1 mt-4" Fixed="true">
-            @if (CurrentStepModel != null)
-            {
-                if (CurrentStepModel.HasCancelButton)
+            <MudContainer Class="d-flex justify-end flex-grow-1 mt-4" Fixed="true">
+                @if (WizardSchema.CurrentStep != null)
                 {
-                    <MudButton Size="Size.Small" Class="mr-4" Variant="Variant.Filled" Disabled="@(!CurrentStepModel.CancelEnabled)" StartIcon="@Icons.Material.Filled.Cancel"
-                               Color="Color.Warning" @onclick="CancelButtonClicked">@CurrentStepModel.CancelButtonText</MudButton>
-                }
+                    if (WizardSchema.CurrentStep.IsCancelButtonVisible)
+                    {
+                        <MudButton Size="Size.Small" Class="mr-4" Variant="Variant.Filled" Disabled="@(!WizardSchema.CurrentStep.IsCancelButtonEnabled)"
+                                   StartIcon="@Icons.Material.Filled.Cancel"
+                                   Color="Color.Warning" @onclick="CancelButtonClicked">@WizardSchema.CurrentStep.CancelButtonText</MudButton>
+                    }
 
-                if (CurrentStepModel.HasBackButton)
-                {
-                    <MudButton Size="Size.Small" Class="mr-4" Variant="Variant.Filled" Disabled="@(!CurrentStepModel.BackEnabled)"
-                               StartIcon="@Icons.Material.Filled.NavigateBefore" Color="Color.Default"
-                               @onclick="BackButtonClicked">@CurrentStepModel.BackButtonText</MudButton>
-                }
+                    if (WizardSchema.CurrentStep.IsBackButtonVisible)
+                    {
+                        <MudButton Size="Size.Small" Class="mr-4" Variant="Variant.Filled" Disabled="@(!WizardSchema.CurrentStep.IsBackButtonEnabled)"
+                                   StartIcon="@Icons.Material.Filled.NavigateBefore" Color="Color.Default"
+                                   @onclick="BackButtonClicked">@WizardSchema.CurrentStep.BackButtonText</MudButton>
+                    }
 
-                if (CurrentStepModel.HasForwardButton)
-                {
-                    <MudButton Size="Size.Small" Variant="Variant.Filled" Disabled="@(!CurrentStepModel.ForwardEnabled)" EndIcon="@Icons.Material.Filled.NavigateNext"
-                               Color="Color.Success" @onclick="NextButtonClicked">@CurrentStepModel.NextButtonText</MudButton>
+                    if (WizardSchema.CurrentStep.IsNextButtonVisible)
+                    {
+                        <MudButton Size="Size.Small" Variant="Variant.Filled" Disabled="@(!WizardSchema.CurrentStep.IsNextButtonEnabled)"
+                                   EndIcon="@Icons.Material.Filled.NavigateNext"
+                                   Color="Color.Success" @onclick="NextButtonClicked">@WizardSchema.CurrentStep.NextButtonText</MudButton>
+                    }
                 }
-            }
-        </MudContainer>
+               
+            </MudContainer>
+        </CascadingValue>
     </CascadingValue>
-    
-    
-</CascadingValue>
+}

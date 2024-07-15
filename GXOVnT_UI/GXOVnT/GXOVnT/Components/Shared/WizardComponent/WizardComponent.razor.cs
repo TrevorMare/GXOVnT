@@ -1,26 +1,20 @@
 ﻿using System.ComponentModel;
-using GXOVnT.ViewModels.Wizards;
+using GXOVnT.Shared.Common;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace GXOVnT.Components.Shared.WizardComponent;
 
-public partial class WizardComponent<TWizardModelType> : ComponentBase where TWizardModelType: WizardComponentModel
+public partial class WizardComponent : ComponentBase 
 {
 
-    #region Members
-    
-    private WizardStepModel? CurrentStepModel => WizardComponentModel.CurrentWizardStep;
-
-    #endregion
-    
     #region Properties
 
     [Inject]
     private IDialogService DialogService { get; set; } = default!;
 
     [Parameter]
-    public TWizardModelType WizardComponentModel { get; set; }
+    public WizardSchema? WizardSchema { get; set; }
     
     [Parameter]
     public string? WizardTitle { get; set; } = string.Empty;
@@ -45,24 +39,31 @@ public partial class WizardComponent<TWizardModelType> : ComponentBase where TWi
     {
         base.OnAfterRender(firstRender);
 
-        if (!firstRender) return;
-        WizardComponentModel.PropertyChanged -= WizardComponentModelOnPropertyChanged;
-        WizardComponentModel.PropertyChanged += WizardComponentModelOnPropertyChanged;
+        if (!firstRender || WizardSchema == null) return;
+        WizardSchema.PropertyChanged -= WizardSchemaOnPropertyChanged;
+        WizardSchema.PropertyChanged += WizardSchemaOnPropertyChanged;
+        WizardSchema.OnWizardComplete += WizardSchemaOnOnWizardComplete;
     }
     #endregion
     
     #region Methods
-    public void AddWizardStep(WizardStepModel wizardStepModel)
+    public void AddWizardStep(WizardStep wizardStep)
     {
-        WizardComponentModel.AddWizardStep(wizardStepModel);       
+        WizardSchema?.AddWizardStep(wizardStep.WizardSchemaStep);       
     }
     #endregion
     
     #region Event Callbacks
-    private async void WizardComponentModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private async void WizardSchemaOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         await InvokeAsync(StateHasChanged);
     }
+    
+    private async void WizardSchemaOnOnWizardComplete(object? sender, EventArgs e)
+    {
+        await WizardCompleted.InvokeAsync();
+    }
+
 
     private async Task CancelButtonClicked()
     {
@@ -73,6 +74,9 @@ public partial class WizardComponent<TWizardModelType> : ComponentBase where TWi
                 "Are you sure you want to quit the wizard? All progress will be lost.", 
                 yesText:"Yes", cancelText:"No");
         
+            if (WizardSchema != null)
+                await WizardSchema.OnCancelWizard();
+            
             if (result == true)
                 await WizardCancelled.InvokeAsync();
             
@@ -80,21 +84,23 @@ public partial class WizardComponent<TWizardModelType> : ComponentBase where TWi
         }
         else
         {
+            if (WizardSchema != null)
+                await WizardSchema.OnCancelWizard();
+            
             await WizardCancelled.InvokeAsync();
         }
     }
     
     private async Task BackButtonClicked()
     {
-        if (WizardComponentModel.GotoPreviousStep())
-            await InvokeAsync(StateHasChanged);
+        if (WizardSchema != null)
+            await WizardSchema.GoToPreviousStep();
     }
     
     private async Task NextButtonClicked()
     {
-        
-        if (WizardComponentModel.GotoNextStep())
-            await InvokeAsync(StateHasChanged);
+        if (WizardSchema != null)
+            await WizardSchema.GoToNextStep();
     }
     #endregion
     
