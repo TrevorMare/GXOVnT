@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using GXOVnT.Services.Models;
+using GXOVnT.Services.Wizards;
 using GXOVnT.ViewModels.Wizards;
 using MudBlazor;
 
@@ -16,6 +17,9 @@ public partial class EnrollDeviceWizard : ComponentBase
 
     #region Properties
     [Inject]
+    private EnrollDeviceWizardSchema EnrollDeviceWizardSchema { get; set; } = default!;
+    
+    [Inject]
     private EnrollDeviceWizardModel EnrollDeviceWizardModel { get; set; }
 
     [Inject]
@@ -23,6 +27,10 @@ public partial class EnrollDeviceWizard : ComponentBase
 
     #endregion
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
 
     #region Event Callbacks
     private void OnDeviceSelected(Services.Models.System? device)

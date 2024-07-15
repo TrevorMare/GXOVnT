@@ -12,6 +12,11 @@ public static class StartupExtensions
     {
 
         services.AddTransient<IRequestPermissionService, RequestPermissionService>();
+        
+        services.AddTransient<ViewModels.CheckBluetoothPermissionsViewModel>();
+        services.AddTransient<ViewModels.DeviceInfoViewModel>();
+        services.AddTransient<ViewModels.DeviceScannerViewModel>();
+        services.AddTransient<Wizards.EnrollDeviceWizardSchema>();
 
         services.AddSingleton<IBluetoothService, BluetoothService>();
         services.AddSingleton<IMessageOrchestrator, MessageOrchestrator>();

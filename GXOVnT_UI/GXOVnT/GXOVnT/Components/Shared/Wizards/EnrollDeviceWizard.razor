@@ -6,16 +6,21 @@
                      TWizardModelType="EnrollDeviceWizardModel"
                      WizardComponentModel="EnrollDeviceWizardModel">
 
-        
-        <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Information"
-                    StepSequence="0" HasBackButton="false" WizardStepName="step_information">
-            <DeviceEnrollmentStart></DeviceEnrollmentStart>
-        </WizardStep>
 
-        <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Checking Permissions" 
-                    StepSequence="1" WizardStepName="step_permissions">
-            <CheckBTPermissions></CheckBTPermissions>
-        </WizardStep>
+        <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Checking Permissions"
+                    StepSequence="0" WizardStepName="step_permissions">
+            <CheckBTPermissions InitialViewModel="@EnrollDeviceWizardSchema.CheckBluetoothPermissionsViewModel"></CheckBTPermissions>
+        </WizardStep>   
+        
+        @* <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Information" *@
+        @*             StepSequence="0" HasBackButton="false" WizardStepName="step_information"> *@
+        @*     <DeviceEnrollmentStart></DeviceEnrollmentStart> *@
+        @* </WizardStep> *@
+
+        @* <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Checking Permissions"  *@
+        @*             StepSequence="1" WizardStepName="step_permissions"> *@
+        @*     <CheckBTPermissions></CheckBTPermissions> *@
+        @* </WizardStep> *@
 
         <WizardStep TWizardModelType="EnrollDeviceWizardModel" WizardStepTitle="Find device" 
                     StepSequence="2" WizardStepName="step_find_device">

@@ -10,9 +10,12 @@ public class CheckBluetoothPermissionsViewModel : StateObject
     private readonly IRequestPermissionService _requestPermissionService;
     private bool _hasBluetoothPermission;
     private bool _hasCheckedPermissions;
+    private readonly string _id = Guid.NewGuid().ToString();
     #endregion
 
     #region Properties
+
+    public string Id => _id;
 
     public bool HasCheckedPermissions
     {

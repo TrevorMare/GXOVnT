@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using GXOVnT.Services.Interfaces;
+using GXOVnT.Shared;
+using GXOVnT.Shared.Common;
 using GXOVnT.Shared.Interfaces;
 using GXOVnT.ViewModels.Wizards;
 using Microsoft.AspNetCore.Components;
@@ -12,6 +14,11 @@ public class GXOVnTComponent : ComponentBase
 
     #region Members
 
+    protected StateObject? AttachedViewModelStateObject;
+    
+    
+    
+    
     private bool _isBusy;
     private string? _busyText;
 
@@ -57,13 +64,35 @@ public class GXOVnTComponent : ComponentBase
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        InitializeViewModel();
+        
 
         if (WizardStepModel == null) return;
         
         WizardStepModel.PropertyChanged -= WizardStepModelOnPropertyChanged;
         WizardStepModel.PropertyChanged += WizardStepModelOnPropertyChanged;
     }
+    
+    
+    protected virtual void InitializeViewModel() {}
 
+    protected virtual void SetAttachedViewModelStateObject<T>(T? viewModelStateObject) where T : StateObject 
+    {
+        // Check if we did not previously have an attached model, if so remove the event handlers
+        if (AttachedViewModelStateObject != null)
+            AttachedViewModelStateObject.PropertyChanged -= AttachedViewModelStateObjectOnPropertyChanged;
+
+        // Set the view model to the passed input
+        AttachedViewModelStateObject = viewModelStateObject;
+
+        // If the input state object is null, we need to initialize the value
+        if (AttachedViewModelStateObject == null)
+            AttachedViewModelStateObject = AppService.ServiceProvider.GetRequiredService<T>();
+        
+        // Now attach the event handler
+        if (AttachedViewModelStateObject != null)
+            AttachedViewModelStateObject.PropertyChanged += AttachedViewModelStateObjectOnPropertyChanged;
+    }
     #endregion
 
     #region Protected Methods
@@ -94,7 +123,13 @@ public class GXOVnTComponent : ComponentBase
         await InvokeAsync(StateHasChanged);
     }
 
+    private async void AttachedViewModelStateObjectOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
     #endregion
+ 
     
     
 }
