@@ -1,6 +1,6 @@
 ﻿@inherits GXOVnTComponent
 <div class="d-flex flex-grow-1 gap-4">
-    @foreach (var context in BluetoothService.DiscoveredDevices)
+    @foreach (var context in ViewModel.DiscoveredDevices)
     {
         var cardKey = context.UUID;
         <MudCard @key="cardKey" Elevation="2" Outlined="true">
@@ -21,7 +21,7 @@
 
             <MudCardActions>
                 <MudButton Disabled="IsScanningDevices" Variant="Variant.Text" Color="Color.Primary" @onclick="() => OnDeviceListItemClick(context)">Select</MudButton>
-                @if (!string.IsNullOrWhiteSpace(_selectedUUId) && context.UUID.Equals(_selectedUUId))
+                @if (ViewModel.SelectedSystemId != null && context.Id.Equals(ViewModel.SelectedSystemId.Value))
                 {
                     <MudIcon Class="my-2" Color="Color.Success" Icon="@Icons.Material.Filled.Check" Size="Size.Small"></MudIcon>
                 }

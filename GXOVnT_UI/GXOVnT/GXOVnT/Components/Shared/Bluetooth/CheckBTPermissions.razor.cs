@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using GXOVnT.Services.ViewModels;
-using GXOVnT.Shared;
+﻿using GXOVnT.Services.ViewModels;
 using Microsoft.AspNetCore.Components;
 
 namespace GXOVnT.Components.Shared.Bluetooth;
@@ -20,7 +18,7 @@ public partial class CheckBTPermissions : GXOVnTComponent
     /// This is a calculated view model that will either be a new view model from the service provider or
     /// the view model parameters
     /// </summary>
-    protected CheckBluetoothPermissionsViewModel ViewModel =>
+    private CheckBluetoothPermissionsViewModel ViewModel =>
         (CheckBluetoothPermissionsViewModel)AttachedViewModelStateObject!;
     
     #endregion
@@ -36,7 +34,9 @@ public partial class CheckBTPermissions : GXOVnTComponent
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        // If it's the first render and this view model is not passed down from the 
+        // wizard. The wizard will rather perform this step
+        if (firstRender && InitialViewModel == null)
             await ViewModel.CheckHasBluetoothPermission();
     }
     #endregion

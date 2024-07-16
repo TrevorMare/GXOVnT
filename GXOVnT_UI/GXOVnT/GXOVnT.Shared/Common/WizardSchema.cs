@@ -12,7 +12,7 @@ public abstract class WizardSchema : StateObject
     
     protected readonly List<WizardSchemaStep> WizardSchemaSteps = new();
     
-    protected WizardStepDirection StepDirection { get; set; }
+    protected WizardStepDirection StepDirection { get; set; } = WizardStepDirection.None;
 
     #endregion
     

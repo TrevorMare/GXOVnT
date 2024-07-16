@@ -36,7 +36,6 @@ public class GXOVnTComponent : ComponentBase
         InitializeViewModel();
     }
     
-    
     protected virtual void InitializeViewModel() {}
 
     protected virtual void SetAttachedViewModelStateObject<T>(T? viewModelStateObject) where T : StateObject 
@@ -68,7 +67,13 @@ public class GXOVnTComponent : ComponentBase
 
     private async void AttachedViewModelStateObjectOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        await OnViewModelPropertyChanged(sender, e);
         await InvokeAsync(StateHasChanged);
+    }
+
+    protected virtual Task OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        return Task.CompletedTask;
     }
 
     #endregion

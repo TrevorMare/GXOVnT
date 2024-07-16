@@ -26,6 +26,8 @@ public class DeviceScannerViewModel : StateObject
 
     #region Properties
 
+    public bool IsScanningDevices => _bluetoothService.IsScanningDevices;
+    
     public IReadOnlyList<Models.System> DiscoveredDevices => _bluetoothService.DiscoveredDevices;
     
     public Guid? SelectedSystemId
@@ -52,6 +54,7 @@ public class DeviceScannerViewModel : StateObject
             SelectedSystem = null;
             return;
         }
+        
         SelectedSystem = _bluetoothService.FindDevice(SelectedSystemId.Value);
 
         if (SelectedSystem != null) 
@@ -95,8 +98,6 @@ public class DeviceScannerViewModel : StateObject
             SetBusyState(false);
         }
     }
-
-
     #endregion
 
     #region Event Callbacks

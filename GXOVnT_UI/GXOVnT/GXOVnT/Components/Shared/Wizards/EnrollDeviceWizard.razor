@@ -11,11 +11,11 @@
         </WizardStep>
 
         <WizardStep StepTitle="Checking Permissions" StepName="@WizardSchemaStepType.CheckBluetoothPermissions.Name">
-            <CheckBTPermissions></CheckBTPermissions>
+            <CheckBTPermissions InitialViewModel="@EnrollDeviceWizardSchema.CheckBluetoothPermissionsViewModel"></CheckBTPermissions>
         </WizardStep>
 
         <WizardStep StepTitle="Find device" StepName="@WizardSchemaStepType.ScanBluetoothSystems.Name">
-            <DeviceScanner DeviceSelected="OnDeviceSelected"></DeviceScanner>
+            <DeviceScanner InitialViewModel="@EnrollDeviceWizardSchema.DeviceScannerViewModel" DeviceSelected="OnDeviceSelected"></DeviceScanner>
         </WizardStep>
 
         <WizardStep StepTitle="Device Information" StepName="@WizardSchemaStepType.ConfirmDeviceInformation.Name">

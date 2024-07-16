@@ -78,8 +78,4 @@
       </MauiSplashScreen>
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="ViewModels\Wizards\" />
-    </ItemGroup>
-
 </Project>

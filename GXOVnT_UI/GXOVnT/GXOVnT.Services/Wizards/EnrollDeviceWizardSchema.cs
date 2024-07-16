@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using GXOVnT.Services.ViewModels;
 using GXOVnT.Shared.Common;
-using GXOVnT.Shared.Interfaces;
 
 namespace GXOVnT.Services.Wizards;
 
@@ -32,9 +31,8 @@ public class EnrollDeviceWizardSchema : WizardSchema
         DeviceScannerViewModel.OnBusyStateChanged += ViewModelOnBusyStateChanged;
         
         CheckBluetoothPermissionsViewModel.PropertyChanged += CheckBluetoothPermissionsViewModelOnPropertyChanged;
+        DeviceScannerViewModel.PropertyChanged += DeviceScannerViewModelOnPropertyChanged;
     }
-
-
 
     #endregion
 
@@ -84,9 +82,7 @@ public class EnrollDeviceWizardSchema : WizardSchema
         {
             await GoToScanDevicesState();
         }
-        
     }
-
     #endregion
 
     #region Enroll Device Startup Information State
@@ -115,12 +111,16 @@ public class EnrollDeviceWizardSchema : WizardSchema
         if (!CurrentStepIsType(WizardSchemaStepType.CheckBluetoothPermissions))
             return;
         
-        var hasBluetoothPermissions = await CheckBluetoothPermissionsViewModel.CheckHasBluetoothPermission();
-
+        // If we already got the permissions, no need to request again
+        if (!CheckBluetoothPermissionsViewModel.HasBluetoothPermission)
+        {
+            await CheckBluetoothPermissionsViewModel.CheckHasBluetoothPermission();    
+        }
+        
         await UpdateGoToCheckBluetoothPermissionState();
         
         // If we are going forward, and we already have the permission, we don't have to wait for the next click.
-        if (hasBluetoothPermissions && skipIfAlreadyHasPermissions && StepDirection.Equals(WizardStepDirection.Next))
+        if (CheckBluetoothPermissionsViewModel.HasBluetoothPermission && skipIfAlreadyHasPermissions && StepDirection.Equals(WizardStepDirection.Next))
             await NextStep();
     }
 
@@ -152,7 +152,7 @@ public class EnrollDeviceWizardSchema : WizardSchema
         CurrentStep!.IsBackButtonVisible = true;
         CurrentStep.IsBackButtonEnabled = true;
         CurrentStep.IsCancelButtonEnabled = true;
-        CurrentStep.IsNextButtonEnabled = DeviceScannerViewModel.SelectedSystem != null;
+        CurrentStep.IsNextButtonEnabled = DeviceScannerViewModel.SelectedSystemId != null;
         return Task.CompletedTask;
     }
 
@@ -175,8 +175,22 @@ public class EnrollDeviceWizardSchema : WizardSchema
         }
     }
 
+    private void DeviceScannerViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        // Validate the property name
+        if (string.IsNullOrWhiteSpace(e.PropertyName)) return;
+        // Validate the current step
+        if (!CurrentStepIsType(WizardSchemaStepType.ScanBluetoothSystems)) return;
+        
+        // If it's either the has bluetooth permissions or the all property that changed, update the current state
+        if (e.PropertyName.Equals(nameof(DeviceScannerViewModel.SelectedSystemId)) ||
+            e.PropertyName.Equals("*"))
+        {
+            UpdateScanDevicesState();
+        }
+    }
+
 
     #endregion
-    
    
 }
