@@ -68,6 +68,10 @@ public class EnrollDeviceWizardSchema : WizardSchema
         {
             await GoToCheckBluetoothPermissionState(false);
         }
+        else if (CurrentStep.WizardSchemaStepType.Equals(WizardSchemaStepType.ConfirmDeviceInformation))
+        {
+            await GoToScanDevicesState();
+        }
     }
 
     protected override async Task NextStep()
@@ -81,6 +85,10 @@ public class EnrollDeviceWizardSchema : WizardSchema
         else if (CurrentStep.WizardSchemaStepType.Equals(WizardSchemaStepType.CheckBluetoothPermissions))
         {
             await GoToScanDevicesState();
+        }
+        else if (CurrentStep.WizardSchemaStepType.Equals(WizardSchemaStepType.ScanBluetoothSystems))
+        {
+            await GoToDevicesInfoState();
         }
     }
     #endregion
@@ -117,14 +125,14 @@ public class EnrollDeviceWizardSchema : WizardSchema
             await CheckBluetoothPermissionsViewModel.CheckHasBluetoothPermission();    
         }
         
-        await UpdateGoToCheckBluetoothPermissionState();
+        await UpdateCheckBluetoothPermissionStep();
         
         // If we are going forward, and we already have the permission, we don't have to wait for the next click.
         if (CheckBluetoothPermissionsViewModel.HasBluetoothPermission && skipIfAlreadyHasPermissions && StepDirection.Equals(WizardStepDirection.Next))
             await NextStep();
     }
 
-    private Task UpdateGoToCheckBluetoothPermissionState()
+    private Task UpdateCheckBluetoothPermissionStep()
     {
         CurrentStep!.IsBackButtonVisible = true;
         CurrentStep.IsBackButtonEnabled = true;
@@ -144,10 +152,10 @@ public class EnrollDeviceWizardSchema : WizardSchema
         if (!CurrentStepIsType(WizardSchemaStepType.ScanBluetoothSystems))
             return;
 
-        await UpdateScanDevicesState();
+        await UpdateScanDevicesStep();
     }
 
-    private Task UpdateScanDevicesState()
+    private Task UpdateScanDevicesStep()
     {
         CurrentStep!.IsBackButtonVisible = true;
         CurrentStep.IsBackButtonEnabled = true;
@@ -157,7 +165,33 @@ public class EnrollDeviceWizardSchema : WizardSchema
     }
 
     #endregion
-  
+
+    #region Device Info View Model
+
+    private async Task GoToDevicesInfoState()
+    {
+        SetStepAsCurrent(WizardSchemaStepType.ConfirmDeviceInformation);
+        
+        if (!CurrentStepIsType(WizardSchemaStepType.ConfirmDeviceInformation))
+            return;
+
+        // We need to set the device of this view model to the previously selected device
+        await DeviceInfoViewModel.GetDeviceInfo(DeviceScannerViewModel.SelectedSystemId);
+        
+        await UpdateDevicesInfoStep();
+    }
+
+    private Task UpdateDevicesInfoStep()
+    {
+        CurrentStep!.IsBackButtonVisible = true;
+        CurrentStep.IsBackButtonEnabled = true;
+        CurrentStep.IsCancelButtonEnabled = true;
+        CurrentStep.IsNextButtonEnabled = DeviceInfoViewModel.SelectedSystemId != null;
+        return Task.CompletedTask;
+    }
+
+    #endregion
+    
     #region Event Callbacks
 
     private void CheckBluetoothPermissionsViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -171,7 +205,7 @@ public class EnrollDeviceWizardSchema : WizardSchema
         if (e.PropertyName.Equals(nameof(CheckBluetoothPermissionsViewModel.HasBluetoothPermission)) ||
             e.PropertyName.Equals("*"))
         {
-            UpdateGoToCheckBluetoothPermissionState();
+            UpdateCheckBluetoothPermissionStep();
         }
     }
 
@@ -182,11 +216,12 @@ public class EnrollDeviceWizardSchema : WizardSchema
         // Validate the current step
         if (!CurrentStepIsType(WizardSchemaStepType.ScanBluetoothSystems)) return;
         
-        // If it's either the has bluetooth permissions or the all property that changed, update the current state
+        // If it's either the selected system id or the all property that changed, update the current state
         if (e.PropertyName.Equals(nameof(DeviceScannerViewModel.SelectedSystemId)) ||
             e.PropertyName.Equals("*"))
         {
-            UpdateScanDevicesState();
+            DeviceInfoViewModel.SetSystemId(DeviceScannerViewModel.SelectedSystemId);
+            UpdateScanDevicesStep();
         }
     }
 

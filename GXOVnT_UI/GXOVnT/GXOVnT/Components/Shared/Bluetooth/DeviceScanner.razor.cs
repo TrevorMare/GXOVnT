@@ -22,7 +22,7 @@ public partial class DeviceScanner : GXOVnTComponent
     /// This is a calculated view model that will either be a new view model from the service provider or
     /// the view model parameters
     /// </summary>
-    protected DeviceScannerViewModel ViewModel =>
+    private DeviceScannerViewModel ViewModel =>
         (DeviceScannerViewModel)AttachedViewModelStateObject!;
     
     private bool IsScanningDevices => ViewModel.IsScanningDevices;

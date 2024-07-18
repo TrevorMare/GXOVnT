@@ -19,7 +19,7 @@
         </WizardStep>
 
         <WizardStep StepTitle="Device Information" StepName="@WizardSchemaStepType.ConfirmDeviceInformation.Name">
-            <DeviceInfo Device="@_selectedDeviceToEnroll"></DeviceInfo>
+            <DeviceInfo InitialViewModel="@EnrollDeviceWizardSchema.DeviceInfoViewModel"></DeviceInfo>
         </WizardStep>
 
         <WizardStep StepTitle="Device Settings" StepName="@WizardSchemaStepType.SetDeviceConfiguration.Name">

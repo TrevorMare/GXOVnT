@@ -1,61 +1,45 @@
 ﻿@inherits GXOVnTComponent
-@if (!ComponentInitialized)
+@if (ViewModel.SelectedSystem == null)
 {
-    <MudText Typo="Typo.body1">Initializing component</MudText>
+    <MudAlert Severity="Severity.Error">
+        No device selected, unable to continue
+    </MudAlert>
 }
-else
+else if (ViewModel.FailedToGetInfo)
 {
+    <MudAlert Severity="Severity.Error">
+        Could not get the device information.
+    </MudAlert>
+}  
+else if (ViewModel.DeviceInfo != null)
+{
+    <MudCard Elevation="2" Outlined="true">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">Device name: @ViewModel.SelectedSystem?.DeviceName</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
 
-    if (Device == null)
+        <MudCardContent>
+            <MudStack>
+                <MudField Variant="Variant.Text">Id: @ViewModel.SelectedSystem?.Id</MudField>
+                <MudField Variant="Variant.Text">Rssi: @ViewModel.SelectedSystem?.DeviceName</MudField>
+                <MudField Variant="Variant.Text">Bluetooth State: @ViewModel.SelectedSystem?.DeviceState</MudField>
+                <MudField Variant="Variant.Text">System Type: @ViewModel.DeviceInfo.GXOVnTSystemType?.Name</MudField>
+                <MudField Variant="Variant.Text">System Configured: @ViewModel.DeviceInfo.SystemConfigured</MudField>
+                <MudField Variant="Variant.Text">Firmware version: @ViewModel.DeviceInfo.FirmwareVersion</MudField>
+            </MudStack>
+        </MudCardContent>
+    </MudCard>
+
+    if (NeedConfirmation)
     {
-        <MudAlert Severity="Severity.Error">
-            No device selected, unable to continue
+        <MudAlert Severity="Severity.Warning">
+            This system has been previously enrolled and provisioned. Are you sure you want to continue with the enrolment procedure, all
+            current configurations and settings will be overwritten.<br/>
+                    
+            <MudCheckBox T="bool" ValueChanged="OnConfirmChanged" Label="Confirm" Value="ConfirmedContinue" ></MudCheckBox>
         </MudAlert>
     }
-    else if (!ConnectedToDevice)
-    {
-        <MudAlert Severity="Severity.Error">
-            Unable to connect to the device
-        </MudAlert>
-    }
-    else if (FailedToGetInformation)
-    {
-        <MudAlert Severity="Severity.Error">
-            Could not get the device information.
-        </MudAlert>
-    }  
-    else if (DataLoaded && DeviceSettingsResponse != null)
-    {
-        <MudCard Elevation="2" Outlined="true">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Device name: @Device?.DeviceName</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-
-            <MudCardContent>
-                <MudStack>
-                    <MudField Variant="Variant.Text">Id: @Device?.Id</MudField>
-                    <MudField Variant="Variant.Text">Rssi: @Device?.DeviceName</MudField>
-                    <MudField Variant="Variant.Text">Bluetooth State: @Device?.DeviceState</MudField>
-                    <MudField Variant="Variant.Text">System Type: @DeviceSettingsResponse.GXOVnTSystemType?.Name</MudField>
-                    <MudField Variant="Variant.Text">System Configured: @DeviceSettingsResponse.SystemConfigured</MudField>
-                    <MudField Variant="Variant.Text">Firmware version: @DeviceSettingsResponse.FirmwareVersion</MudField>
-                </MudStack>
-            </MudCardContent>
-        </MudCard>
-
-        if (NeedConfirmation)
-        {
-            <MudAlert Severity="Severity.Warning">
-                This system has been previously enrolled and provisioned. Are you sure you want to continue with the enrolment procedure, all
-                current configurations and settings will be overwritten.<br/>
-            
-                <MudCheckBox T="bool" ValueChanged="OnConfirmChanged" Label="Confirm" Value="ConfirmedContinue" ></MudCheckBox>
-            </MudAlert>
-        }
-    }
-    
-    
 }
 

@@ -1,9 +1,6 @@
 ﻿using System.ComponentModel;
-using GXOVnT.Services.Interfaces;
-using GXOVnT.Services.Models;
+using GXOVnT.Services.ViewModels;
 using GXOVnT.Shared.Common;
-using GXOVnT.Shared.DeviceMessage.Request;
-using GXOVnT.Shared.DeviceMessage.Response;
 using Microsoft.AspNetCore.Components;
 
 namespace GXOVnT.Components.Shared.Devices;
@@ -13,100 +10,55 @@ public partial class DeviceInfo : GXOVnTComponent
     
     #region Properties
 
-
-    [Inject]
-    private IDeviceService DeviceService { get; set; } = default!;
-   
+    /// <summary>
+    /// The parameter is to be used in the context when a wizard model passes down a specific view model and should
+    /// not be relied on that it will be set. The correct property to use is the standard view model object <see cref="ViewModel"/>
+    /// </summary>
     [Parameter]
-    public Services.Models.System? Device { get; set; } 
+    public DeviceInfoViewModel? InitialViewModel { get; set; }
     
-    private bool DeviceInformationGetExecuted { get; set; }
+    /// <summary>
+    /// This is a calculated view model that will either be a new view model from the service provider or
+    /// the view model parameters
+    /// </summary>
+    private DeviceInfoViewModel ViewModel =>
+        (DeviceInfoViewModel)AttachedViewModelStateObject!;
     
-    private bool ComponentInitialized { get; set; }
-    
-    private bool ConnectedToDevice { get; set; }
-    
-    private bool FailedToGetInformation { get; set; }
-    
-    private bool DataLoaded { get; set; }
-    
-    private GetSystemSettingsResponse? DeviceSettingsResponse { get; set; }
-
     private bool NeedConfirmation => StepRequiresConfirmation();
     
     private bool ConfirmedContinue { get; set; }
     #endregion
 
     #region Override
-
-    protected override void OnInitialized()
+    protected override void InitializeViewModel()
     {
-        base.OnInitialized();
-        
-       
-        
-        DeviceService.PropertyChanged -= DeviceServiceOnPropertyChanged;
-        DeviceService.PropertyChanged += DeviceServiceOnPropertyChanged;
+        // Set the internal view model object, this will either be from the wizard model or we should
+        // initialize it from the service provider
+        SetAttachedViewModelStateObject(InitialViewModel);
     }
-
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnAfterRenderAsync(firstRender);
-
-        if (!firstRender) 
-            return;
-
-        ComponentInitialized = true;
-        DeviceInformationGetExecuted = false;
-        
-        await InvokeAsync(StateHasChanged);
-        await GetDeviceInfo();
+        // If it's the first render and this view model is not passed down from the 
+        // wizard. The wizard will rather perform this step
+        if (firstRender && InitialViewModel == null)
+            await ViewModel.GetDeviceInfo(null);
     }
 
     #endregion
 
     #region Methods
-    private async Task GetDeviceInfo()
-    {
-        try
-        {
-            DeviceInformationGetExecuted = true;
-            DataLoaded = false;
-            ConfirmedContinue = false;
-           
-            
-            if (Device == null)
-                return;
-
-            var responseModel = await DeviceService.GetDeviceInfoAsync(Device);
-                
-            DataLoaded = true;
-            DeviceSettingsResponse = responseModel;
-            
-         
-               
-        }
-        catch (Exception)
-        {
-            FailedToGetInformation = true;
-            LogService.LogError("There was an internal error retrieving the device information");
-        }
-        finally
-        {
-            
-        }
-    }
     
     
     private bool StepRequiresConfirmation()
     {
-        if (DeviceSettingsResponse == null)
+        if (ViewModel.DeviceInfo == null)
             return false;
         
-        if (DeviceSettingsResponse.SystemConfigured)
+        if (ViewModel.DeviceInfo.SystemConfigured)
             return true;
 
-        return (DeviceSettingsResponse.GXOVnTSystemType?.Id ?? SystemType.UnInitialized.Id) !=
+        return (ViewModel.DeviceInfo.GXOVnTSystemType?.Id ?? SystemType.UnInitialized.Id) !=
                SystemType.UnInitialized.Id;
     }
 
@@ -116,16 +68,7 @@ public partial class DeviceInfo : GXOVnTComponent
     private void OnConfirmChanged(bool value)
     {
         ConfirmedContinue = value;
-       
     }
-    
-    private async void DeviceServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-      
-        
-        await InvokeAsync(StateHasChanged);
-    }
-
     #endregion
     
 }
