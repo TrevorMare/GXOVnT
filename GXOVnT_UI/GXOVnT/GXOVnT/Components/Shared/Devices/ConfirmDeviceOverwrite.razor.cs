@@ -48,7 +48,11 @@ public partial class DeviceInfo : GXOVnTComponent
     #endregion
 
     #region Methods
-    
+
+    private async Task RetryGetDeviceInfo()
+    {
+        await ViewModel.GetDeviceInfo(null);
+    }
     
     private bool StepRequiresConfirmation()
     {

@@ -8,11 +8,26 @@
 else if (ViewModel.FailedToGetInfo)
 {
     <MudAlert Severity="Severity.Error">
-        Could not get the device information.
+        Could not get the device information. Please restart the device and then click the retry button
+        <MudButton @onclick="">Retry</MudButton>
     </MudAlert>
 }  
 else if (ViewModel.DeviceInfo != null)
 {
+    if (NeedConfirmation)
+    {
+        <MudAlert Severity="Severity.Warning">
+            This system has been previously enrolled and provisioned. Are you sure you want to continue with the enrolment procedure, all
+            current configurations and settings will be overwritten.<br/>
+                    
+            <MudCheckBox T="bool" ValueChanged="OnConfirmChanged" Label="Confirm" Value="ConfirmedContinue" ></MudCheckBox>
+        </MudAlert>
+    }
+    else
+    {
+        
+    }
+    
     <MudCard Elevation="2" Outlined="true">
         <MudCardHeader>
             <CardHeaderContent>
@@ -32,14 +47,6 @@ else if (ViewModel.DeviceInfo != null)
         </MudCardContent>
     </MudCard>
 
-    if (NeedConfirmation)
-    {
-        <MudAlert Severity="Severity.Warning">
-            This system has been previously enrolled and provisioned. Are you sure you want to continue with the enrolment procedure, all
-            current configurations and settings will be overwritten.<br/>
-                    
-            <MudCheckBox T="bool" ValueChanged="OnConfirmChanged" Label="Confirm" Value="ConfirmedContinue" ></MudCheckBox>
-        </MudAlert>
-    }
+    
 }
 
