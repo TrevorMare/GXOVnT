@@ -9,7 +9,7 @@ else if (ViewModel.FailedToGetInfo)
 {
     <MudAlert Severity="Severity.Error">
         Could not get the device information. Please restart the device and then click the retry button
-        <MudButton @onclick="">Retry</MudButton>
+        <MudButton @onclick="RetryGetDeviceInfo">Retry</MudButton>
     </MudAlert>
 }  
 else if (ViewModel.DeviceInfo != null)
@@ -25,28 +25,9 @@ else if (ViewModel.DeviceInfo != null)
     }
     else
     {
-        
+        <MudAlert Severity="Severity.Info">
+            This system has not been previously enrolled and provisioned. It is safe to install on this device.<br/>
+        </MudAlert>
     }
-    
-    <MudCard Elevation="2" Outlined="true">
-        <MudCardHeader>
-            <CardHeaderContent>
-                <MudText Typo="Typo.h6">Device name: @ViewModel.SelectedSystem?.DeviceName</MudText>
-            </CardHeaderContent>
-        </MudCardHeader>
-
-        <MudCardContent>
-            <MudStack>
-                <MudField Variant="Variant.Text">Id: @ViewModel.SelectedSystem?.Id</MudField>
-                <MudField Variant="Variant.Text">Rssi: @ViewModel.SelectedSystem?.DeviceName</MudField>
-                <MudField Variant="Variant.Text">Bluetooth State: @ViewModel.SelectedSystem?.DeviceState</MudField>
-                <MudField Variant="Variant.Text">System Type: @ViewModel.DeviceInfo.GXOVnTSystemType?.Name</MudField>
-                <MudField Variant="Variant.Text">System Configured: @ViewModel.DeviceInfo.SystemConfigured</MudField>
-                <MudField Variant="Variant.Text">Firmware version: @ViewModel.DeviceInfo.FirmwareVersion</MudField>
-            </MudStack>
-        </MudCardContent>
-    </MudCard>
-
-    
 }
 

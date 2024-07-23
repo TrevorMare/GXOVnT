@@ -4,6 +4,11 @@ namespace GXOVnT.Services.Interfaces;
 
 public interface IRequestPermissionService : IStateObject
 {
+    
+    Task<bool> ApplicationHasNetworkStatePermission();
+
+    Task<bool> ApplicationHasNearbyWiFiPermission();
+    
     Task<bool> ApplicationHasBluetoothPermission();
     
     Task<bool> ApplicationHasPermission<TPermission>() where TPermission : Permissions.BasePermission, new();
@@ -12,4 +17,8 @@ public interface IRequestPermissionService : IStateObject
     
     Task<bool> RequestBluetoothPermission();
     
+    Task<bool> RequestNetworkStatePermission();
+
+    Task<bool> RequestNearbyWiFiPermission();
+
 }

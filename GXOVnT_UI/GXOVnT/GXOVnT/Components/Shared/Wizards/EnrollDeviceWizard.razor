@@ -19,11 +19,11 @@
         </WizardStep>
 
         <WizardStep StepTitle="Device Information" StepName="@WizardSchemaStepType.ConfirmDeviceInformation.Name">
-            <DeviceInfo InitialViewModel="@EnrollDeviceWizardSchema.DeviceInfoViewModel"></DeviceInfo>
+            <ConfirmDeviceOverwrite InitialViewModel="@EnrollDeviceWizardSchema.DeviceInfoViewModel"></ConfirmDeviceOverwrite>
         </WizardStep>
 
         <WizardStep StepTitle="Device Settings" StepName="@WizardSchemaStepType.SetDeviceConfiguration.Name">
-            <DeviceEnrollSettings Device="@_selectedDeviceToEnroll"></DeviceEnrollSettings>
+            <DeviceEnrollSettings InitialViewModel="@EnrollDeviceWizardSchema.DeviceEnrollConfigurationViewModel"></DeviceEnrollSettings>
         </WizardStep>
     </WizardComponent>
 

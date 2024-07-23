@@ -21,6 +21,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)"/>
+        <PackageReference Include="MQTTnet" Version="4.3.6.1152" />
         <PackageReference Include="Plugin.BLE" Version="3.0.0" />
     </ItemGroup>
 

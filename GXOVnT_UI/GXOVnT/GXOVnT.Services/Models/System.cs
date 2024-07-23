@@ -145,14 +145,15 @@ public class System : StateObject, IAsyncDisposable
                 throw new GXOVnTException(
                     "The Bluetooth connection cannot be made at this stage. The Device reference was lost");
 
+            await _bluetoothAdapter.DisconnectDeviceAsync(Device);
+
             UnBindFromDeviceServicesAndCharacteristics();
-            
+
             using var localCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
 
             if (cancellationToken == default)
                 cancellationToken = localCancellationTokenSource.Token;
 
-            
             // First perform the connect to known device
             var deviceReconnected = false;
             while (!cancellationToken.IsCancellationRequested && !deviceReconnected)
@@ -160,8 +161,9 @@ public class System : StateObject, IAsyncDisposable
                 try
                 {
                     // The return value is the same device object that was created and returned from the bluetooth service 
-                    Device = await _bluetoothAdapter.ConnectToKnownDeviceAsync(Device.Id, new ConnectParameters(), cancellationToken);
-                    
+                    Device = await _bluetoothAdapter.ConnectToKnownDeviceAsync(Device.Id, new ConnectParameters(),
+                        cancellationToken);
+
                     deviceReconnected = true;
                 }
                 catch (Exception ex) when (ex is DeviceConnectionException)
@@ -174,7 +176,7 @@ public class System : StateObject, IAsyncDisposable
                     // IoS will not throw an exception but the cancellation token will expire
                 }
             }
-            
+
             // Next wait until the device status is back to connected
             if (deviceReconnected)
             {
@@ -191,9 +193,14 @@ public class System : StateObject, IAsyncDisposable
                     }
                 }
             }
-            
+
             OnPropertyChanged(nameof(DeviceIsConnected));
             return deviceReconnected;
+        }
+        catch (TaskCanceledException)
+        {
+            OnPropertyChanged(nameof(DeviceIsConnected));
+            return false;
         }
         catch (Exception ex)
         {

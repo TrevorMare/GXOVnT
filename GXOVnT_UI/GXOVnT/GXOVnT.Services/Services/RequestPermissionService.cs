@@ -20,7 +20,10 @@ public class RequestPermissionService : StateObject, IRequestPermissionService
     #endregion
 
     #region Methods
-
+    public async Task<bool> ApplicationHasNetworkStatePermission() => await ApplicationHasPermission<Permissions.NetworkState>();
+    
+    public async Task<bool> ApplicationHasNearbyWiFiPermission() => await ApplicationHasPermission<Permissions.NearbyWifiDevices>();
+    
     public async Task<bool> ApplicationHasBluetoothPermission() => await ApplicationHasPermission<Permissions.Bluetooth>();
     
     public async Task<bool> ApplicationHasPermission<TPermission>() where TPermission : Permissions.BasePermission, new()
@@ -44,6 +47,10 @@ public class RequestPermissionService : StateObject, IRequestPermissionService
     }
 
     public async Task<bool> RequestBluetoothPermission() => await RequestApplicationPermission<Permissions.Bluetooth>();
+    
+    public async Task<bool> RequestNearbyWiFiPermission() => await RequestApplicationPermission<Permissions.NearbyWifiDevices>();
+    
+    public async Task<bool> RequestNetworkStatePermission() => await RequestApplicationPermission<Permissions.NetworkState>();
     
     public async Task<bool> RequestApplicationPermission<TPermission>()
         where TPermission : Permissions.BasePermission, new()

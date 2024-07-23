@@ -16,8 +16,11 @@ public static class StartupExtensions
         services.AddTransient<ViewModels.CheckBluetoothPermissionsViewModel>();
         services.AddTransient<ViewModels.DeviceInfoViewModel>();
         services.AddTransient<ViewModels.DeviceScannerViewModel>();
+        services.AddTransient<ViewModels.DeviceEnrollConfigurationViewModel>();
         services.AddTransient<Wizards.EnrollDeviceWizardSchema>();
 
+        services.AddSingleton<IMqttBroker, MqttBroker>();
+        
         services.AddSingleton<IBluetoothService, BluetoothService>();
         services.AddSingleton<IMessageOrchestrator, MessageOrchestrator>();
         services.AddSingleton<IAlertService, AlertService>();

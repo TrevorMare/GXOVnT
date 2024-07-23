@@ -1,11 +1,10 @@
-﻿using System.ComponentModel;
-using GXOVnT.Services.ViewModels;
+﻿using GXOVnT.Services.ViewModels;
 using GXOVnT.Shared.Common;
 using Microsoft.AspNetCore.Components;
 
 namespace GXOVnT.Components.Shared.Devices;
 
-public partial class DeviceInfo : GXOVnTComponent
+public partial class ConfirmDeviceOverwrite : GXOVnTComponent
 {
     
     #region Properties
@@ -16,6 +15,9 @@ public partial class DeviceInfo : GXOVnTComponent
     /// </summary>
     [Parameter]
     public DeviceInfoViewModel? InitialViewModel { get; set; }
+    
+    [Parameter]
+    public Guid? SystemId { get; set; }
     
     /// <summary>
     /// This is a calculated view model that will either be a new view model from the service provider or
@@ -42,7 +44,7 @@ public partial class DeviceInfo : GXOVnTComponent
         // If it's the first render and this view model is not passed down from the 
         // wizard. The wizard will rather perform this step
         if (firstRender && InitialViewModel == null)
-            await ViewModel.GetDeviceInfo(null);
+            await ViewModel.GetDeviceInfo(SystemId);
     }
 
     #endregion
@@ -51,7 +53,8 @@ public partial class DeviceInfo : GXOVnTComponent
 
     private async Task RetryGetDeviceInfo()
     {
-        await ViewModel.GetDeviceInfo(null);
+        var currentId = SystemId ?? ViewModel.SelectedSystemId;
+        await ViewModel.GetDeviceInfo(currentId);
     }
     
     private bool StepRequiresConfirmation()
@@ -71,7 +74,7 @@ public partial class DeviceInfo : GXOVnTComponent
     #region Event Callbacks
     private void OnConfirmChanged(bool value)
     {
-        ConfirmedContinue = value;
+        ViewModel.SetDeviceOverwriteConfirmed(value);
     }
     #endregion
     

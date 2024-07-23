@@ -15,6 +15,7 @@ public class EnrollDeviceWizardSchema : WizardSchema
     
     public DeviceScannerViewModel DeviceScannerViewModel { get; }
 
+    public DeviceEnrollConfigurationViewModel DeviceEnrollConfigurationViewModel { get; } 
     #endregion
 
     #region ctor
@@ -24,16 +25,19 @@ public class EnrollDeviceWizardSchema : WizardSchema
         CheckBluetoothPermissionsViewModel = Services.GetRequiredService<CheckBluetoothPermissionsViewModel>();
         DeviceInfoViewModel = Services.GetRequiredService<DeviceInfoViewModel>();
         DeviceScannerViewModel = Services.GetRequiredService<DeviceScannerViewModel>();
+        DeviceEnrollConfigurationViewModel = Services.GetRequiredService<DeviceEnrollConfigurationViewModel>();
         
         // Attach the busy state changed event handlers
         CheckBluetoothPermissionsViewModel.OnBusyStateChanged += ViewModelOnBusyStateChanged;
         DeviceInfoViewModel.OnBusyStateChanged += ViewModelOnBusyStateChanged;
         DeviceScannerViewModel.OnBusyStateChanged += ViewModelOnBusyStateChanged;
+        DeviceEnrollConfigurationViewModel.OnBusyStateChanged += ViewModelOnBusyStateChanged;
         
         CheckBluetoothPermissionsViewModel.PropertyChanged += CheckBluetoothPermissionsViewModelOnPropertyChanged;
         DeviceScannerViewModel.PropertyChanged += DeviceScannerViewModelOnPropertyChanged;
+        DeviceInfoViewModel.PropertyChanged += DeviceInfoViewModelOnPropertyChanged;
+        DeviceEnrollConfigurationViewModel.PropertyChanged += DeviceEnrollConfigurationViewModelOnPropertyChanged;
     }
-
     #endregion
 
     #region Methods
@@ -70,6 +74,10 @@ public class EnrollDeviceWizardSchema : WizardSchema
         }
         else if (CurrentStep.WizardSchemaStepType.Equals(WizardSchemaStepType.ConfirmDeviceInformation))
         {
+            await GoToDeviceConfigurationStep();
+        }
+        else if (CurrentStep.WizardSchemaStepType.Equals(WizardSchemaStepType.SetDeviceConfiguration))
+        {
             await GoToScanDevicesState();
         }
     }
@@ -89,6 +97,10 @@ public class EnrollDeviceWizardSchema : WizardSchema
         else if (CurrentStep.WizardSchemaStepType.Equals(WizardSchemaStepType.ScanBluetoothSystems))
         {
             await GoToDevicesInfoState();
+        }
+        else if (CurrentStep.WizardSchemaStepType.Equals(WizardSchemaStepType.ConfirmDeviceInformation))
+        {
+            await GoToDeviceConfigurationStep();
         }
     }
     #endregion
@@ -177,7 +189,16 @@ public class EnrollDeviceWizardSchema : WizardSchema
 
         // We need to set the device of this view model to the previously selected device
         await DeviceInfoViewModel.GetDeviceInfo(DeviceScannerViewModel.SelectedSystemId);
-        
+
+        // If the device info could be found, we should check if the system has been previously initialized or configured
+        if (DeviceInfoViewModel is { SelectedSystemId: not null, DeviceInfo: not null })
+        {
+            var shouldConfirm = DeviceInfoViewModel.IsSystemConfigured || DeviceInfoViewModel.IsSystemInitialized;
+            // No need to confirm, just go to the next step
+            if (!shouldConfirm)
+                await GoToNextStep();
+        }
+
         await UpdateDevicesInfoStep();
     }
 
@@ -186,7 +207,43 @@ public class EnrollDeviceWizardSchema : WizardSchema
         CurrentStep!.IsBackButtonVisible = true;
         CurrentStep.IsBackButtonEnabled = true;
         CurrentStep.IsCancelButtonEnabled = true;
-        CurrentStep.IsNextButtonEnabled = DeviceInfoViewModel.SelectedSystemId != null;
+        if (DeviceInfoViewModel is { SelectedSystemId: not null, DeviceInfo: not null })
+        {
+            var shouldConfirm = DeviceInfoViewModel.IsSystemConfigured || DeviceInfoViewModel.IsSystemInitialized;
+            var hasConfirmed = DeviceInfoViewModel.DeviceOverwriteConfirmed;
+            
+            CurrentStep.IsNextButtonEnabled = !shouldConfirm || (shouldConfirm && hasConfirmed);
+        }
+        else
+            CurrentStep.IsNextButtonEnabled = false;
+        
+        return Task.CompletedTask;
+    }
+
+    #endregion
+    
+    #region Device Info View Model
+
+    private async Task GoToDeviceConfigurationStep()
+    {
+        SetStepAsCurrent(WizardSchemaStepType.SetDeviceConfiguration);
+        
+        if (!CurrentStepIsType(WizardSchemaStepType.SetDeviceConfiguration))
+            return;
+
+        // We need to set the device of this view model to the previously selected device
+        await DeviceEnrollConfigurationViewModel.LoadDeviceConfiguration(DeviceScannerViewModel.SelectedSystemId);
+
+        await UpdateDeviceConfigurationStep();
+    }
+
+    private Task UpdateDeviceConfigurationStep()
+    {
+        CurrentStep!.IsBackButtonVisible = true;
+        CurrentStep.IsBackButtonEnabled = true;
+        CurrentStep.IsCancelButtonEnabled = true;
+        CurrentStep.IsNextButtonEnabled = DeviceEnrollConfigurationViewModel.IsValid;
+        
         return Task.CompletedTask;
     }
 
@@ -226,6 +283,23 @@ public class EnrollDeviceWizardSchema : WizardSchema
     }
 
 
+    private void DeviceInfoViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        // Validate the property name
+        if (string.IsNullOrWhiteSpace(e.PropertyName)) return;
+        // Validate the current step
+        if (!CurrentStepIsType(WizardSchemaStepType.ConfirmDeviceInformation)) return;
+        UpdateDevicesInfoStep();
+    }
+
+    private void DeviceEnrollConfigurationViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        // Validate the property name
+        if (string.IsNullOrWhiteSpace(e.PropertyName)) return;
+        // Validate the current step
+        if (!CurrentStepIsType(WizardSchemaStepType.SetDeviceConfiguration)) return;
+        UpdateDeviceConfigurationStep();
+    }
     #endregion
    
 }

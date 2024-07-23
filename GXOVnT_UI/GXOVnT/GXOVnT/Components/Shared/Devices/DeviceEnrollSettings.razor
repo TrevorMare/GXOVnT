@@ -13,27 +13,28 @@
 
             <MudForm @ref="_form" @bind-IsValid="@success" @bind-Errors="@errors">
 
-                <MudTextField T="string" Label="System Name" Required="true" RequiredError="System name is required!" @bind-Value="@SetSettingsMessageModel.SystemName"/>
+                <MudTextField T="string" Label="System Name" Required="true" RequiredError="System name is required!" @bind-Value="@ViewModel.SystemName"/>
 
-                <MudSelect Label="System Type" T="int" Dense="true" RequiredError="System type is required" Required="true" Value="@SetSettingsMessageModel.SystemType" ValueChanged="id => SetSettingsMessageModel.SystemType = id">
+                <MudSelect Label="System Type" T="int" Dense="true" RequiredError="System type is required" Required="true" Value="@ViewModel.SystemType" ValueChanged="id => ViewModel.SystemType = id">
                     @foreach (var item in Enumeration.GetAll<SystemType>(f => f.Id != SystemType.UnInitialized.Id))
                     {
                         <MudSelectItem Value="@item.Id">@item.ToString()</MudSelectItem>
                     }
                 </MudSelect>
-
-                <MudTextField T="string" Label="WiFi SSID" Required="true" RequiredError="WiFi SSID is required" @bind-Value="@SetSettingsMessageModel.WiFiSsid"/>
-                <MudTextField InputType="InputType.Password" T="string" Label="WiFi Password" Required="false" @bind-Value="@SetSettingsMessageModel.WiFiPassword"/>
-
+                <MudTextField T="string" Label="WiFi SSID" Required="true" RequiredError="WiFi SSID is required" @bind-Value="@ViewModel.WiFiSsid"/>
+                <MudTextField InputType="InputType.Password" T="string" Label="WiFi Password" Required="false" @bind-Value="@ViewModel.WiFiPassword"/>
             </MudForm>
-
             <MudAlert Severity="Severity.Info" Class="my-2">
                 The WiFi settings should be provided to enable the device to download the latest firmware.
             </MudAlert>
+            <MudButton @onclick="TestWiFiConnection" StartIcon="@Icons.Material.Filled.Wifi" >Test WiFi</MudButton>
 
-            <MudButton @onclick="TestDeviceWiFiSettings" StartIcon="@Icons.Material.Filled.Wifi" >Test WiFi</MudButton>
-            <MudButton @onclick="RebootDeviceAsync" StartIcon="@Icons.Material.Filled.Wifi" >Test reboot</MudButton>
+            @if (InitialViewModel == null)
+            {
+                <MudButton @onclick="ViewModel.SaveSettings" StartIcon="@Icons.Material.Filled.Save" >Save settings</MudButton>    
+            }
         </MudPaper>
+        
     </MudItem>
     
     <MudItem xs="12" sm="5">

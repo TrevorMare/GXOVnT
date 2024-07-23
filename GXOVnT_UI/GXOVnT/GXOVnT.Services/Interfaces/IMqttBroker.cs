@@ -1,6 +1,6 @@
 ﻿namespace GXOVnT.Services.Interfaces;
 
-public interface IMqttServer
+public interface IMqttBroker
 {
 
     Task StartServerAsync();

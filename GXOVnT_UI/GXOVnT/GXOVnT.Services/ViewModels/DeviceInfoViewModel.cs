@@ -13,10 +13,17 @@ public class DeviceInfoViewModel : StateObject
     private Guid? _selectedSystemId;
     private Models.System? _selectedSystem;
     private GetSystemSettingsResponse? _deviceInfo;
-    private bool _failedToGetInfo = false;
+    private bool _failedToGetInfo;
+    private bool _deviceOverwriteConfirmed;
     #endregion
 
     #region Properties
+
+    public bool DeviceOverwriteConfirmed
+    {
+        get => _deviceOverwriteConfirmed;
+        private set => SetField(ref _deviceOverwriteConfirmed, value);
+    }
 
     public Guid? SelectedSystemId
     {
@@ -44,6 +51,8 @@ public class DeviceInfoViewModel : StateObject
     
     public bool IsSystemInitialized =>
         _deviceInfo != null && _deviceInfo.SystemType != SystemType.UnInitialized.Id;
+
+    public bool IsSystemConfigured => _deviceInfo is { SystemConfigured: true };
     #endregion
     
     #region ctor
@@ -103,6 +112,11 @@ public class DeviceInfoViewModel : StateObject
         }, "Loading system information");
     }
 
+    public void SetDeviceOverwriteConfirmed(bool isConfirmed)
+    {
+        DeviceOverwriteConfirmed = isConfirmed;
+    }
+    
     #endregion
 
     #region Private Methods

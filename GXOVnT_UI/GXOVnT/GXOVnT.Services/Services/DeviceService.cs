@@ -1,9 +1,7 @@
 ﻿using GXOVnT.Services.Interfaces;
-using GXOVnT.Services.Models;
 using GXOVnT.Shared.Common;
 using GXOVnT.Shared.DeviceMessage.Request;
 using GXOVnT.Shared.DeviceMessage.Response;
-using GXOVnT.Shared.Interfaces;
 
 namespace GXOVnT.Services.Services;
 
@@ -41,7 +39,6 @@ public class DeviceService : StateObject, IDeviceService
             SetBusyState(true, "Sending device reboot request");
 
             await device.SendJsonModelToDevice(new RebootRequest());
-            await Task.Delay(1000);
 
             if (!reconnect)
                 return;

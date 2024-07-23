@@ -28,4 +28,5 @@ public interface IDeviceService : IStateObject
 
     Task<GetFirmwareUpdateResultResponse> CheckFirmwareUpdates(Models.System device, string wifiSsid = "",
         string wifiPassword = "");
+    
 }
